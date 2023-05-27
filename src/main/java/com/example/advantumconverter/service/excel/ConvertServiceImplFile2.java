@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.example.advantumconverter.utils.DateConverter.*;
 
@@ -67,22 +64,22 @@ public class ConvertServiceImplFile2 extends ConvertServiceBase implements Conve
                     dataLine.add("");
                     dataLine.add("");
                     dataLine.add(fillS(row, copy));
-//                    dataLine.add(fillT(row));
-//                    dataLine.add(fillU(row));
-//                    dataLine.add(fillV(row));
-//                    dataLine.add(isStart(row) ? "Погрузка" : "Разгрузка");
-//                    dataLine.add(fillX(row));
-//                    dataLine.add("");
-//                    dataLine.add("");
-//                    dataLine.add("");
-//                    dataLine.add("");
-//                    dataLine.add(fillAC(row));
-//                    dataLine.add("");
-//                    dataLine.add(fillAE(row));
-//                    dataLine.add("");
-//                    dataLine.add("");
-//                    dataLine.add("");
-                    //===========================
+                    dataLine.add(fillT(row, copy));
+                    dataLine.add(fillU(row, copy));
+                    dataLine.add(fillU(row, copy));
+                    dataLine.add(copy == 1 ? "Погрузка" : "Разгрузка");
+                    dataLine.add(String.valueOf(copy));
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add(getCellValue(row, 14));
+                    dataLine.add("");
+                    dataLine.add(getCellValue(row, 16));
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+
                     data.add(dataLine);
                 }
             }
@@ -92,53 +89,7 @@ public class ConvertServiceImplFile2 extends ConvertServiceBase implements Conve
         return data;
     }
 
-
-    private String getValueOrDefault(int row, int slippage, int col) {
-        row = row + slippage;
-        if (row < START_ROW || row > sheet.getLastRowNum()) {
-            return "";
-        }
-        if (col < 0 || col > LAST_COLUMN_NUMBER) {
-            return "";
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
-    }
-
-    private String getCellValue(int row, int col) {
-        if (sheet.getRow(row) == null) {
-            return "";
-        }
-        if (sheet.getRow(row).getCell(col) == null) {
-            return "";
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
-    }
-
-    private String getCellValue(XSSFCell xssfCell) {
-        DataFormatter formatter = new DataFormatter();
-        return formatter.formatCellValue(xssfCell);
-    }
-
-    private String fillA(int row) throws ParseException {
-        val cur = getValueOrDefault(row, 0, 3);
-        val next1 = getValueOrDefault(row, 1, 3);
-        val next2 = getValueOrDefault(row, 2, 3);
-        val date = convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE);
-        return (next1.equals(next2) ? next1 : cur) + date;
-    }
-
-
-    private Car findCar(int row) {
-        val cur = getValueOrDefault(row, 0, 9);
-        val next1 = getValueOrDefault(row, 1, 9);
-        val next2 = getValueOrDefault(row, 2, 9);
-        val carName = next1.equals(next2) && !next1.equals("") ? next1 : cur;
-        return cars.stream().filter(e -> e.getName().equals(carName))
-                .findFirst().orElseThrow(() -> new CarNotFoundException(""));
-    }
-
-    private String fillS(int row, int copy) throws ParseException {
-        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + " ";
+    private Date getTimeForS(int row, int copy) throws ParseException {
         int column = 0;
         switch (copy) {
             case 1:
@@ -151,68 +102,35 @@ public class ConvertServiceImplFile2 extends ConvertServiceBase implements Conve
                 column = 22;
                 break;
         }
-        return convertDateFormat(date + getCellValue(row, column), TEMPLATE_DATE_TIME_SEC_DOT, TEMPLATE_DATE_TIME_DOT);
+        return getCellDate(row, column);
+    }
+
+    private String fillS(int row, int copy) throws ParseException {
+        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + " ";
+        val time = getTimeForS(row, copy);
+        return date + convertDateFormat(time, TEMPLATE_TIME);
     }
 
     private String fillT(int row, int copy) throws ParseException {
-        val dateText = fillS(row, copy);
-        val date = convertDateFormat(dateText, TEMPLATE_DATE_TIME_DOT);
-        return convertDateFormat(DateUtils.addHours(date, 1), TEMPLATE_DATE_TIME_DOT);
+        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + " ";
+        val time = DateUtils.addHours(getTimeForS(row, copy), 2);
+        return date + convertDateFormat(time, TEMPLATE_TIME);
     }
 
-    private String fillU(int row) {
-        return isStart(row) ? "Склад Рулог М3" : getCellValue(row, 4);
-    }
-
-    private String fillV(int row) {
-        return isStart(row) ? fillU(row) : getCellValue(row, 11);
-    }
-
-    private String fillX(int row) {
-        int i = row;
-        for (; i >= START_ROW; --i) {
-            if (isStart(i)) {
+    private String fillU(int row, int copy) {
+        int column = 0;
+        switch (copy) {
+            case 1:
+                column = 13;
                 break;
-            }
-            if (getValueOrDefault(i, 0, 0).equals("") && i != row) {
+            case 2:
+                column = 21;
                 break;
-            }
-        }
-        return String.valueOf(row - i + 1);
-    }
-
-    private String fillAC(int row) {
-        return getFioTrack(row, 13);
-    }
-
-    private String fillAE(int row) {
-        return getFioTrack(row, 12);
-    }
-
-    private String getFioTrack(int row, int column) {
-        if (isStart(row)) {
-            val result = getValueOrDefault(row, 1, column);
-            return result.equals("") ? "0" : result;
-        }
-        for (int i = row; i >= START_ROW; --i) {
-            val value = getValueOrDefault(i, 0, column);
-            if (!value.equals("")) {
-                return value;
-            }
-            if (getValueOrDefault(i, 0, 0).equals("") && i != row) {
+            case 3:
+                column = 23;
                 break;
-            }
         }
-        return "0";
-    }
-
-    private boolean isStart(int row) {
-        if (row == START_ROW) {
-            return true;
-        }
-        val cur = getValueOrDefault(row, 0, 3);
-        val prev1 = getValueOrDefault(row, -1, 3);
-        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(""));
+        return getCellValue(row, column);
     }
 
 }

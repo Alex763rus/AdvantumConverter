@@ -6,18 +6,11 @@ import com.example.advantumconverter.model.excel.Header;
 import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.example.advantumconverter.utils.DateConverter.*;
 
@@ -82,40 +75,13 @@ public class ConvertServiceImplFile1 extends ConvertServiceBase implements Conve
                 dataLine.add("");
                 dataLine.add("");
                 dataLine.add("");
-                //===========================
+
                 data.add(dataLine);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return data;
-    }
-
-
-    private String getValueOrDefault(int row, int slippage, int col) {
-        row = row + slippage;
-        if (row < START_ROW || row > sheet.getLastRowNum()) {
-            return "";
-        }
-        if (col < 0 || col > LAST_COLUMN_NUMBER) {
-            return "";
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
-    }
-
-    private String getCellValue(int row, int col) {
-        if (sheet.getRow(row) == null) {
-            return "";
-        }
-        if (sheet.getRow(row).getCell(col) == null) {
-            return "";
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
-    }
-
-    private String getCellValue(XSSFCell xssfCell) {
-        DataFormatter formatter = new DataFormatter();
-        return formatter.formatCellValue(xssfCell);
     }
 
     private String fillA(int row) throws ParseException {
@@ -192,6 +158,17 @@ public class ConvertServiceImplFile1 extends ConvertServiceBase implements Conve
             }
         }
         return "0";
+    }
+
+    private String getValueOrDefault(int row, int slippage, int col) {
+        row = row + slippage;
+        if (row < START_ROW || row > sheet.getLastRowNum()) {
+            return "";
+        }
+        if (col < 0 || col > LAST_COLUMN_NUMBER) {
+            return "";
+        }
+        return getCellValue(sheet.getRow(row).getCell(col));
     }
 
     private boolean isStart(int row) {
