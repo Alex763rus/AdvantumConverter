@@ -10,6 +10,8 @@ public class DateConverter {
 
     public static final String TEMPLATE_DATE_TIME_SLASH = "MM/dd/yy HH:mm";
     public static final String TEMPLATE_DATE_TIME_DOT = "dd.MM.yyyy H:mm";
+    public static final String TEMPLATE_DATE_TIME_SEC_DOT = "dd.MM.yyyy H:mm:ss";
+    public static final String TEMPLATE_DATE_TIME_DOT_SLASH = "dd.MM.yyyy H:mm";
     public static final String TEMPLATE_DATE_SLASH = "MM/dd/yy";
     public static final String TEMPLATE_DATE = "ddMMyy";
     public static final String TEMPLATE_DATE_DOT = "dd.MM.yyyy";

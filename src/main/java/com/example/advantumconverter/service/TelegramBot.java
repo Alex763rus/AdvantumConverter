@@ -1,7 +1,10 @@
 package com.example.advantumconverter.service;
 
 import com.example.advantumconverter.config.BotConfig;
-import com.example.advantumconverter.service.excel.ConvertService;
+import com.example.advantumconverter.service.excel.ConvertServiceBase;
+import com.example.advantumconverter.service.excel.ConvertServiceImplFile1;
+import com.example.advantumconverter.service.excel.ConvertServiceImplFile2;
+import com.example.advantumconverter.service.excel.ExcelGenerateService;
 import com.example.advantumconverter.service.menu.MenuService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +34,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private MenuService menuService;
 
     @Autowired
-    private ConvertService convertService;
+    private ConvertServiceBase convertServiceBase;
 
     @PostConstruct
     public void init() {
@@ -56,16 +59,28 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     FileUploadService fileUploadService;
 
+    @Autowired
+    protected ConvertServiceImplFile1 convertServiceImplFile1;
+
+    @Autowired
+    protected ConvertServiceImplFile2 convertServiceImplFile2;
+
+    @Autowired
+    protected ExcelGenerateService excelGenerateService;
+
+
     @Override
     public void onUpdateReceived(Update update) {
-        if(update.hasMessage()){
-            if(update.getMessage().hasDocument()){
+        if (update.hasMessage()) {
+            if (update.getMessage().hasDocument()) {
                 val field = update.getMessage().getDocument();
                 try {
                     val file = fileUploadService.uploadFile(field.getFileName(), field.getFileId());
                     val book = (XSSFWorkbook) WorkbookFactory.create(file);
-                    val document = convertService.process(book);
 
+                    //todo выбор сервиса через кнопки
+                    val convertService = convertServiceImplFile1;
+                    val document = excelGenerateService.process(convertService.getConvertedBook(book), ConvertServiceBase.SHEET_RESULT_NAME);
                     val sendDocument = new SendDocument();
                     sendDocument.setDocument(document);
                     sendDocument.setChatId(String.valueOf(update.getMessage().getChatId()));
