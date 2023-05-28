@@ -29,6 +29,9 @@ public class MenuService {
 
     @Autowired
     private MenuConvertBogorodsk menuconvertBogorodsk;
+
+    @Autowired
+    private MenuConvertScooter menuConvertScooter;
     @Autowired
     private StateService stateService;
     private List<MenuActivity> mainMenu;
@@ -39,6 +42,7 @@ public class MenuService {
         mainMenu.add(menuStart);
         mainMenu.add(menuConvertCofix);
         mainMenu.add(menuconvertBogorodsk);
+        mainMenu.add(menuConvertScooter);
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {

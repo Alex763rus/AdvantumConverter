@@ -20,6 +20,7 @@ import static com.example.advantumconverter.utils.DateConverter.*;
 public class ConvertServiceImplCofix extends ConvertServiceBase implements ConvertService {
 
     private final int START_ROW = 2;
+    private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
     private Set<Car> cars;
 
@@ -41,9 +42,10 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
         int row = START_ROW;
         ArrayList<String> dataLine = new ArrayList();
         try {
-            sheet = book.getSheet("Исходник");
+            sheet = book.getSheetAt(0);
+            LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
-            for (; row < sheet.getLastRowNum(); ++row) {
+            for (; row < LAST_ROW; ++row) {
                 dataLine = new ArrayList<String>();
                 dataLine.add(fillA(row));
                 dataLine.add(convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
@@ -172,10 +174,10 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
 
     private String getValueOrDefault(int row, int slippage, int col) {
         row = row + slippage;
-        if (row < START_ROW || row > sheet.getLastRowNum()) {
+        if (row < START_ROW || row > LAST_ROW) {
             return "";
         }
-        if (col < 0 || col > LAST_COLUMN_NUMBER) {
+        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
             return "";
         }
         return getCellValue(sheet.getRow(row).getCell(col));

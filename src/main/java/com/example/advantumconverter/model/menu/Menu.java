@@ -1,6 +1,7 @@
 package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.config.BotConfig;
+import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.model.security.User;
 import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;

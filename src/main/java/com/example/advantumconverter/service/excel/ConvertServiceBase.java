@@ -12,12 +12,15 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.SHEET_RESULT_NAME;
 import static com.example.advantumconverter.enums.State.FREE;
+import static com.example.advantumconverter.utils.DateConverter.TEMPLATE_DATE;
+import static com.example.advantumconverter.utils.DateConverter.convertDateFormat;
 
 
 @Component
@@ -50,5 +53,21 @@ public class ConvertServiceBase {
             return null;
         }
         return sheet.getRow(row).getCell(col).getDateCellValue();
+    }
+
+    protected int getLastRow(int startRow) {
+        int i = startRow;
+        for (; ; i++) {
+            if (getCellValue(i, 0).equals("")) {
+                if (getCellValue(i + 1, 0).equals("")) {
+                    break;
+                }
+            }
+        }
+        return i - 1;
+    }
+
+    protected String getCurrentDate(String format) throws ParseException {
+        return convertDateFormat(new Date(), format);
     }
 }

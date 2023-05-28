@@ -20,6 +20,7 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
     private final int START_ROW = 1;
 
     private Set<Car> cars;
+    private int LAST_ROW;
 
     @PostConstruct
     public void init() {
@@ -38,9 +39,10 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
         int row = START_ROW;
         ArrayList<String> dataLine = new ArrayList();
         try {
-            sheet = book.getSheet("Sheet1");
+            sheet = book.getSheetAt(0);
+            LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
-            for (; row <= sheet.getLastRowNum(); ++row) {
+            for (; row <= LAST_ROW; ++row) {
                 for (int copy = 1; copy < 4; ++copy) {
                     dataLine = new ArrayList<String>();
                     dataLine.add(getCellValue(row, 1));
