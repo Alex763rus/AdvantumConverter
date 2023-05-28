@@ -12,10 +12,11 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.*;
 
+import static com.example.advantumconverter.constant.Constant.RULOG_COFIX;
 import static com.example.advantumconverter.utils.DateConverter.*;
 
 @Component
-public class ConvertServiceImplFile1 extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplCofix extends ConvertServiceBase implements ConvertService {
 
     private final int START_ROW = 2;
     private int LAST_COLUMN_NUMBER;
@@ -82,6 +83,11 @@ public class ConvertServiceImplFile1 extends ConvertServiceBase implements Conve
             e.printStackTrace();
         }
         return data;
+    }
+
+    @Override
+    public String getFileNamePrefix() {
+        return RULOG_COFIX;
     }
 
     private String fillA(int row) throws ParseException {

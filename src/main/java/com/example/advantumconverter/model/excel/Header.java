@@ -1,10 +1,29 @@
 package com.example.advantumconverter.model.excel;
 
 import lombok.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.List;
 
 public class Header {
+
+    private final static Workbook workbook = new XSSFWorkbook();
+    private final static DataFormat dataFormat = workbook.createDataFormat();
+
+    private final static CellStyle cellStyleNumber = findOrCreateCellStyle("@");
+    public final static List<CellStyle> dataFormatOutput = List.of(
+            cellStyleNumber
+    );
+
+    private static CellStyle findOrCreateCellStyle(String formatIn) {
+        val cellStyle = workbook.createCellStyle();
+        cellStyle.setDataFormat(dataFormat.getFormat(formatIn));
+        return cellStyle;
+    }
 
     public static List<String> headersOutput = List.of(
             "Номер заявки\n" +

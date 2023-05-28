@@ -14,5 +14,9 @@ public class Constant {
 
     public static String NEW_LINE = "\n";
     public static String SPACE = " ";
+    public static String SHEET_RESULT_NAME = "ИМПОРТ";
+
+    public static String RULOG_COFIX = "Рулог Кофикс";
+    public static String BOGORODSK = "Х5 Богородск";
 
 }

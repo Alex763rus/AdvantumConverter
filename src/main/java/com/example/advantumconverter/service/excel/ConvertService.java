@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ConvertService {
     List<List<String>> getConvertedBook(XSSFWorkbook book);
+
+    String getFileNamePrefix();
 }

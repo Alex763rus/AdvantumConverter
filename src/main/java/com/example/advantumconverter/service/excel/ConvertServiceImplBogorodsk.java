@@ -1,25 +1,21 @@
 package com.example.advantumconverter.service.excel;
 
-import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.model.excel.Car;
 import com.example.advantumconverter.model.excel.Header;
 import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.*;
 
+import static com.example.advantumconverter.constant.Constant.BOGORODSK;
 import static com.example.advantumconverter.utils.DateConverter.*;
 
 @Component
-public class ConvertServiceImplFile2 extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements ConvertService {
     private final int START_ROW = 1;
 
     private Set<Car> cars;
@@ -27,14 +23,12 @@ public class ConvertServiceImplFile2 extends ConvertServiceBase implements Conve
     @PostConstruct
     public void init() {
         cars = new HashSet<>();
-//        cars.add(new Car("4500 - *HYUN 5ТБУШ.10", 5, 10));
-//        cars.add(new Car("4501 - *HYUN 10ТБУШ 16", 10, 16));
-//        cars.add(new Car("11 - *HYUN 20ТБУШ.33", 20, 33));
-//        cars.add(new Car("4700 - *HYUN 5ТСОF-БУШ", 5, 10));
-//        cars.add(new Car("4701 - *HYUN 3TCOF-БУШ", 3, 10));
-//        cars.add(new Car("2350 - *10П2Т (РЕФЗАК)", 2, 10));
     }
 
+    @Override
+    public String getFileNamePrefix() {
+        return BOGORODSK;
+    }
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
@@ -89,7 +83,7 @@ public class ConvertServiceImplFile2 extends ConvertServiceBase implements Conve
         return data;
     }
 
-    private Date getTimeForS(int row, int copy) throws ParseException {
+    private Date getTimeForS(int row, int copy) {
         int column = 0;
         switch (copy) {
             case 1:

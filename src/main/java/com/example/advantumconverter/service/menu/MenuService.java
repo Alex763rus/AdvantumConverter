@@ -25,10 +25,10 @@ public class MenuService {
     private MenuDefault menuActivityDefault;
 
     @Autowired
-    private MenuSend menuSend;
+    private MenuConvertCofix menuConvertCofix;
 
     @Autowired
-    private MenuStop menuStop;
+    private MenuConvertBogorodsk menuconvertBogorodsk;
     @Autowired
     private StateService stateService;
     private List<MenuActivity> mainMenu;
@@ -37,8 +37,8 @@ public class MenuService {
     public void mainMenuInit() {
         mainMenu = new ArrayList();
         mainMenu.add(menuStart);
-        mainMenu.add(menuSend);
-        mainMenu.add(menuStop);
+        mainMenu.add(menuConvertCofix);
+        mainMenu.add(menuconvertBogorodsk);
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {

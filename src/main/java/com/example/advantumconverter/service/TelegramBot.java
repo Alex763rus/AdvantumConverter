@@ -2,26 +2,20 @@ package com.example.advantumconverter.service;
 
 import com.example.advantumconverter.config.BotConfig;
 import com.example.advantumconverter.service.excel.ConvertServiceBase;
-import com.example.advantumconverter.service.excel.ConvertServiceImplFile1;
-import com.example.advantumconverter.service.excel.ConvertServiceImplFile2;
-import com.example.advantumconverter.service.excel.ExcelGenerateService;
 import com.example.advantumconverter.service.menu.MenuService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.io.IOException;
 
 @Component
 @Slf4j
@@ -56,53 +50,32 @@ public class TelegramBot extends TelegramLongPollingBot {
         return botConfig.getBotToken();
     }
 
-    @Autowired
-    FileUploadService fileUploadService;
-
-    @Autowired
-    protected ConvertServiceImplFile1 convertServiceImplFile1;
-
-    @Autowired
-    protected ConvertServiceImplFile2 convertServiceImplFile2;
-
-    @Autowired
-    protected ExcelGenerateService excelGenerateService;
-
-
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage()) {
-            if (update.getMessage().hasDocument()) {
-                val field = update.getMessage().getDocument();
-                try {
-                    val file = fileUploadService.uploadFile(field.getFileName(), field.getFileId());
-                    val book = (XSSFWorkbook) WorkbookFactory.create(file);
-
-                    //todo выбор сервиса через кнопки
-                    val convertService = convertServiceImplFile1;
-                    val document = excelGenerateService.process(convertService.getConvertedBook(book), ConvertServiceBase.SHEET_RESULT_NAME);
-                    val sendDocument = new SendDocument();
-                    sendDocument.setDocument(document);
-                    sendDocument.setChatId(String.valueOf(update.getMessage().getChatId()));
-                    execute(sendDocument);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                return;
-            }
-        }
         val answers = menuService.messageProcess(update);
         for (val answer : answers) {
             try {
                 if (answer instanceof BotApiMethod) {
                     execute((BotApiMethod) answer);
                 }
+                if (answer instanceof SendDocument) {
+                    //deleteLastMessage(update);
+                    execute((SendDocument) answer);
+                }
             } catch (TelegramApiException e) {
                 log.error("Ошибка во время обработки сообщения: " + e.getMessage());
             }
         }
+    }
+
+    private void deleteLastMessage(Update update) throws TelegramApiException {
+        EditMessageText editMessageText = new EditMessageText();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+        long chatId = update.getCallbackQuery().getMessage().getChatId();
+        editMessageText.setChatId(String.valueOf(chatId));
+        editMessageText.setMessageId((int) messageId);
+        editMessageText.setText("Документ готов!");
+        execute(editMessageText);
     }
 
 }
