@@ -19,5 +19,6 @@ public class Constant {
     public static String RULOG_COFIX = "Рулог Кофикс";
     public static String BOGORODSK = "Х5 Богородск";
     public static String SCOOTER = "Самокат";
+    public static String LENTA = "Лента";
 
 }

@@ -19,13 +19,7 @@ import static com.example.advantumconverter.utils.DateConverter.*;
 public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements ConvertService {
     private final int START_ROW = 1;
 
-    private Set<Car> cars;
     private int LAST_ROW;
-
-    @PostConstruct
-    public void init() {
-        cars = new HashSet<>();
-    }
 
     @Override
     public String getFileNamePrefix() {
@@ -44,7 +38,7 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
                 for (int copy = 1; copy < 4; ++copy) {
-                    dataLine = new ArrayList<String>();
+                    dataLine = new ArrayList<>();
                     dataLine.add(getCellValue(row, 1));
                     dataLine.add(convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                     dataLine.add("Х5 Богородск");
