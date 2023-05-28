@@ -1,11 +1,9 @@
 package com.example.advantumconverter.service.excel;
 
+import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.excel.Header;
 import jakarta.annotation.PostConstruct;
 import lombok.val;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.format.CellFormat;
-import org.apache.poi.ss.format.CellFormatResult;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 import static com.example.advantumconverter.utils.DateConverter.*;
@@ -28,22 +25,76 @@ public class ExcelGenerateService {
 
     private CellStyle styleDateDot;
     private CellStyle styleDateTimeDot;
-    private CellStyle styleDouble;
     private CellStyle styleInt;
+
+    public InputFile processXlsx(List<List<String>> dataIn, String fileNamePrefix, String sheetName) throws ParseException {
+        this.data = dataIn;
+        workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet(sheetName);
+        styleDateDot = getStyle(TEMPLATE_DATE_DOT);
+        styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
+        styleInt = getStyle("0");
+
+        File tmpFile;
+        int y = 0;
+        try {
+            tmpFile = Files.createTempFile(fileNamePrefix, ".xlsx").toFile();
+            for (; y < data.size(); y++) {
+                val row = sheet.createRow(y);
+                if (y == 0) {
+                    for (int x = 0; x < data.get(y).size(); x++) {
+                        val cell = row.createCell(x);
+                        cell.setCellValue(data.get(y).get(x));
+                    }
+                } else {
+                    createCellString(row, y, 0);
+                    createCellDate(row, y, 1, TEMPLATE_DATE_DOT, styleDateDot);
+                    createCellString(row, y, 2);
+                    createCellString(row, y, 3);
+                    createCellInt(row, y, 4);
+                    createCellString(row, y, 5);
+                    createCellString(row, y, 6);
+                    createCellString(row, y, 7);
+                    createCellInt(row, y, 8);
+                    createCellInt(row, y, 9);
+                    createCellInt(row, y, 10);
+                    createCellInt(row, y, 11);
+                    createCellInt(row, y, 12);
+                    createCellInt(row, y, 13);
+                    createCellInt(row, y, 14);
+                    createCellInt(row, y, 15);
+                    createCellInt(row, y, 16);
+                    createCellInt(row, y, 17);
+                    createCellDate(row, y, 18, TEMPLATE_DATE_TIME_DOT, styleDateTimeDot);
+                    createCellDate(row, y, 19, TEMPLATE_DATE_TIME_DOT, styleDateTimeDot);
+                    createCellString(row, y, 20);
+                    createCellString(row, y, 21);
+                    createCellString(row, y, 22);
+                    createCellInt(row, y, 23);
+                    createCellInt(row, y, 24);
+                    createCellInt(row, y, 25);
+                    createCellString(row, y, 26);
+                    createCellString(row, y, 27);
+                    createCellString(row, y, 28);
+                    createCellString(row, y, 29);
+                    createCellString(row, y, 30);
+                    createCellInt(row, y, 31);
+                    createCellString(row, y, 32);
+                    createCellString(row, y, 33);
+                }
+            }
+            workbook.write(new FileOutputStream(tmpFile));
+            workbook.close();
+            return new InputFile(tmpFile);
+        } catch (Exception e) {
+            throw new ExcelGenerationException("Строка:" + y + ". " + e.getMessage());
+        }
+    }
 
     private CellStyle getStyle(String format) {
         val style = workbook.createCellStyle();
         style.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat(format));
         return style;
-    }
-
-    private void createCellDouble(Row row, int y, int x) {
-        val cell = row.createCell(x);
-        cell.setCellStyle(styleDouble);
-        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-        if (!data.get(y).get(x).equals("")) {
-            cell.setCellValue(Double.parseDouble(data.get(y).get(x)));
-        }
     }
 
     private void createCellInt(Row row, int y, int x) {
@@ -64,75 +115,4 @@ public class ExcelGenerateService {
         cell1.setCellStyle(cellStyle);
 
     }
-
-    public InputFile processXlsx(List<List<String>> dataIn, String fileNamePrefix, String sheetName) throws ParseException {
-        this.data = dataIn;
-        workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(sheetName);
-        styleDateDot = getStyle(TEMPLATE_DATE_DOT);
-        styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
-        styleDouble = getStyle("# ##0,00");
-        styleInt = getStyle("0");
-
-        File tmpFile;
-        try {
-            tmpFile = Files.createTempFile(fileNamePrefix, ".xlsx").toFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Object ob = null;
-        for (int y = 0; y < data.size(); y++) {
-            val row = sheet.createRow(y);
-            if (y == 0) {
-                for (int x = 0; x < data.get(y).size(); x++) {
-                    val cell = row.createCell(x);
-                    cell.setCellValue(data.get(y).get(x));
-                }
-            } else {
-                createCellString(row, y, 0);
-                createCellDate(row, y, 1, TEMPLATE_DATE_DOT, styleDateDot);
-                createCellString(row, y, 2);
-                createCellString(row, y, 3);
-                createCellDouble(row, y, 4);
-                createCellString(row, y, 5);
-                createCellString(row, y, 6);
-                createCellString(row, y, 7);
-                createCellDouble(row, y, 8);
-                createCellInt(row, y, 9);
-                createCellInt(row, y, 10);
-                createCellInt(row, y, 11);
-                createCellInt(row, y, 12);
-                createCellInt(row, y, 13);
-                createCellInt(row, y, 14);
-                createCellInt(row, y, 15);
-                createCellInt(row, y, 16);
-                createCellInt(row, y, 17);
-                createCellDate(row, y, 18, TEMPLATE_DATE_TIME_DOT, styleDateTimeDot);
-                createCellDate(row, y, 19, TEMPLATE_DATE_TIME_DOT, styleDateTimeDot);
-                createCellString(row, y, 20);
-                createCellString(row, y, 21);
-                createCellString(row, y, 22);
-                createCellInt(row, y, 23);
-                createCellInt(row, y, 24);
-                createCellInt(row, y, 25);
-                createCellString(row, y, 26);
-                createCellString(row, y, 27);
-                createCellString(row, y, 28);
-                createCellString(row, y, 29);
-                createCellString(row, y, 30);
-                createCellInt(row, y, 31);
-                createCellString(row, y, 32);
-                createCellString(row, y, 33);
-            }
-        }
-        try {
-            workbook.write(new FileOutputStream(tmpFile));
-            workbook.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return new InputFile(tmpFile);
-    }
-
-
 }

@@ -2,6 +2,7 @@ package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.config.BotConfig;
 import com.example.advantumconverter.model.security.User;
+import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.FileUploadService;
 import com.example.advantumconverter.service.excel.ConvertService;
@@ -63,20 +64,21 @@ public abstract class Menu implements MenuActivity {
     protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {
         if (update.hasMessage()) {
             if (update.getMessage().hasDocument()) {
-                val field = update.getMessage().getDocument();
                 try {
-                    val file = fileUploadService.uploadFile(field.getFileName(), field.getFileId());
-                    val book = (XSSFWorkbook) WorkbookFactory.create(file);
+                    val field = update.getMessage().getDocument();
+                    val book = fileUploadService.uploadXlsx(field.getFileName(), field.getFileId());
                     val convertedBook = convertService.getConvertedBook(book);
                     val document = excelGenerateService.processXlsx(convertedBook, convertService.getFileNamePrefix(), SHEET_RESULT_NAME);
-                    val sendDocument = new SendDocument();
-                    sendDocument.setDocument(document);
-                    sendDocument.setChatId(String.valueOf(update.getMessage().getChatId()));
                     stateService.setState(user, FREE);
-                    return Arrays.asList(sendDocument);
+                    return Arrays.asList(SendDocumentWrap.init()
+                            .setChatIdLong(update.getMessage().getChatId())
+                            .setDocument(document)
+                            .build().createMessage());
                 } catch (Exception ex) {
-                    errorMessage(update, ex.getMessage());
+                    return errorMessage(update, ex.getMessage());
                 }
+            } else{
+                return errorMessage(update, "Ошибка. Сообщение не содержит документ.\nОтправьте документ");
             }
         }
         return errorMessageDefault(update);

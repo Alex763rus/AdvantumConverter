@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel;
 
+import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.excel.Car;
 import com.example.advantumconverter.model.excel.Header;
 import jakarta.annotation.PostConstruct;
@@ -27,18 +28,21 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
 
     @Override
     public String getFileNamePrefix() {
-        return BOGORODSK;
+        return BOGORODSK + "_";
     }
+
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutput);
+        int row = START_ROW;
+        ArrayList<String> dataLine = new ArrayList();
         try {
             sheet = book.getSheet("Sheet1");
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
-            for (int row = START_ROW; row <= sheet.getLastRowNum(); ++row) {
+            for (; row <= sheet.getLastRowNum(); ++row) {
                 for (int copy = 1; copy < 4; ++copy) {
-                    val dataLine = new ArrayList<String>();
+                    dataLine = new ArrayList<String>();
                     dataLine.add(getCellValue(row, 1));
                     dataLine.add(convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                     dataLine.add("Х5 Богородск");
@@ -78,7 +82,8 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new ConvertProcessingException("не удалось обработать строку:" + row
+                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
         }
         return data;
     }

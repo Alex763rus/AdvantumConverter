@@ -40,6 +40,9 @@ public class BotConfig {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Value("${input.file.path}")
+    String inputFilePath;
+
     @SneakyThrows
     @Bean
     WhiteListUser whiteListUser() {

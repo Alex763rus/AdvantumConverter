@@ -41,6 +41,9 @@ public class MenuConvertCofix extends Menu {
     }
 
     private List<PartialBotApiMethod> freeLogic(User user, Update update) {
+        if(!update.getMessage().getText().equals(MENU_NAME)){
+            return errorMessageDefault(update);
+        }
         stateService.setState(user, State.CONVERT_FILE_COFIX);
         return Arrays.asList(
                 SendMessageWrap.init()

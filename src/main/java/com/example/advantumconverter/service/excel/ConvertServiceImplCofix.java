@@ -1,6 +1,7 @@
 package com.example.advantumconverter.service.excel;
 
 import com.example.advantumconverter.exception.CarNotFoundException;
+import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.excel.Car;
 import com.example.advantumconverter.model.excel.Header;
 import jakarta.annotation.PostConstruct;
@@ -37,11 +38,13 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutput);
+        int row = START_ROW;
+        ArrayList<String> dataLine = new ArrayList();
         try {
             sheet = book.getSheet("Исходник");
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
-            for (int row = START_ROW; row < sheet.getLastRowNum(); ++row) {
-                val dataLine = new ArrayList<String>();
+            for (; row < sheet.getLastRowNum(); ++row) {
+                dataLine = new ArrayList<String>();
                 dataLine.add(fillA(row));
                 dataLine.add(convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                 dataLine.add("Рулог Кофикс");
@@ -80,14 +83,15 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
                 data.add(dataLine);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new ConvertProcessingException("не удалось обработать строку:" + row
+                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
         }
         return data;
     }
 
     @Override
     public String getFileNamePrefix() {
-        return RULOG_COFIX;
+        return RULOG_COFIX + "_";
     }
 
     private String fillA(int row) throws ParseException {
