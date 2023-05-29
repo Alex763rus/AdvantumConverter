@@ -40,49 +40,56 @@ public class ConvertServiceImplScooter extends ConvertServiceBase implements Con
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
-                val isStart = isStart(row);
+                boolean isStart = isStart(row);
                 if (isStart) {
                     mainRow = row;
                     counterCopy = 1;
                 }
-                dataLine = new ArrayList<>();
-                dataLine.add(fillA(mainRow));
-                dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
-                dataLine.add("Самокат");
-                dataLine.add("ООО \"Буш-Автопром\"");
-                dataLine.add("");
-                dataLine.add("Рефрижератор");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("5");
-                dataLine.add("10");
-                dataLine.add("2");
-                dataLine.add("4");
-                dataLine.add("6");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add(fillS(mainRow, isStart));
-                dataLine.add(fillT(mainRow, isStart));
-                dataLine.add("Склад FMCG МСК");
-                dataLine.add("Московская область, Пушкинский район, г.п. Софрино, 48 км Ярославского шоссе, владение 1\n");
-                dataLine.add(isStart ? "Погрузка" : "Разгрузка");
-                dataLine.add(String.valueOf(counterCopy));
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add(getCellValue(mainRow, 3));
-                dataLine.add("");
-                dataLine.add(getCellValue(mainRow, 4));
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                for (int copy = 1; copy <= 2; ++copy) {
+                    dataLine = new ArrayList<>();
+                    dataLine.add(fillA(mainRow));
+                    dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
+                    dataLine.add("Самокат");
+                    dataLine.add("ООО \"Буш-Автопром\"");
+                    dataLine.add("");
+                    dataLine.add("Рефрижератор");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("5");
+                    dataLine.add("10");
+                    dataLine.add("2");
+                    dataLine.add("4");
+                    dataLine.add("6");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add(fillS(row, isStart));
+                    dataLine.add(fillT(row, isStart));
+                    dataLine.add(fillU(row, isStart));
+                    dataLine.add(fillV(row, isStart));
+                    dataLine.add(isStart ? "Погрузка" : "Разгрузка");
+                    dataLine.add(String.valueOf(counterCopy));
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add(getCellValue(mainRow, 3).replaceAll(" ", ""));
+                    dataLine.add("");
+                    dataLine.add(getCellValue(mainRow, 4));
+                    dataLine.add("");
+                    dataLine.add("");
+                    dataLine.add("");
 
-                ++counterCopy;
-                data.add(dataLine);
+                    ++counterCopy;
+                    data.add(dataLine);
+                    if (!isStart) {
+                        break;
+                    } else {
+                        isStart = false;
+                    }
+                }
             }
         } catch (Exception e) {
             throw new ConvertProcessingException("не удалось обработать строку:" + mainRow
@@ -91,28 +98,30 @@ public class ConvertServiceImplScooter extends ConvertServiceBase implements Con
         return data;
     }
 
+    private String fillU(int row, boolean isStart) {
+        return isStart ? "Склад FMCG МСК" : getCellValue(row, 10);
+    }
+
+    private String fillV(int row, boolean isStart) {
+        val textStart = "Московская область, Пушкинский район, г.п. Софрино, 48 км Ярославского шоссе, владение 1";
+        return isStart ? textStart : getCellValue(row, 10);
+    }
     private String fillA(int row) throws ParseException {
-        return getCellValue(row, 0) + getCurrentDate(TEMPLATE_DATE);
+        return getCellValue(row, 1) + getCurrentDate(TEMPLATE_DATE);
     }
 
     private String fillS(int row, boolean isStart) throws ParseException {
         val date = getCurrentDate(TEMPLATE_DATE_DOT);
-        val time = getCellDate(row, 0);
-        if (isStart) {
-            DateUtils.addHours(time, -2);
-        }
-        return date + " " + convertDateFormat(time, TEMPLATE_TIME);
+        val timeA = getCellDate(row, 0);
+        val timeResult = isStart ? DateUtils.addHours(timeA, -2) : timeA;
+        return date + " " + convertDateFormat(timeResult, TEMPLATE_TIME);
     }
 
     private String fillT(int row, boolean isStart) throws ParseException {
         val date = getCurrentDate(TEMPLATE_DATE_DOT);
-        val time = getCellDate(row, 0);
-        if (isStart) {
-            DateUtils.addHours(time, -2);
-        } else {
-            DateUtils.addHours(time, -1);
-        }
-        return date + " " + convertDateFormat(time, TEMPLATE_TIME);
+        val timeA = getCellDate(row, 0);
+        val timeResult = isStart ? DateUtils.addHours(timeA, 1) : DateUtils.addHours(timeA, 4);
+        return date + " " + convertDateFormat(timeResult, TEMPLATE_TIME);
     }
 
     private String getValueOrDefault(int row, int slippage, int col) {
