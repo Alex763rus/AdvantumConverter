@@ -1,4 +1,4 @@
-package com.example.advantumconverter.model.excel;
+package com.example.advantumconverter.model.dictionary.excel;
 
 import lombok.*;
 import org.apache.poi.ss.usermodel.CellStyle;

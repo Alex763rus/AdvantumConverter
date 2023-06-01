@@ -1,6 +1,53 @@
 package com.example.advantumconverter.constant;
 
-public class Constant {
+import lombok.NoArgsConstructor;
+
+import static lombok.AccessLevel.PRIVATE;
+
+@NoArgsConstructor(access = PRIVATE)
+public final class Constant {
+    @NoArgsConstructor(access = PRIVATE)
+    public final class  App{
+
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
+    public final class Text {
+
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
+    public final class FileOutputName {
+        public static final String FILE_NAME_LENTA = "Лента";
+
+        public static final String FILE_NAME_COFIX = "Рулог Кофикс";
+
+        public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
+
+        public static final String FILE_NAME_SAMOKAT = "Самокат";
+        public static final String FILE_NAME_DOMINOS = "Рулог Доминос";
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
+    public final class Company {
+        public static final String COMPANY_NAME_LENTA = "Лента";
+        public static final String COMPANY_NAME_BUSH_AVTOPROM = "Буш-Автопром";
+    }
+    @NoArgsConstructor(access = PRIVATE)
+    public final class Command {
+        public static final String COMMAND_DEFAULT = "/default";
+        public static final String COMMAND_START = "/start";
+
+        public static final String COMMAND_FAQ = "/faq";
+
+        public static final String COMMAND_CONVERT_BOGORODSK = "/convert_bogorodsk";
+        public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
+        public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
+        public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
+        public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
+    }
+
+
 
     public static String APP_NAME = "advantumconverter";
     public static String PARSE_MODE = "Markdown";
@@ -16,9 +63,6 @@ public class Constant {
     public static String SPACE = " ";
     public static String SHEET_RESULT_NAME = "ИМПОРТ";
 
-    public static String RULOG_COFIX = "Рулог Кофикс";
-    public static String BOGORODSK = "Х5 Богородск";
-    public static String SCOOTER = "Самокат";
-    public static String LENTA = "Лента";
+
 
 }

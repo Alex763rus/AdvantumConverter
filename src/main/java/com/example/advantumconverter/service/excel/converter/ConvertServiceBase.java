@@ -1,25 +1,17 @@
-package com.example.advantumconverter.service.excel;
+package com.example.advantumconverter.service.excel.converter;
 
-import com.example.advantumconverter.model.security.User;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.text.ParseException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.SHEET_RESULT_NAME;
-import static com.example.advantumconverter.enums.State.FREE;
-import static com.example.advantumconverter.utils.DateConverter.TEMPLATE_DATE;
 import static com.example.advantumconverter.utils.DateConverter.convertDateFormat;
 
 
@@ -44,7 +36,35 @@ public class ConvertServiceBase {
         DataFormatter formatter = new DataFormatter();
         return formatter.formatCellValue(xssfCell);
     }
+    protected String getCellWindowValue(XSSFSheet sheet, int row, int col) {
+        if (sheet.getRow(row) == null) {
+            return "";
+        }
+        if (sheet.getRow(row).getCell(col) == null) {
+            return "";
+        }
+        return getCellValue(sheet.getRow(row).getCell(col));
+    }
 
+    protected List<List<String>> getDataFromSheet(XSSFWorkbook book, String sheetName, final int colStart, final int countColumns) {
+        val data = new ArrayList<List<String>>();
+        val windowSheet = book.getSheet(sheetName);
+        val colEnd = colStart + countColumns;
+        for (int row = 0; ; row++) {
+            val cellValue = getCellWindowValue(windowSheet, row, 0);
+            val nextValue = getCellWindowValue(windowSheet, row + 1, 0);
+            if (cellValue.equals("") && nextValue.equals("")) {
+                --row;
+                break;
+            }
+            val line = new ArrayList<String>();
+            for (int column = colStart; column < colEnd; ++ column){
+                line.add(getCellWindowValue(windowSheet, row, column));
+            }
+            data.add(line);
+        }
+        return data;
+    }
     protected Date getCellDate(int row, int col) {
         if (sheet.getRow(row) == null) {
             return null;

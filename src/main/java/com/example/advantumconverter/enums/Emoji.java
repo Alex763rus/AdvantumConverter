@@ -2,6 +2,7 @@ package com.example.advantumconverter.enums;
 
 public enum Emoji {
 
+    BLUSH (":blush:"),
     ARROW_UP (":arrow_up:"),
     ARROW_DOWN (":arrow_down:"),
     SHOPPING_TROLLEY (":shopping_trolley:"),

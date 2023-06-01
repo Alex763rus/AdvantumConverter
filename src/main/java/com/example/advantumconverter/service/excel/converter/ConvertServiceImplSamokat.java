@@ -1,9 +1,7 @@
-package com.example.advantumconverter.service.excel;
+package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
-import com.example.advantumconverter.model.excel.Car;
-import com.example.advantumconverter.model.excel.Header;
-import jakarta.annotation.PostConstruct;
+import com.example.advantumconverter.model.dictionary.excel.Header;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,19 +10,29 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.BOGORODSK;
-import static com.example.advantumconverter.constant.Constant.SCOOTER;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SAMOKAT;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SAMOKAT;
 import static com.example.advantumconverter.utils.DateConverter.*;
 
 @Component
-public class ConvertServiceImplScooter extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplSamokat extends ConvertServiceBase implements ConvertService {
     private final int START_ROW = 1;
 
     private int LAST_ROW;
 
     @Override
     public String getFileNamePrefix() {
-        return SCOOTER + "_";
+        return FILE_NAME_SAMOKAT + "_";
+    }
+
+    @Override
+    public String getConverterName() {
+        return FILE_NAME_SAMOKAT;
+    }
+
+    @Override
+    public String getConverterCommand() {
+        return COMMAND_CONVERT_SAMOKAT;
     }
 
     @Override

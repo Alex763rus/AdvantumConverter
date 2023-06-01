@@ -1,19 +1,22 @@
-package com.example.advantumconverter.service.excel;
+package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.exception.ConvertProcessingException;
-import com.example.advantumconverter.model.excel.Car;
-import com.example.advantumconverter.model.excel.Header;
+import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.model.jpa.Car;
+import com.example.advantumconverter.model.jpa.CarRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.RULOG_COFIX;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_COFIX;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_COFIX;
 import static com.example.advantumconverter.utils.DateConverter.*;
 
 @Component
@@ -24,15 +27,24 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
     private int LAST_COLUMN_NUMBER;
     private Set<Car> cars;
 
+    @Autowired
+    private CarRepository carRepository;
+
     @PostConstruct
     public void init() {
+        val carsIter = carRepository.findAll();
         cars = new HashSet<>();
-        cars.add(new Car("4500 - *HYUN 5ТБУШ.10", 5, 10));
-        cars.add(new Car("4501 - *HYUN 10ТБУШ 16", 10, 16));
-        cars.add(new Car("11 - *HYUN 20ТБУШ.33", 20, 33));
-        cars.add(new Car("4700 - *HYUN 5ТСОF-БУШ", 5, 10));
-        cars.add(new Car("4701 - *HYUN 3TCOF-БУШ", 3, 10));
-        cars.add(new Car("2350 - *10П2Т (РЕФЗАК)", 2, 10));
+        carsIter.forEach(cars::add);
+    }
+
+    @Override
+    public String getConverterName() {
+        return FILE_NAME_COFIX;
+    }
+
+    @Override
+    public String getConverterCommand() {
+        return COMMAND_CONVERT_COFIX;
     }
 
     @Override
@@ -49,7 +61,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
                 dataLine = new ArrayList<String>();
                 dataLine.add(fillA(row));
                 dataLine.add(convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
-                dataLine.add("Рулог Кофикс");
+                dataLine.add(FILE_NAME_COFIX);
                 dataLine.add("ООО \"Буш-Автопром\"");
                 dataLine.add("");
                 dataLine.add("Рефрижератор");
@@ -93,7 +105,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
 
     @Override
     public String getFileNamePrefix() {
-        return RULOG_COFIX + "_";
+        return getConverterName() + "_";
     }
 
     private String fillA(int row) throws ParseException {
@@ -110,7 +122,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
         val next1 = getValueOrDefault(row, 1, 9);
         val next2 = getValueOrDefault(row, 2, 9);
         val carName = next1.equals(next2) && !next1.equals("") ? next1 : cur;
-        return cars.stream().filter(e -> e.getName().equals(carName))
+        return cars.stream().filter(e -> e.getCarName().equals(carName))
                 .findFirst().orElseThrow(() -> new CarNotFoundException(""));
     }
 

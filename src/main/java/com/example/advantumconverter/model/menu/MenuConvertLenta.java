@@ -1,9 +1,8 @@
 package com.example.advantumconverter.model.menu;
 
-import com.example.advantumconverter.enums.State;
-import com.example.advantumconverter.model.security.User;
+import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
-import com.example.advantumconverter.service.excel.ConvertServiceImplLenta;
+import com.example.advantumconverter.service.excel.converter.ConvertServiceImplLenta;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,21 +12,20 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.LENTA;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
 import static com.example.advantumconverter.enums.State.CONVERT_FILE_LENTA;
 
 @Component
 @Slf4j
 public class MenuConvertLenta extends Menu {
 
-    final String MENU_NAME = "/convert_lenta";
-
     @Autowired
     protected ConvertServiceImplLenta convertServiceImplLenta;
 
     @Override
-    public String getMenuName() {
-        return MENU_NAME;
+    public String getMenuComand() {
+        return COMMAND_CONVERT_LENTA;
     }
 
     @Override
@@ -42,20 +40,20 @@ public class MenuConvertLenta extends Menu {
     }
 
     private List<PartialBotApiMethod> freeLogic(User user, Update update) {
-        if (!update.getMessage().getText().equals(MENU_NAME)) {
+        if (!update.getMessage().getText().equals(getMenuComand())) {
             return errorMessageDefault(update);
         }
         stateService.setState(user, CONVERT_FILE_LENTA);
         return Arrays.asList(
                 SendMessageWrap.init()
                         .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Отправьте исходный файл " + LENTA + ":")
+                        .setText("Отправьте исходный файл " + FILE_NAME_LENTA + ":")
                         .build().createSendMessage());
     }
 
     @Override
     public String getDescription() {
-        return "Сконвертировать файл " + LENTA;
+        return "Сконвертировать файл " + FILE_NAME_LENTA;
     }
 
 }

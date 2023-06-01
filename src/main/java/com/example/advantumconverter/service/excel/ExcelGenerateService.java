@@ -1,8 +1,6 @@
 package com.example.advantumconverter.service.excel;
 
 import com.example.advantumconverter.exception.ExcelGenerationException;
-import com.example.advantumconverter.model.excel.Header;
-import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -11,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.List;

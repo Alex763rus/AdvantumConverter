@@ -1,21 +1,17 @@
 package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.config.BotConfig;
-import com.example.advantumconverter.exception.CarNotFoundException;
-import com.example.advantumconverter.model.security.User;
+import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
-import com.example.advantumconverter.service.FileUploadService;
-import com.example.advantumconverter.service.excel.ConvertService;
+import com.example.advantumconverter.service.excel.FileUploadService;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.ExcelGenerateService;
 import com.example.advantumconverter.service.menu.StateService;
 import jakarta.persistence.MappedSuperclass;
 import lombok.val;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Arrays;

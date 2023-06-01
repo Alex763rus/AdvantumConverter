@@ -1,9 +1,7 @@
-package com.example.advantumconverter.service.excel;
+package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
-import com.example.advantumconverter.model.excel.Car;
-import com.example.advantumconverter.model.excel.Header;
-import jakarta.annotation.PostConstruct;
+import com.example.advantumconverter.model.dictionary.excel.Header;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,7 +10,8 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.BOGORODSK;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOGORODSK;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOGORODSK;
 import static com.example.advantumconverter.utils.DateConverter.*;
 
 @Component
@@ -23,7 +22,17 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
 
     @Override
     public String getFileNamePrefix() {
-        return BOGORODSK + "_";
+        return getConverterName() + "_";
+    }
+
+    @Override
+    public String getConverterName() {
+        return FILE_NAME_BOGORODSK;
+    }
+
+    @Override
+    public String getConverterCommand() {
+        return COMMAND_CONVERT_BOGORODSK;
     }
 
     @Override

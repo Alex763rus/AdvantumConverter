@@ -1,6 +1,6 @@
 package com.example.advantumconverter.model.menu;
 
-import com.example.advantumconverter.model.security.User;
+import com.example.advantumconverter.model.jpa.User;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MenuActivity {
 
-    public String getMenuName();
+    public String getMenuComand();
 
     public String getDescription();
 

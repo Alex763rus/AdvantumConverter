@@ -2,11 +2,8 @@ package com.example.advantumconverter.service.menu;
 
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.menu.MenuActivity;
-import com.example.advantumconverter.model.security.User;
-import com.example.advantumconverter.model.security.WhiteListUser;
-import jakarta.annotation.PostConstruct;
+import com.example.advantumconverter.model.jpa.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -16,15 +13,8 @@ import java.util.Map;
 @Service
 public class StateService {
 
-    @Autowired
-    WhiteListUser whiteListUser;
     private Map<User, State> userState = new HashMap<>();
     private Map<User, MenuActivity> userMenu = new HashMap<>();
-
-    @PostConstruct
-    public void init() {
-        whiteListUser.getUsers().stream().forEach(e -> userState.put(e, State.FREE));
-    }
 
     public void setState(User user, State state) {
         userState.put(user, state);
@@ -41,11 +31,12 @@ public class StateService {
         return userMenu.getOrDefault(user, null);
     }
 
-    public User getUser(String chatId) {
-        return userState.entrySet().stream()
-                .filter(entry -> entry.getKey().getChatId().equals(chatId))
+    public User getUser(Long chatId) {
+        User user = userState.entrySet().stream()
+                .filter(entry -> (long) entry.getKey().getChatId() == (chatId))
                 .findFirst().map(Map.Entry::getKey)
                 .orElse(null);
+        return user;
     }
 
     public void setMenu(User user, MenuActivity mainMenu) {
