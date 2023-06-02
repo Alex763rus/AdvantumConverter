@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_DEFAULT;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_ADVANTUM;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class Security {
     private Map<Company, List<String>> companyAccessList;
 
     public boolean checkAccess(User user, String menuComand) {
-        if(menuComand.equals(COMMAND_START)||menuComand.equals(COMMAND_DEFAULT)){
+        if (menuComand.equals(COMMAND_START) || menuComand.equals(COMMAND_DEFAULT)) {
             return true;
         }
         val roleAccess = roleAccessList.get(user.getUserRole()).contains(menuComand);

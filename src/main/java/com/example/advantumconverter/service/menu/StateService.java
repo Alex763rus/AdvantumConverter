@@ -4,10 +4,13 @@ import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.menu.MenuActivity;
 import com.example.advantumconverter.model.jpa.User;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.advantumconverter.enums.State.FREE;
 
 @Slf4j
 @Service
@@ -22,7 +25,7 @@ public class StateService {
 
     public State getState(User user) {
         if (!userState.containsKey(user)) {
-            userState.put(user, State.FREE);
+            userState.put(user, FREE);
         }
         return userState.get(user);
     }
@@ -41,12 +44,19 @@ public class StateService {
 
     public void setMenu(User user, MenuActivity mainMenu) {
         userMenu.put(user, mainMenu);
-        userState.put(user, State.FREE);
+        userState.put(user, FREE);
     }
-
+    public void deleteUser(User user) {
+        userMenu.remove(user);
+        userState.remove(user);
+    }
     public void clearOldState() {
-        userState.entrySet().removeIf(e -> e.getValue() == State.FREE);
+        userState.entrySet().removeIf(e -> e.getValue() == FREE);
     }
 
+    public void refreshUser(User user){
+        deleteUser(getUser(user.getChatId()));
+        setState(user, FREE);
+    }
 
 }

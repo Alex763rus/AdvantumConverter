@@ -43,7 +43,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", userName='" + userName + '\'' +
-                ", userRole=" + userRole +
+                ", userRole=" + userRole.getTitle() +
                 ", registeredAt=" + registeredAt +
                 ", company=" + company +
                 '}';

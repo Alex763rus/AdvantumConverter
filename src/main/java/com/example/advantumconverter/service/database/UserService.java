@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.sql.Timestamp;
 
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NOT_FOUND;
 import static com.example.advantumconverter.enums.UserRole.NEED_SETTING;
 
 @Slf4j
@@ -41,6 +42,10 @@ public class UserService {
         return user;
     }
 
+    public void refreshUser(User user){
+        stateService.refreshUser(user);
+    }
+
     private Message getMessage(Update update) {
         if (update.hasMessage()) {
             return update.getMessage();
@@ -62,7 +67,7 @@ public class UserService {
         user.setLastName(chat.getLastName());
         user.setUserName(chat.getUserName());
         user.setUserRole(NEED_SETTING);
-        user.setCompany(companyRepository.getCompaniesByCompanyName("Компания отсутствует"));
+        user.setCompany(companyRepository.getCompaniesByCompanyName(COMPANY_NOT_FOUND));
         user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
 
         userRepository.save(user);

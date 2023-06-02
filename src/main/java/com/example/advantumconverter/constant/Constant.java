@@ -30,6 +30,8 @@ public final class Constant {
 
     @NoArgsConstructor(access = PRIVATE)
     public final class Company {
+        public static final String COMPANY_NOT_FOUND = "Компания отсутствует";
+        public static final String COMPANY_ADVANTUM = "Адвантум";
         public static final String COMPANY_NAME_LENTA = "Лента";
         public static final String COMPANY_NAME_BUSH_AVTOPROM = "Буш-Автопром";
     }
@@ -45,6 +47,8 @@ public final class Constant {
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
+
+        public static final String COMMAND_SETTING_NEW_USER = "/setting_user";
     }
 
 

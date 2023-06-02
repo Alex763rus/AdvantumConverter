@@ -1,12 +1,15 @@
 package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.config.BotConfig;
+import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
+import com.example.advantumconverter.service.database.UserService;
 import com.example.advantumconverter.service.excel.FileUploadService;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.ExcelGenerateService;
+import com.example.advantumconverter.service.menu.ButtonService;
 import com.example.advantumconverter.service.menu.StateService;
 import jakarta.persistence.MappedSuperclass;
 import lombok.val;
@@ -35,6 +38,14 @@ public abstract class Menu implements MenuActivity {
     @Autowired
     protected ExcelGenerateService excelGenerateService;
 
+    @Autowired
+    protected ButtonService buttonService;
+
+    @Autowired
+    protected CompanyRepository companyRepository;
+
+    @Autowired
+    protected UserService userService;
     private static final String DEFAULT_TEXT_ERROR = "Ошибка! Команда не найдена";
 
     protected List<PartialBotApiMethod> errorMessageDefault(Update update) {
@@ -74,7 +85,7 @@ public abstract class Menu implements MenuActivity {
                 } catch (Exception ex) {
                     return errorMessage(update, ex.getMessage());
                 }
-            } else{
+            } else {
                 return errorMessage(update, "Ошибка. Сообщение не содержит документ.\nОтправьте документ");
             }
         }

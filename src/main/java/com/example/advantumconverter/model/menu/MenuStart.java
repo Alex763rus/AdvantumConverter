@@ -14,8 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_FAQ;
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
+import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.constant.Constant.SPACE;
 import static com.example.advantumconverter.enums.Emoji.BLUSH;
@@ -46,14 +45,15 @@ public class MenuStart extends Menu {
             case EMPLOYEE:
                 messageText = getEmployeeMenuText(user);
                 break;
-//                 case MAIN_EMPLOYEE:
-//                        menuText = "";
-//                        break;
-//                 case SUPPORT:
-//                        menuText = "";
-//                        break;
-//                 case ADMIN:
-//                        menuText = "";
+            case MAIN_EMPLOYEE:
+                messageText = getMainEmployeeMenuText(user);
+                break;
+            case SUPPORT:
+                messageText = getSupportMenuText(user);
+                break;
+            case ADMIN:
+                messageText = getAdminMenuText(user);
+                break;
 
         }
         return Arrays.asList(
@@ -61,6 +61,38 @@ public class MenuStart extends Menu {
                         .setChatIdLong(user.getChatId())
                         .setText(EmojiParser.parseToUnicode(messageText))
                         .build().createSendMessage());
+    }
+
+    private String getMainEmployeeMenuText(User user) {
+        val menu = new StringBuilder();
+        menu.append("- справочная информация: ").append(COMMAND_FAQ).append(NEW_LINE)
+                .append(NEW_LINE)
+                .append("Обработка файлов:").append(NEW_LINE);
+        val converters = companySetting.getConverters(user.getCompany());
+        for (val convertService : converters) {
+            menu.append("- ").append(convertService.getConverterName()).append(": ")
+                    .append(SPACE).append(getShield(convertService.getConverterCommand())).append(NEW_LINE);
+        }
+        return menu.toString();
+    }
+
+    private String getSupportMenuText(User user) {
+        val menu = new StringBuilder();
+        menu.append("- справочная информация: ").append(COMMAND_FAQ).append(NEW_LINE)
+                .append(NEW_LINE)
+                .append("Обработка файлов:").append(NEW_LINE);
+        val converters = companySetting.getConverters(user.getCompany());
+        for (val convertService : converters) {
+            menu.append("- ").append(convertService.getConverterName()).append(": ")
+                    .append(SPACE).append(getShield(convertService.getConverterCommand())).append(NEW_LINE);
+        }
+        return menu.toString();
+    }
+
+    private String getAdminMenuText(User user) {
+        val menu = new StringBuilder();
+        menu.append("Проверить новых пользователей: ").append(NEW_LINE).append(getShield(COMMAND_SETTING_NEW_USER)).append(NEW_LINE);
+        return menu.toString();
     }
 
     private String getEmployeeMenuText(User user) {

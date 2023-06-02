@@ -8,6 +8,8 @@ import lombok.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_ADVANTUM;
+
 @Getter
 @Setter
 @ToString

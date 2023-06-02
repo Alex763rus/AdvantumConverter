@@ -40,6 +40,12 @@ public class MenuService {
     private MenuConvertLenta menuConvertLenta;
 
     @Autowired
+    private MenuSettingUser menuSettingUser;
+
+    @Autowired
+    private MenuFaq menuFaq;
+
+    @Autowired
     private StateService stateService;
     private List<MenuActivity> mainMenu;
     @Autowired
@@ -60,6 +66,8 @@ public class MenuService {
         mainMenu.add(menuConvertSamokat);
         mainMenu.add(menuConvertLenta);
         mainMenu.add(menuConvertDominos);
+        mainMenu.add(menuSettingUser);
+        mainMenu.add(menuFaq);
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {
