@@ -45,4 +45,6 @@ public class SupportTask {
     @Column(name = "close_at")
     private Timestamp closeAt;
 
+    @Column(name = "filePath")
+    private String filePath;
 }

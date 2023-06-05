@@ -2,11 +2,13 @@ package com.example.advantumconverter.model.menu.support;
 
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.wpapper.ForwardMessageWrap;
+import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.text.ParseException;
@@ -64,6 +66,7 @@ public class MenuOpenTaskBase extends MenuTaskBase {
         supportTask.setTaskState(IN_PROGRESS);
         supportTaskRepository.save(supportTask);
         stateService.setState(user, FREE);
+        val inputFile = new InputFile(fileUploadService.uploadFileFromServer(supportTask.getFilePath()));
 
         val resultText = new StringBuilder(getTaskInfo(supportTask));
         resultText.append(NEW_LINE).append("Для обработки задачи перейдите в меню \"мои задачи\"");
@@ -71,9 +74,8 @@ public class MenuOpenTaskBase extends MenuTaskBase {
         return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
                         .setText(resultText.toString())
                         .build().createSendMessage(),
-                ForwardMessageWrap.init().setChatIdLong(user.getChatId())
-                        .setMessageId(supportTask.getMessageId())
-                        .setChatIdFromLong(supportTask.getEmployeeChatId())
+                SendDocumentWrap.init().setChatIdLong(user.getChatId())
+                        .setDocument(inputFile)
                         .build().createMessage());
     }
 

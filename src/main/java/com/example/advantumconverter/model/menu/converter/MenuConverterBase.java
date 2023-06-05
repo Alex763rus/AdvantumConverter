@@ -1,5 +1,6 @@
 package com.example.advantumconverter.model.menu.converter;
 
+import com.example.advantumconverter.enums.FileType;
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.menu.Menu;
@@ -15,17 +16,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.SHEET_RESULT_NAME;
+import static com.example.advantumconverter.enums.FileType.USER_IN;
 import static com.example.advantumconverter.enums.State.FREE;
 
 @MappedSuperclass
-public abstract class MenuConverterBase extends Menu implements MenuConverter {
+public abstract class MenuConverterBase extends Menu {
 
     protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {
         if (update.hasMessage()) {
             if (update.getMessage().hasDocument()) {
+                String fileFullPath = "";
                 try {
                     val field = update.getMessage().getDocument();
-                    val book = fileUploadService.uploadXlsx(field.getFileName(), field.getFileId());
+                    fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
+                    val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
+
                     val convertedBook = convertService.getConvertedBook(book);
                     val document = excelGenerateService.processXlsx(convertedBook, convertService.getFileNamePrefix(), SHEET_RESULT_NAME);
                     stateService.setState(user, FREE);
@@ -34,7 +39,11 @@ public abstract class MenuConverterBase extends Menu implements MenuConverter {
                             .setDocument(document)
                             .build().createMessage());
                 } catch (Exception ex) {
-                    return supportService.processNewTask(user, update, convertService, ex);
+                    try {
+                        return supportService.processNewTask(user, update, convertService, fileFullPath, ex);
+                    } catch (Exception e) {
+                        //todo
+                    }
                 }
             } else {
                 return errorMessage(update, "Ошибка. Сообщение не содержит документ.\nОтправьте документ");

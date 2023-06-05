@@ -1,11 +1,13 @@
 package com.example.advantumconverter.service.support;
 
+import com.example.advantumconverter.enums.FileType;
 import com.example.advantumconverter.model.jpa.SupportTask;
 import com.example.advantumconverter.model.jpa.SupportTaskRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
-import com.example.advantumconverter.model.wpapper.ForwardMessageWrap;
+import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
+import com.example.advantumconverter.service.excel.FileUploadService;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.vdurmont.emoji.EmojiParser;
 import jakarta.annotation.PostConstruct;
@@ -14,9 +16,12 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.io.File;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,43 +35,47 @@ import static com.example.advantumconverter.utils.StringUtils.prepareTaskId;
 @Service
 public class SupportService {
 
-    List<User> supportUserList;
+    private List<User> supportUserList;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    SupportTaskRepository supportTaskRepository;
+    private SupportTaskRepository supportTaskRepository;
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @PostConstruct
     public void init() {
         supportUserList = userRepository.findUserByUserRole(SUPPORT);
     }
 
-    public List<PartialBotApiMethod> processNewTask(User user, Update update, ConvertService convertService, Exception ex) {
+    public List<PartialBotApiMethod> processNewTask(User user, Update update, ConvertService convertService
+            , String fullFileName, Exception ex) throws ParseException {
         if (user.getUserRole() == SUPPORT) {
             return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
                     .setText(ex.getMessage())
                     .build().createSendMessage());
         }
+        val message = update.getMessage();
+        val inputFile = new InputFile(fileUploadService.uploadFileFromServer(fullFileName));
+
         val supportTask = new SupportTask();
         supportTask.setEmployeeChatId(user.getChatId());
-        supportTask.setMessageId(update.getMessage().getMessageId());
+        supportTask.setMessageId(message.getMessageId());
         supportTask.setConverterName(convertService.getConverterName());
         supportTask.setErrorText(ex.getMessage());
+        supportTask.setFilePath(fullFileName);
         supportTask.setTaskState(NEW);
         supportTask.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
         val supportEntity = supportTaskRepository.save(supportTask);
 
         val supportMessages = new ArrayList<PartialBotApiMethod>();
         val userErrorMessage = SendMessageWrap.init()
-                .setChatIdLong(update.getMessage().getChatId())
+                .setChatIdLong(message.getChatId())
                 .setText(getErrorMessageText(supportEntity.getSupportTaskId()))
                 .build().createSendMessage();
         supportMessages.add(userErrorMessage);
-        //сохранить файл на сервер
-        //сохранить название файла в таске
-        //отправить инфу в саппорт
 
         for (User supportUser : supportUserList) {
             supportMessages.add(
@@ -74,11 +83,9 @@ public class SupportService {
                             .setText(getSupportMessageText(supportEntity))
                             .build().createSendMessage());
             supportMessages.add(
-                    ForwardMessageWrap.init().setChatIdLong(supportUser.getChatId())
-                            .setMessageId(update.getMessage().getMessageId())
-                            .setChatIdFromString(String.valueOf(update.getMessage().getChatId()))
-                            .build().createMessage()
-            );
+                    SendDocumentWrap.init().setChatIdLong(supportUser.getChatId())
+                            .setDocument(inputFile)
+                            .build().createMessage());
         }
         return supportMessages;
     }

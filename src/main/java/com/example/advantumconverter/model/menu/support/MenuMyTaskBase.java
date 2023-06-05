@@ -21,6 +21,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_SHOW_MY_TASK;
 import static com.example.advantumconverter.constant.Constant.NEW_LINE;
+import static com.example.advantumconverter.enums.FileType.SUPPORT_OUT;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.SupportTaskState.DONE;
 import static com.example.advantumconverter.enums.SupportTaskState.IN_PROGRESS;
@@ -60,10 +61,8 @@ public class MenuMyTaskBase extends MenuTaskBase {
             if (update.getMessage().hasDocument()) {
                 try {
                     val task = userTmp.get(user);
-                    val field = update.getMessage().getDocument();
-                    val book = fileUploadService.uploadFile(field.getFileName(), field.getFileId());
+                    val book = fileUploadService.uploadFileFromServer(task.getFilePath());
                     val resultText = new StringBuilder();
-
                     task.setResultText(update.getMessage().getCaption());
                     task.setTaskState(DONE);
                     task.setCloseAt(new Timestamp(System.currentTimeMillis()));
@@ -72,7 +71,6 @@ public class MenuMyTaskBase extends MenuTaskBase {
                             .append("Причина возникновения ошибки:").append(task.getResultText()).append(NEW_LINE)
                             .append("Корректный файл во вложении ниже, попробуйте его сконвертировать:")
                     ;
-
                     supportTaskRepository.save(task);
                     userTmp.remove(user);
                     stateService.setState(user, FREE);
@@ -139,6 +137,7 @@ public class MenuMyTaskBase extends MenuTaskBase {
         }
         val task = supportTaskRepository.findById(Long.parseLong(update.getCallbackQuery().getData())).get();
         userTmp.put(user, task);
+        val inputFile = new InputFile(fileUploadService.uploadFileFromServer(task.getFilePath()));
         val btns = new LinkedHashMap<String, String>();
         btns.put(SUPPORT_WAIT_RESOLVE_TASK.name(), "Выполнить");
         btns.put(CANCEL.name(), "Отмена");
@@ -146,9 +145,8 @@ public class MenuMyTaskBase extends MenuTaskBase {
         return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
                         .setText(getTaskInfo(task))
                         .build().createSendMessage(),
-                ForwardMessageWrap.init().setChatIdLong(user.getChatId())
-                        .setMessageId(task.getMessageId())
-                        .setChatIdFromLong(task.getEmployeeChatId())
+                SendDocumentWrap.init().setChatIdLong(user.getChatId())
+                        .setDocument(inputFile)
                         .build().createMessage(),
                 SendMessageWrap.init()
                         .setChatIdLong(user.getChatId())

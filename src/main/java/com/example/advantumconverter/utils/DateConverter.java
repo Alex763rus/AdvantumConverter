@@ -14,6 +14,7 @@ public class DateConverter {
     public static final String TEMPLATE_DATE_SLASH = "MM/dd/yy";
     public static final String TEMPLATE_DATE = "ddMMyy";
     public static final String TEMPLATE_DATE_DOT = "dd.MM.yyyy";
+    public static final String TEMPLATE_DATE_FILE_NAME = "ddMMyyyy_HHmm_";
 
 
     public static Date convertDateFormat(String dateIn, String templateIn) throws ParseException {
@@ -21,12 +22,12 @@ public class DateConverter {
     }
 
     public static String convertDateFormat(String dateIn, String templateIn, String templateOut) throws ParseException {
-        val date =convertDateFormat(dateIn, templateIn);
+        val date = convertDateFormat(dateIn, templateIn);
         return new SimpleDateFormat(templateOut).format(date);
     }
 
     public static String convertDateFormat(Date dateIn, String templateOut) throws ParseException {
-        if(dateIn == null){
+        if (dateIn == null) {
             return "";
         }
         return new SimpleDateFormat(templateOut).format(dateIn);
