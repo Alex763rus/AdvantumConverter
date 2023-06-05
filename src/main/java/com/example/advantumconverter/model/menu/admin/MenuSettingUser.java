@@ -1,10 +1,10 @@
-package com.example.advantumconverter.model.menu;
+package com.example.advantumconverter.model.menu.admin;
 
 import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
+import com.example.advantumconverter.model.menu.Menu;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
-import com.google.common.base.Enums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_ST
 import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.UserRole.*;
-import static com.example.advantumconverter.utils.StringUtils.getShield;
+import static com.example.advantumconverter.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j
@@ -64,7 +64,7 @@ public class MenuSettingUser extends Menu {
         return Arrays.asList(
                 SendMessageWrap.init()
                         .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
-                        .setText("Пользователь успешно настроен:" + getShield(userRefresh.toString()))
+                        .setText("Пользователь успешно настроен:" + prepareShield(userRefresh.toString()))
                         .build().createSendMessage(),
                 SendMessageWrap.init()
                         .setChatIdLong(userRefresh.getChatId())
@@ -82,10 +82,10 @@ public class MenuSettingUser extends Menu {
         val userSetting = userTmp.get(user);
         userSetting.setCompany(company);
         val btns = new LinkedHashMap<String, String>();
-        btns.put(BLOCKED.name(), BLOCKED.name());
-        btns.put(EMPLOYEE.name(), EMPLOYEE.name());
-        btns.put(MAIN_EMPLOYEE.name(), MAIN_EMPLOYEE.name());
-        btns.put(SUPPORT.name(), SUPPORT.name());
+        btns.put(BLOCKED.name(), BLOCKED.getTitle());
+        btns.put(EMPLOYEE.name(), EMPLOYEE.getTitle());
+        btns.put(MAIN_EMPLOYEE.name(), MAIN_EMPLOYEE.getTitle());
+        btns.put(SUPPORT.name(), SUPPORT.getTitle());
         stateService.setState(user, ADMIN_SETTING_WAIT_ROLE);
         return Arrays.asList(
                 SendMessageWrap.init()

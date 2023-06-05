@@ -1,8 +1,7 @@
-package com.example.advantumconverter.model.menu;
+package com.example.advantumconverter.model.menu.converter;
 
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceImplBogorodsk;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +14,11 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOGORODSK;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOGORODSK;
+import static com.example.advantumconverter.enums.State.CONVERT_FILE_BOGORODSK;
 
 @Component
 @Slf4j
-public class MenuConvertBogorodsk extends Menu {
+public class MenuConvertBogorodsk extends MenuConverterBase {
 
     @Autowired
     protected ConvertServiceImplBogorodsk convertServiceImplBogorodsk;
@@ -32,23 +32,11 @@ public class MenuConvertBogorodsk extends Menu {
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
         switch (stateService.getState(user)) {
             case FREE:
-                return freeLogic(user, update);
+                return freeLogic(user, update, CONVERT_FILE_BOGORODSK, FILE_NAME_BOGORODSK);
             case CONVERT_FILE_BOGORODSK:
                 return convertFileLogic(user, update, convertServiceImplBogorodsk);
         }
         return errorMessageDefault(update);
-    }
-
-    private List<PartialBotApiMethod> freeLogic(User user, Update update) {
-        if (!update.getMessage().getText().equals(getMenuComand())) {
-            return errorMessageDefault(update);
-        }
-        stateService.setState(user, State.CONVERT_FILE_BOGORODSK);
-        return Arrays.asList(
-                SendMessageWrap.init()
-                        .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Отправьте исходный файл " + FILE_NAME_BOGORODSK + ":")
-                        .build().createSendMessage());
     }
 
     @Override

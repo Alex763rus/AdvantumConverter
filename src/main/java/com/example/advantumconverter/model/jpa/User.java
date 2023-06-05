@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -35,6 +36,11 @@ public class User {
     @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "companyId")
     private Company company;
+
+//    @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
+//    @JoinColumn(name = "supportId")
+//    @Nullable
+//    private Support support;
 
     @Override
     public String toString() {

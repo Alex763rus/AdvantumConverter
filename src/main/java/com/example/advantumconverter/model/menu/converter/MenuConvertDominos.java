@@ -1,6 +1,7 @@
-package com.example.advantumconverter.model.menu;
+package com.example.advantumconverter.model.menu.converter;
 
 import com.example.advantumconverter.model.jpa.User;
+import com.example.advantumconverter.model.menu.Menu;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceImplDominos;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import static com.example.advantumconverter.enums.State.CONVERT_FILE_DOMINOS;
 
 @Component
 @Slf4j
-public class MenuConvertDominos extends Menu {
+public class MenuConvertDominos extends MenuConverterBase {
 
     @Autowired
     protected ConvertServiceImplDominos convertServiceImplDominos;
@@ -32,23 +33,11 @@ public class MenuConvertDominos extends Menu {
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
         switch (stateService.getState(user)) {
             case FREE:
-                return freeLogic(user, update);
+                return freeLogic(user, update, CONVERT_FILE_DOMINOS, FILE_NAME_DOMINOS);
             case CONVERT_FILE_DOMINOS:
                 return convertFileLogic(user, update, convertServiceImplDominos);
         }
         return errorMessageDefault(update);
-    }
-
-    private List<PartialBotApiMethod> freeLogic(User user, Update update) {
-        if(!update.getMessage().getText().equals(getMenuComand())){
-            return errorMessageDefault(update);
-        }
-        stateService.setState(user, CONVERT_FILE_DOMINOS);
-        return Arrays.asList(
-                SendMessageWrap.init()
-                        .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Отправьте исходный файл " + FILE_NAME_DOMINOS + ":")
-                        .build().createSendMessage());
     }
 
     @Override

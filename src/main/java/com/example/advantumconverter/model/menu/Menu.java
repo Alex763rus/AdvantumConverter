@@ -11,15 +11,19 @@ import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.ExcelGenerateService;
 import com.example.advantumconverter.service.menu.ButtonService;
 import com.example.advantumconverter.service.menu.StateService;
+import com.example.advantumconverter.service.support.SupportService;
 import jakarta.persistence.MappedSuperclass;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.constant.Constant.SHEET_RESULT_NAME;
 import static com.example.advantumconverter.enums.State.FREE;
 
@@ -46,6 +50,10 @@ public abstract class Menu implements MenuActivity {
 
     @Autowired
     protected UserService userService;
+
+    @Autowired
+    protected SupportService supportService;
+
     private static final String DEFAULT_TEXT_ERROR = "Ошибка! Команда не найдена";
 
     protected List<PartialBotApiMethod> errorMessageDefault(Update update) {
@@ -69,26 +77,5 @@ public abstract class Menu implements MenuActivity {
                 .build().createSendMessage();
     }
 
-    protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {
-        if (update.hasMessage()) {
-            if (update.getMessage().hasDocument()) {
-                try {
-                    val field = update.getMessage().getDocument();
-                    val book = fileUploadService.uploadXlsx(field.getFileName(), field.getFileId());
-                    val convertedBook = convertService.getConvertedBook(book);
-                    val document = excelGenerateService.processXlsx(convertedBook, convertService.getFileNamePrefix(), SHEET_RESULT_NAME);
-                    stateService.setState(user, FREE);
-                    return Arrays.asList(SendDocumentWrap.init()
-                            .setChatIdLong(update.getMessage().getChatId())
-                            .setDocument(document)
-                            .build().createMessage());
-                } catch (Exception ex) {
-                    return errorMessage(update, ex.getMessage());
-                }
-            } else {
-                return errorMessage(update, "Ошибка. Сообщение не содержит документ.\nОтправьте документ");
-            }
-        }
-        return errorMessageDefault(update);
-    }
+
 }

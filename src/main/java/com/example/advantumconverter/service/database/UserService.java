@@ -1,10 +1,6 @@
 package com.example.advantumconverter.service.database;
 
-import com.example.advantumconverter.enums.UserRole;
-import com.example.advantumconverter.model.jpa.Company;
-import com.example.advantumconverter.model.jpa.CompanyRepository;
-import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.jpa.UserRepository;
+import com.example.advantumconverter.model.jpa.*;
 import com.example.advantumconverter.service.menu.StateService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -30,6 +26,9 @@ public class UserService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private SupportTaskRepository supportTaskRepository;
 
     public User getUser(Update update) {
         val message = getMessage(update);
@@ -68,6 +67,7 @@ public class UserService {
         user.setUserName(chat.getUserName());
         user.setUserRole(NEED_SETTING);
         user.setCompany(companyRepository.getCompaniesByCompanyName(COMPANY_NOT_FOUND));
+
         user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
 
         userRepository.save(user);

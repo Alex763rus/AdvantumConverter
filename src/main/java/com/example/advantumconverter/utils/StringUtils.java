@@ -11,11 +11,15 @@ public class StringUtils {
 
     private static final String[] shieldingSimbols = {"_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", " -", "=", "|", "{", "}", ".", "!"};
 
-    public static String getShield(String source) {
+    public static String prepareShield(String source) {
         for (String shieldingSimbol : shieldingSimbols) {
             source = source.replace(shieldingSimbol, SHIELD + shieldingSimbol);
         }
         return source;
+    }
+
+    public static String prepareTaskId(Long taskId){
+        return String.format("%05d", taskId);
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_DEFAULT;
-import static com.example.advantumconverter.utils.StringUtils.getShield;
+import static com.example.advantumconverter.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j
@@ -27,7 +27,7 @@ public class MenuDefault extends Menu {
         return Arrays.asList(
                 SendMessageWrap.init()
                         .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Не найдена доступная команда с именем: " + getShield(update.getMessage().getText()))
+                        .setText("Не найдена доступная команда с именем: " + prepareShield(update.getMessage().getText()))
                         .build().createSendMessage());
     }
 

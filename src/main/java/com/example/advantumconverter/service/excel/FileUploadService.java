@@ -19,18 +19,19 @@ public class FileUploadService {
     BotConfig botConfig;
 
     public File uploadFile(String file_name, String file_id) throws IOException {
-        val fulFileName = botConfig.getInputFilePath() + " " + file_name;
+        val fullFileName = botConfig.getInputFilePath() + " " + file_name;
         val url = new URL("https://api.telegram.org/bot" + botConfig.getBotToken() + "/getFile?file_id=" + file_id);
         val in = new BufferedReader(new InputStreamReader(url.openStream()));
         val res = in.readLine();
         val file_path = new JSONObject(res).getJSONObject("result").getString("file_path");
-        val downoload = new URL("https://api.telegram.org/file/bot" + botConfig.getBotToken() + "/" + file_path);
-        val fos = new FileOutputStream(fulFileName);
-        val rbc = Channels.newChannel(downoload.openStream());
+        val download = new URL("https://api.telegram.org/file/bot" + botConfig.getBotToken() + "/" + file_path);
+        val fos = new FileOutputStream(fullFileName);
+        val rbc = Channels.newChannel(download.openStream());
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        in.close();
         fos.close();
         rbc.close();
-        return new File(fulFileName);
+        return new File(fullFileName);
     }
 
     public XSSFWorkbook uploadXlsx(String file_name, String file_id) throws Exception {

@@ -48,6 +48,8 @@ public final class Constant {
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
 
+        public static final String COMMAND_SHOW_OPEN_TASK = "/show_open_task";
+        public static final String COMMAND_SHOW_MY_TASK = "/show_my_task";
         public static final String COMMAND_SETTING_NEW_USER = "/setting_user";
     }
 

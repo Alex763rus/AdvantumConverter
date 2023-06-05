@@ -1,8 +1,12 @@
 package com.example.advantumconverter.service.menu;
 
-import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.dictionary.security.Security;
 import com.example.advantumconverter.model.menu.*;
+import com.example.advantumconverter.model.menu.admin.MenuSettingUser;
+import com.example.advantumconverter.model.menu.converter.*;
+import com.example.advantumconverter.model.menu.support.MenuMyTaskBase;
+import com.example.advantumconverter.model.menu.support.MenuOpenTaskBase;
+import com.example.advantumconverter.model.wpapper.EditMessageTextWrap;
 import com.example.advantumconverter.service.database.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +21,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
+import static com.example.advantumconverter.enums.State.FREE;
 
 @Slf4j
 @Service
 public class MenuService {
 
     @Autowired
-    private MenuStart menuStart;
-    @Autowired
     private MenuDefault menuActivityDefault;
+
+    @Autowired
+    private StateService stateService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private Security security;
 
     @Autowired
     private MenuConvertBogorodsk menuConvertBogorodsk;
@@ -43,40 +55,30 @@ public class MenuService {
     private MenuSettingUser menuSettingUser;
 
     @Autowired
+    private MenuOpenTaskBase menuOpenTask;
+
+    @Autowired
+    private MenuMyTaskBase menuMyTask;
+
+    @Autowired
     private MenuFaq menuFaq;
-
     @Autowired
-    private StateService stateService;
-    private List<MenuActivity> mainMenu;
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private Security security;
-
-    @Autowired
-    private CompanySetting companySetting;
+    private MenuStart menuStart;
 
     @PostConstruct
-    public void mainMenuInit() {
-        mainMenu = new ArrayList();
-        mainMenu.add(menuStart);
-        mainMenu.add(menuConvertBogorodsk);
-        mainMenu.add(menuConvertCofix);
-        mainMenu.add(menuConvertSamokat);
-        mainMenu.add(menuConvertLenta);
-        mainMenu.add(menuConvertDominos);
-        mainMenu.add(menuSettingUser);
-        mainMenu.add(menuFaq);
+    public void init() {
+        // Список всех возможных обработчиков меню:
+        security.setMainMenu(List.of(menuStart, menuConvertBogorodsk, menuConvertCofix, menuConvertSamokat
+                , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask));
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {
         val user = userService.getUser(update);
         MenuActivity menuActivity = null;
         if (update.hasMessage()) {
-            for (val menu : mainMenu) {
+            for (val menu : security.getMainMenu()) {
                 if (menu.getMenuComand().equals(update.getMessage().getText())) {
-                    if(security.checkAccess(user, menu.getMenuComand())){
+                    if (security.checkAccess(user, menu.getMenuComand())) {
                         menuActivity = menu;
                     } else {
                         menuActivity = menuActivityDefault;
@@ -93,13 +95,26 @@ public class MenuService {
                 menuActivity = menuActivityDefault;
             }
         }
-        return menuActivity.menuRun(user, update);
+        val answer = new ArrayList<PartialBotApiMethod>();
+        if (update.hasCallbackQuery()) {
+            val message = update.getCallbackQuery().getMessage();
+            answer.add(EditMessageTextWrap.init()
+                    .setChatIdLong(message.getChatId())
+                    .setMessageId(message.getMessageId())
+                    .setText("Выбрано меню: " + message.getReplyMarkup().getKeyboard().get(0).get(0).getText())
+                    .build().createMessage());
+        }
+        answer.addAll(menuActivity.menuRun(user, update));
+        if (stateService.getState(user) == FREE && !menuActivity.getMenuComand().equals(menuStart.getMenuComand())) {
+            answer.addAll(menuStart.menuRun(user, update));
+        }
+        return answer;
     }
 
     public List<BotCommand> getMainMenuComands() {
         val listofCommands = new ArrayList<BotCommand>();
-        mainMenu.stream()
-                .filter(e->e.getMenuComand().equals(COMMAND_START))
+        security.getMainMenu().stream()
+                .filter(e -> e.getMenuComand().equals(COMMAND_START))
                 .forEach(e -> listofCommands.add(new BotCommand(e.getMenuComand(), e.getDescription())));
         return listofCommands;
     }

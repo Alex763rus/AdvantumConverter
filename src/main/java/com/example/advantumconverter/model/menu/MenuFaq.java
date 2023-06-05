@@ -14,13 +14,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_DEFAULT;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_FAQ;
 import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.State.*;
-import static com.example.advantumconverter.enums.UserRole.*;
-import static com.example.advantumconverter.enums.UserRole.SUPPORT;
-import static com.example.advantumconverter.utils.StringUtils.getShield;
 
 @Component
 @Slf4j
@@ -54,8 +50,7 @@ public class MenuFaq extends Menu {
         stateService.setState(user, FREE);
         return Arrays.asList(SendMessageWrap.init()
                 .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
-                .setText("Выбран вопрос: " + faq.getQuestion() + NEW_LINE
-                        + "Ответ: " + faq.getAnswer())
+                .setText("Ответ: " + faq.getAnswer())
                 .build().createSendMessage());
     }
 

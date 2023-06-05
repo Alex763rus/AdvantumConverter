@@ -1,7 +1,8 @@
-package com.example.advantumconverter.model.menu;
+package com.example.advantumconverter.model.menu.converter;
 
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
+import com.example.advantumconverter.model.menu.Menu;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceImplSamokat;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,11 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SAMOKAT;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SAMOKAT;
+import static com.example.advantumconverter.enums.State.CONVERT_FILE_SAMOKAT;
 
 @Component
 @Slf4j
-public class MenuConvertSamokat extends Menu {
+public class MenuConvertSamokat extends MenuConverterBase {
 
     @Autowired
     protected ConvertServiceImplSamokat convertServiceImplSamokat;
@@ -32,23 +34,11 @@ public class MenuConvertSamokat extends Menu {
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
         switch (stateService.getState(user)) {
             case FREE:
-                return freeLogic(user, update);
+                return freeLogic(user, update, CONVERT_FILE_SAMOKAT, FILE_NAME_SAMOKAT);
             case CONVERT_FILE_SAMOKAT:
                 return convertFileLogic(user, update, convertServiceImplSamokat);
         }
         return errorMessageDefault(update);
-    }
-
-    private List<PartialBotApiMethod> freeLogic(User user, Update update) {
-        if(!update.getMessage().getText().equals(getMenuComand())){
-            return errorMessageDefault(update);
-        }
-        stateService.setState(user, State.CONVERT_FILE_SAMOKAT);
-        return Arrays.asList(
-                SendMessageWrap.init()
-                        .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Отправьте исходный файл " + FILE_NAME_SAMOKAT + ":")
-                        .build().createSendMessage());
     }
 
     @Override

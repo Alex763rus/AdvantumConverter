@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -91,16 +90,28 @@ public class BotConfig {
     @Bean
     public Security security() {
         val roleSecurity = new Security();
-        val accessList = new HashMap<UserRole, List<String>>();
-        accessList.put(NEED_SETTING, List.of(COMMAND_DEFAULT, COMMAND_START));
-        accessList.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
-        accessList.put(EMPLOYEE, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS));
-        accessList.put(MAIN_EMPLOYEE, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS));
-        accessList.put(SUPPORT, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS));
-        accessList.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_SETTING_NEW_USER));
-        roleSecurity.setRoleAccessList(accessList);
 
+        // Настройка команд по ролям:
+        val roleAccess = new HashMap<UserRole, List<String>>();
+        roleAccess.put(NEED_SETTING, List.of(COMMAND_DEFAULT, COMMAND_START));
+        roleAccess.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
+        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS));
+        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS));
+        roleAccess.put(SUPPORT, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
+                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK));
+        roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_SETTING_NEW_USER));
+        roleSecurity.setRoleAccess(roleAccess);
+
+        // Настройка доступов по компаниям:
         val commandAccessList = new HashMap<Company, List<String>>();
+        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM)
+                , List.of(/*Общие:*/COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START
+                        /*Буш автопром:*/, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS
+                        /*Лента:*/, COMMAND_CONVERT_LENTA
+                        /*Саппорт:*/, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK
+                        /*админ:*/, COMMAND_SETTING_NEW_USER
+                )
+        );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_LENTA
                 )
@@ -108,13 +119,6 @@ public class BotConfig {
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BUSH_AVTOPROM)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START
                         , COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS
-                )
-        );
-        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM)
-                , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START
-                        , COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS
-                        , COMMAND_CONVERT_LENTA
-                        , COMMAND_SETTING_NEW_USER
                 )
         );
         roleSecurity.setCompanyAccessList(commandAccessList);
