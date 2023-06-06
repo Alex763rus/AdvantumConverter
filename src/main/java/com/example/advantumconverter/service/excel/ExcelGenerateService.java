@@ -31,11 +31,8 @@ public class ExcelGenerateService {
         styleDateDot = getStyle(TEMPLATE_DATE_DOT);
         styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
         styleInt = getStyle("0");
-
-        File tmpFile;
         int y = 0;
         try {
-            tmpFile = Files.createTempFile(fileNamePrefix, ".xlsx").toFile();
             for (; y < data.size(); y++) {
                 val row = sheet.createRow(y);
                 if (y == 0) {
@@ -80,6 +77,7 @@ public class ExcelGenerateService {
                     createCellString(row, y, 33);
                 }
             }
+            val tmpFile = Files.createTempFile(fileNamePrefix, ".xlsx").toFile();
             workbook.write(new FileOutputStream(tmpFile));
             workbook.close();
             return new InputFile(tmpFile);

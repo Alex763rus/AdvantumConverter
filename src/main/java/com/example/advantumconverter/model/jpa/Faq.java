@@ -23,6 +23,9 @@ public class Faq {
     @Column(name = "answer")
     private String answer;
 
+    @Column(name = "filePath")
+    private String filePath;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

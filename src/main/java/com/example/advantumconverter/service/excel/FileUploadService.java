@@ -50,7 +50,6 @@ public class FileUploadService {
         val res = in.readLine();
         val file_path = new JSONObject(res).getJSONObject("result").getString("file_path");
         val download = new URL(SPEC_FILE_DOWNLOAD + file_path);
-//        val fullFileName = getFileName(fileType, file_name);
         val fos = new FileOutputStream(fullFilePath);
         val rbc = Channels.newChannel(download.openStream());
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
