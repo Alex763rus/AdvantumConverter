@@ -1,26 +1,39 @@
 package com.example.advantumconverter.service.menu;
 
+import com.example.advantumconverter.enums.HistoryActionType;
 import com.example.advantumconverter.model.dictionary.security.Security;
+import com.example.advantumconverter.model.jpa.HistoryAction;
+import com.example.advantumconverter.model.jpa.HistoryActionRepository;
+import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.menu.*;
 import com.example.advantumconverter.model.menu.admin.MenuSettingUser;
 import com.example.advantumconverter.model.menu.converter.*;
-import com.example.advantumconverter.model.menu.support.MenuMyTaskBase;
-import com.example.advantumconverter.model.menu.support.MenuOpenTaskBase;
+import com.example.advantumconverter.model.menu.support.MenuMyTask;
+import com.example.advantumconverter.model.menu.support.MenuOpenTask;
 import com.example.advantumconverter.model.wpapper.EditMessageTextWrap;
+import com.example.advantumconverter.service.HistoryActionService;
 import com.example.advantumconverter.service.database.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_HISTORIC_ACTION;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
+import static com.example.advantumconverter.enums.HistoryActionType.SYSTEM_ACTION;
+import static com.example.advantumconverter.enums.HistoryActionType.USER_ACTION;
 import static com.example.advantumconverter.enums.State.FREE;
 
 @Slf4j
@@ -32,6 +45,13 @@ public class MenuService {
 
     @Autowired
     private StateService stateService;
+
+    @Autowired
+    private HistoryActionService historyActionService;
+
+
+    @Autowired
+    private MenuHistoryAction menuHistoryAction;
 
     @Autowired
     private UserService userService;
@@ -55,10 +75,10 @@ public class MenuService {
     private MenuSettingUser menuSettingUser;
 
     @Autowired
-    private MenuOpenTaskBase menuOpenTask;
+    private MenuOpenTask menuOpenTask;
 
     @Autowired
-    private MenuMyTaskBase menuMyTask;
+    private MenuMyTask menuMyTask;
 
     @Autowired
     private MenuFaq menuFaq;
@@ -69,7 +89,7 @@ public class MenuService {
     public void init() {
         // Список всех возможных обработчиков меню:
         security.setMainMenu(List.of(menuStart, menuConvertBogorodsk, menuConvertCofix, menuConvertSamokat
-                , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask));
+                , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask, menuHistoryAction));
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {
@@ -98,15 +118,26 @@ public class MenuService {
         val answer = new ArrayList<PartialBotApiMethod>();
         if (update.hasCallbackQuery()) {
             val message = update.getCallbackQuery().getMessage();
+            val menuName = update.getCallbackQuery().getMessage().getReplyMarkup().getKeyboard().stream()
+                    .filter(e -> e.get(0).getCallbackData().equals(update.getCallbackQuery().getData()))
+                    .findFirst().get().get(0).getText();
             answer.add(EditMessageTextWrap.init()
                     .setChatIdLong(message.getChatId())
                     .setMessageId(message.getMessageId())
-                    .setText("Выбрано меню: " + message.getReplyMarkup().getKeyboard().get(0).get(0).getText())
+                    .setText("Выбрано меню: " + menuName)
                     .build().createMessage());
         }
         answer.addAll(menuActivity.menuRun(user, update));
         if (stateService.getState(user) == FREE && !menuActivity.getMenuComand().equals(menuStart.getMenuComand())) {
             answer.addAll(menuStart.menuRun(user, update));
+        }
+        try {
+            historyActionService.saveHistoryAction(user, update);
+            if (!menuActivity.getMenuComand().equals(COMMAND_START) && !menuActivity.getMenuComand().equals(COMMAND_HISTORIC_ACTION)) {
+                historyActionService.saveHistoryAnswerAction(user, answer);
+            }
+        } catch (Exception ex) {
+            log.error("Ошибка во время сохранения HistoryAction:" + ex.getMessage());
         }
         return answer;
     }

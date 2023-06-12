@@ -38,7 +38,7 @@ public class MenuStart extends Menu {
         switch (user.getUserRole()) {
             case NEED_SETTING:
                 log.warn("ожидает обработки новый пользователь ChatId:" + update.getMessage().getChatId());
-                messageText = "Добрый день, " + prepareShield(user.getUserName()) + "! " + BLUSH.getCode() + "\n\nВы успешно зарегистрированы в системе.\nОжидайте, после настройки вашего аккаунта вам придет сообщение";
+                messageText = "Добрый день, " + prepareShield(user.getNameOrFirst()) + "! " + BLUSH.getCode() + "\n\nВы успешно зарегистрированы в системе.\nОжидайте, после настройки вашего аккаунта вам придет сообщение";
                 break;
             case BLOCKED:
                 messageText = "Доступ запрещен";
@@ -68,6 +68,7 @@ public class MenuStart extends Menu {
         menu.append("Главное меню:").append(NEW_LINE)
                 .append("Справочная информация:").append(NEW_LINE)
                 .append("- часто задаваемые вопросы: ").append(COMMAND_FAQ).append(NEW_LINE)
+                .append("- действия сотрудников: ").append(prepareShield(COMMAND_HISTORIC_ACTION)).append(NEW_LINE)
                 .append(NEW_LINE)
                 .append("Обработка файлов:").append(NEW_LINE);
         val converters = companySetting.getConverters(user.getCompany());
@@ -83,6 +84,7 @@ public class MenuStart extends Menu {
         menu.append("Главное меню:").append(NEW_LINE)
                 .append("Справочная информация:").append(NEW_LINE)
                 .append("- часто задаваемые вопросы: ").append(COMMAND_FAQ).append(NEW_LINE)
+                .append("- действия сотрудников: ").append(prepareShield(COMMAND_HISTORIC_ACTION)).append(NEW_LINE)
                 .append(NEW_LINE)
                 .append("Обработка файлов: ").append(NEW_LINE);
         val converters = companySetting.getConverters(user.getCompany());

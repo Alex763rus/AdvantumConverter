@@ -12,11 +12,6 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class Text {
-
-    }
-
-    @NoArgsConstructor(access = PRIVATE)
     public final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
 
@@ -41,6 +36,7 @@ public final class Constant {
         public static final String COMMAND_START = "/start";
 
         public static final String COMMAND_FAQ = "/faq";
+        public static final String COMMAND_HISTORIC_ACTION = "/historic_action";
 
         public static final String COMMAND_CONVERT_BOGORODSK = "/convert_bogorodsk";
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
@@ -62,6 +58,7 @@ public final class Constant {
     public static String WHITE_LIST_FILE_NAME = "WhiteListUsers.json";
     public static String SENDER_SETTING_FILE_NAME = "SenderSettings.json";
     public static final String SHIELD = "\\";
+    public static final String EMPTY = "";
 
     public static final String STAR = "*";
 

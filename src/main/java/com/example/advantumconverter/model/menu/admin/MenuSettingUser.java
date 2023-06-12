@@ -125,7 +125,7 @@ public class MenuSettingUser extends Menu {
         }
         val btns = new LinkedHashMap<String, String>();
         for (int i = 0; i < users.size(); ++i) {
-            btns.put(String.valueOf(users.get(i).getChatId()), users.get(i).getUserName());
+            btns.put(String.valueOf(users.get(i).getChatId()), users.get(i).getNameOrFirst());
         }
         stateService.setState(user, ADMIN_SETTING_WAIT_USERNAME);
         return Arrays.asList(

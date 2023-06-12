@@ -25,10 +25,10 @@ public abstract class MenuConverterBase extends Menu {
     protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {
         if (update.hasMessage()) {
             if (update.getMessage().hasDocument()) {
-                String fileFullPath = "";
                 try {
                     val field = update.getMessage().getDocument();
-                    fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
+                    val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
+                    update.getMessage().setText(fileFullPath);
                     val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
 
                     val convertedBook = convertService.getConvertedBook(book);
@@ -40,7 +40,7 @@ public abstract class MenuConverterBase extends Menu {
                             .build().createMessage());
                 } catch (Exception ex) {
                     try {
-                        return supportService.processNewTask(user, update, convertService, fileFullPath, ex);
+                        return supportService.processNewTask(user, update, convertService, update.getMessage().getText(), ex);
                     } catch (Exception e) {
                         //todo
                     }

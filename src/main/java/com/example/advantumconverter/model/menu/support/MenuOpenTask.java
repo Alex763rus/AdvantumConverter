@@ -1,7 +1,6 @@
 package com.example.advantumconverter.model.menu.support;
 
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.ForwardMessageWrap;
 import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,7 @@ import static com.example.advantumconverter.enums.SupportTaskState.NEW;
 
 @Component
 @Slf4j
-public class MenuOpenTaskBase extends MenuTaskBase {
+public class MenuOpenTask extends MenuTaskBase {
 
     @Override
     public String getMenuComand() {

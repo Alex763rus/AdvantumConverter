@@ -24,7 +24,7 @@ import static com.example.advantumconverter.utils.DateConverter.convertDateForma
 
 @Component
 public class ConvertServiceImplLenta extends ConvertServiceBase implements ConvertService {
-    private final int START_ROW = 2;
+    private int START_ROW;
 
     private int LAST_ROW;
 
@@ -38,7 +38,6 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         addresses = new HashSet<>();
         addressesIter.forEach(addresses::add);
     }
-
 
     @Override
     public String getFileNamePrefix() {
@@ -59,11 +58,17 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutput);
+        sheet = book.getSheetAt(0);
+        if(getCellValue(1, 0).equals("")){
+            START_ROW = 3;
+        } else{
+            START_ROW = 1;
+        }
         int row = START_ROW;
         int counterCopy = 1;
         ArrayList<String> dataLine = new ArrayList();
         try {
-            sheet = book.getSheetAt(0);
+
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
@@ -123,7 +128,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
 
     private String fillS(int row, boolean isStart) throws ParseException {
-        val date = convertDateFormat(getCellValue(START_ROW, 9), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
+        val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
         val code = Long.parseLong(getCellValue(row, 0));
         val dictionaryType = isStart ? ADDRESS_RC : WINDOW;
         val lentaDictionary = addresses.stream()
@@ -137,7 +142,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillT(int row, boolean isStart) throws ParseException {
-        val date = convertDateFormat(getCellValue(START_ROW, 9), TEMPLATE_DATE_TIME_DOT);
+        val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT);
         val code = Long.parseLong(getCellValue(row, 0));
         val dictionaryType = isStart ? ADDRESS_RC : WINDOW;
         val lentaDictionary = addresses.stream()
@@ -156,7 +161,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private String fillU(int row) {
         val code = Long.parseLong(getCellValue(row, 0));
         val address = addresses.stream().filter(e -> e.getLentaDictionaryKey() == code).findFirst().orElse(null);
-        return address == null ? "Код адреса не найден в справочнике:" + address : address.getAddressName();
+        return address == null ? "Код адреса не найден в справочнике: " + code : address.getAddressName();
     }
 
     private String getValueOrDefault(int row, int slippage, int col) {

@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+import static com.example.advantumconverter.constant.Constant.EMPTY;
+
 @Getter
 @Setter
 @ToString
@@ -37,11 +39,6 @@ public class User {
     @JoinColumn(name = "companyId")
     private Company company;
 
-//    @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
-//    @JoinColumn(name = "supportId")
-//    @Nullable
-//    private Support support;
-
     @Override
     public String toString() {
         return "User{" +
@@ -66,5 +63,9 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(getChatId());
+    }
+
+    public String getNameOrFirst() {
+        return userName != null && !userName.equals(EMPTY) ? userName : firstName;
     }
 }

@@ -2,7 +2,6 @@ package com.example.advantumconverter.model.menu.support;
 
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.ForwardMessageWrap;
 import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
 import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_SHOW_MY_TASK;
 import static com.example.advantumconverter.constant.Constant.NEW_LINE;
-import static com.example.advantumconverter.enums.FileType.SUPPORT_OUT;
+import static com.example.advantumconverter.enums.FileType.*;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.SupportTaskState.DONE;
 import static com.example.advantumconverter.enums.SupportTaskState.IN_PROGRESS;
@@ -29,7 +28,7 @@ import static com.example.advantumconverter.utils.StringUtils.prepareTaskId;
 
 @Component
 @Slf4j
-public class MenuMyTaskBase extends MenuTaskBase {
+public class MenuMyTask extends MenuTaskBase {
 
     @Override
     public String getMenuComand() {
@@ -61,7 +60,12 @@ public class MenuMyTaskBase extends MenuTaskBase {
             if (update.getMessage().hasDocument()) {
                 try {
                     val task = userTmp.get(user);
-                    val book = fileUploadService.uploadFileFromServer(task.getFilePath());
+//                    val book = fileUploadService.uploadFileFromServer(task.getFilePath());
+                    val field = update.getMessage().getDocument();
+                    val fileFullPath = fileUploadService.getFileName(SUPPORT_IN, field.getFileName());
+                    update.getMessage().setText(fileFullPath);
+                    val book = fileUploadService.uploadFileFromTg(fileFullPath, field.getFileId());
+
                     val resultText = new StringBuilder();
                     task.setResultText(update.getMessage().getCaption());
                     task.setTaskState(DONE);
