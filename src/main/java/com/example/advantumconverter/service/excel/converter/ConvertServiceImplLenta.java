@@ -54,16 +54,16 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return COMMAND_CONVERT_LENTA;
     }
 
+    private String START_ROW_TEXT = "ТК/РЦ";
+
+
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutput);
         sheet = book.getSheetAt(0);
-        if(getCellValue(1, 0).equals("")){
-            START_ROW = 3;
-        } else{
-            START_ROW = 1;
-        }
+        START_ROW = getStartRow(START_ROW_TEXT);
+
         int row = START_ROW;
         int counterCopy = 1;
         ArrayList<String> dataLine = new ArrayList();
@@ -95,8 +95,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add("");
                 dataLine.add("");
                 dataLine.add("");
-                dataLine.add(fillS(row, isStart));
-                dataLine.add(fillT(row, isStart));
+                dataLine.add(fillS(row));
+                dataLine.add(fillT(row));
                 dataLine.add(fillU(row));
                 dataLine.add(fillU(row));
                 dataLine.add(isStart ? "Погрузка" : "Разгрузка");
@@ -127,35 +127,33 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
 
-    private String fillS(int row, boolean isStart) throws ParseException {
+    private String fillS(int row) throws ParseException {
         val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
         val code = Long.parseLong(getCellValue(row, 0));
-        val dictionaryType = isStart ? ADDRESS_RC : WINDOW;
         val lentaDictionary = addresses.stream()
-                .filter(e -> e.getLentaDictionaryKey() == code && e.getLentaDictionaryType() == dictionaryType)
+                .filter(e -> e.getLentaDictionaryKey() == code)
                 .findFirst().orElse(null);
         if (lentaDictionary == null) {
             return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
         }
-        val time = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME, TEMPLATE_TIME);
+        val time = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME, TEMPLATE_TIME);
         return date + " " + time;
     }
 
-    private String fillT(int row, boolean isStart) throws ParseException {
+    private String fillT(int row) throws ParseException {
         val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT);
         val code = Long.parseLong(getCellValue(row, 0));
-        val dictionaryType = isStart ? ADDRESS_RC : WINDOW;
         val lentaDictionary = addresses.stream()
-                .filter(e -> e.getLentaDictionaryKey() == code && e.getLentaDictionaryType() == dictionaryType)
+                .filter(e -> e.getLentaDictionaryKey() == code)
                 .findFirst().orElse(null);
         if (lentaDictionary == null) {
             return convertDateFormat(date, TEMPLATE_DATE_DOT) + " 22:00";
         }
         val timeStock = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME);
         val timeShop = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME);
-        val dateResult = timeStock.after(timeShop) ? DateUtils.addDays(date, 1) : date;
+        val dateResult = timeShop.after(timeStock) ? DateUtils.addDays(date, 1) : date;
         val dateResultString = convertDateFormat(dateResult, TEMPLATE_DATE_DOT);
-        return dateResultString + " " + lentaDictionary.getTimeShop();
+        return dateResultString + " " + lentaDictionary.getTimeStock();
     }
 
     private String fillU(int row) {

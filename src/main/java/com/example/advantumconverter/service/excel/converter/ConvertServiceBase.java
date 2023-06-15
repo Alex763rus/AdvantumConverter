@@ -36,6 +36,7 @@ public class ConvertServiceBase {
         DataFormatter formatter = new DataFormatter();
         return formatter.formatCellValue(xssfCell);
     }
+
     protected String getCellWindowValue(XSSFSheet sheet, int row, int col) {
         if (sheet.getRow(row) == null) {
             return "";
@@ -58,13 +59,14 @@ public class ConvertServiceBase {
                 break;
             }
             val line = new ArrayList<String>();
-            for (int column = colStart; column < colEnd; ++ column){
+            for (int column = colStart; column < colEnd; ++column) {
                 line.add(getCellWindowValue(windowSheet, row, column));
             }
             data.add(line);
         }
         return data;
     }
+
     protected Date getCellDate(int row, int col) {
         if (sheet.getRow(row) == null) {
             return null;
@@ -85,6 +87,17 @@ public class ConvertServiceBase {
             }
         }
         return i - 1;
+    }
+
+    private final int MAX_ROW = 10000;
+
+    protected int getStartRow(String startRowText) {
+        for (int i = 0; i < MAX_ROW; i++) {
+            if (getCellValue(i, 0).equals(startRowText)) {
+                return i + 1;
+            }
+        }
+        return 0;
     }
 
     protected String getCurrentDate(String format) throws ParseException {
