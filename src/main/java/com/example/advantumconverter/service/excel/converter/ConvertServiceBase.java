@@ -1,22 +1,30 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.model.jpa.Car;
+import com.example.advantumconverter.model.jpa.CarRepository;
+import com.example.advantumconverter.model.jpa.LentaDictionary;
+import com.example.advantumconverter.model.jpa.LentaDictionaryRepository;
+import com.example.advantumconverter.service.database.DictionaryService;
+import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.example.advantumconverter.utils.DateConverter.convertDateFormat;
 
 
 @Component
 public class ConvertServiceBase {
+
+    @Autowired
+    protected DictionaryService dictionaryService;
 
     protected XSSFSheet sheet;
 

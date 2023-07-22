@@ -2,10 +2,10 @@ package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -95,13 +95,16 @@ public class MenuStart extends Menu {
         menu.append(NEW_LINE)
                 .append("Сопровождение пользователей:").append(NEW_LINE)
                 .append("- Открытые обращения: ").append(prepareShield(COMMAND_SHOW_OPEN_TASK)).append(NEW_LINE)
-                .append("- Мои задачи: ").append(prepareShield(COMMAND_SHOW_MY_TASK)).append(NEW_LINE);
+                .append("- Мои задачи: ").append(prepareShield(COMMAND_SHOW_MY_TASK)).append(NEW_LINE)
+                .append("- Обновить справочники: ").append(prepareShield(COMMAND_RELOAD_DICTIONARY)).append(NEW_LINE);
         return menu.toString();
     }
 
     private String getAdminMenuText(User user) {
         val menu = new StringBuilder();
-        menu.append("Проверить новых пользователей: ").append(NEW_LINE).append(prepareShield(COMMAND_SETTING_NEW_USER)).append(NEW_LINE);
+        menu.append("Меню Администратора:").append(NEW_LINE)
+                .append("- Проверить новых пользователей: ").append(NEW_LINE).append(prepareShield(COMMAND_SETTING_NEW_USER)).append(NEW_LINE)
+                .append("- Обновить справочники: ").append(prepareShield(COMMAND_RELOAD_DICTIONARY)).append(NEW_LINE);
         return menu.toString();
     }
 

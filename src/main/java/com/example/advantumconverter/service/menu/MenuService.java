@@ -1,28 +1,21 @@
 package com.example.advantumconverter.service.menu;
 
-import com.example.advantumconverter.enums.HistoryActionType;
 import com.example.advantumconverter.model.dictionary.security.Security;
-import com.example.advantumconverter.model.jpa.HistoryAction;
-import com.example.advantumconverter.model.jpa.HistoryActionRepository;
-import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.menu.*;
 import com.example.advantumconverter.model.menu.admin.MenuSettingUser;
 import com.example.advantumconverter.model.menu.converter.*;
 import com.example.advantumconverter.model.menu.support.MenuMyTask;
 import com.example.advantumconverter.model.menu.support.MenuOpenTask;
-import com.example.advantumconverter.model.wpapper.EditMessageTextWrap;
+import com.example.advantumconverter.model.menu.support.MenuReloadDictionary;
 import com.example.advantumconverter.service.HistoryActionService;
 import com.example.advantumconverter.service.database.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.EditMessageTextWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
@@ -32,8 +25,6 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_HISTORIC_ACTION;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
-import static com.example.advantumconverter.enums.HistoryActionType.SYSTEM_ACTION;
-import static com.example.advantumconverter.enums.HistoryActionType.USER_ACTION;
 import static com.example.advantumconverter.enums.State.FREE;
 
 @Slf4j
@@ -81,6 +72,9 @@ public class MenuService {
     private MenuMyTask menuMyTask;
 
     @Autowired
+    private MenuReloadDictionary menuReloadDictionary;
+
+    @Autowired
     private MenuFaq menuFaq;
     @Autowired
     private MenuStart menuStart;
@@ -89,7 +83,10 @@ public class MenuService {
     public void init() {
         // Список всех возможных обработчиков меню:
         security.setMainMenu(List.of(menuStart, menuConvertBogorodsk, menuConvertCofix, menuConvertSamokat
-                , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask, menuHistoryAction));
+                        , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask, menuHistoryAction
+                        , menuReloadDictionary
+                )
+        );
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {

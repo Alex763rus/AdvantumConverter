@@ -1,14 +1,13 @@
 package com.example.advantumconverter.model.menu.converter;
 
-import com.example.advantumconverter.enums.FileType;
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.menu.Menu;
-import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import jakarta.persistence.MappedSuperclass;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendDocumentWrap;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -42,6 +41,7 @@ public abstract class MenuConverterBase extends Menu {
                     try {
                         return supportService.processNewTask(user, update, convertService, update.getMessage().getText(), ex);
                     } catch (Exception e) {
+                        int i = 0;
                         //todo
                     }
                 }

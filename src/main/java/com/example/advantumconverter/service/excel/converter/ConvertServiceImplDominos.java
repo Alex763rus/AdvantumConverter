@@ -28,17 +28,6 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
     private final int START_ROW = 2;
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
-    private Set<Car> cars;
-
-    @Autowired
-    private CarRepository carRepository;
-
-    @PostConstruct
-    public void init() {
-        val carsIter = carRepository.findAll();
-        cars = new HashSet<>();
-        carsIter.forEach(cars::add);
-    }
 
     @Override
     public String getConverterName() {
@@ -125,8 +114,7 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
         val next1 = getValueOrDefault(row, 1, 9);
         val next2 = getValueOrDefault(row, 2, 9);
         val carName = next1.equals(next2) && !next1.equals("") ? next1 : cur;
-        return cars.stream().filter(e -> e.getCarName().equals(carName))
-                .findFirst().orElseThrow(() -> new CarNotFoundException(""));
+        return dictionaryService.getCar(carName);
     }
 
     private String fillS(int row) throws ParseException {

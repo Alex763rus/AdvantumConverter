@@ -1,8 +1,8 @@
 package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;

@@ -1,9 +1,6 @@
 package com.example.advantumconverter.model.menu.converter;
 
-import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.menu.Menu;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceImplSamokat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

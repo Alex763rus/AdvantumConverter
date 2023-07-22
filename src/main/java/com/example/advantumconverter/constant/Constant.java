@@ -46,6 +46,9 @@ public final class Constant {
 
         public static final String COMMAND_SHOW_OPEN_TASK = "/show_open_task";
         public static final String COMMAND_SHOW_MY_TASK = "/show_my_task";
+        public static final String COMMAND_RELOAD_DICTIONARY = "/reload_dictionary";
+
+
         public static final String COMMAND_SETTING_NEW_USER = "/setting_user";
     }
 

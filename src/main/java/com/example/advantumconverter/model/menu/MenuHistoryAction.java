@@ -1,10 +1,10 @@
 package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.model.jpa.*;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -100,10 +100,10 @@ public class MenuHistoryAction extends Menu {
             answer.append(NEW_LINE).append(NEW_LINE);
         }
         stateService.setState(user, FREE);
-        return List.of(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText(answer.toString())
-                .build().createSendMessage());
+                .build().createSendMessageList();
     }
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {

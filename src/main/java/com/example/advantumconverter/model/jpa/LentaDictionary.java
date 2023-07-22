@@ -29,5 +29,7 @@ public class LentaDictionary {
     @Column(name = "time_shop")
     private String timeShop;
 
+    @Column(name = "region")
+    private String region;
 
 }

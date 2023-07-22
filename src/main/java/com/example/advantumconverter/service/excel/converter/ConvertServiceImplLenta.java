@@ -1,7 +1,10 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.model.jpa.Car;
+import com.example.advantumconverter.model.jpa.CarRepository;
 import com.example.advantumconverter.model.jpa.LentaDictionary;
 import com.example.advantumconverter.model.jpa.LentaDictionaryRepository;
 import jakarta.annotation.PostConstruct;
@@ -17,8 +20,6 @@ import java.util.*;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
-import static com.example.advantumconverter.enums.LentaDictionaryType.ADDRESS_RC;
-import static com.example.advantumconverter.enums.LentaDictionaryType.WINDOW;
 import static com.example.advantumconverter.utils.DateConverter.*;
 import static com.example.advantumconverter.utils.DateConverter.convertDateFormat;
 
@@ -27,17 +28,6 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private int START_ROW;
 
     private int LAST_ROW;
-
-    private HashSet<LentaDictionary> addresses;
-    @Autowired
-    private LentaDictionaryRepository lentaDictionaryRepository;
-
-    @PostConstruct
-    public void init() {
-        val addressesIter = lentaDictionaryRepository.findAll();
-        addresses = new HashSet<>();
-        addressesIter.forEach(addresses::add);
-    }
 
     @Override
     public String getFileNamePrefix() {
@@ -79,17 +69,17 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine = new ArrayList<>();
                 dataLine.add(getCellValue(row, 1));
                 dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
-                dataLine.add("ООО ''ЛЕНТА''");
+                dataLine.add(fillC(row));
                 dataLine.add(getCellValue(row, 8));
                 dataLine.add("");
                 dataLine.add("Рефрижератор");
                 dataLine.add("");
                 dataLine.add("");
                 dataLine.add("");
-                dataLine.add("5000");
+                dataLine.add(fillJ(row));
                 dataLine.add("1");
-                dataLine.add("2");
-                dataLine.add("6");
+                dataLine.add(fillL(row));
+                dataLine.add(fillM(row));
                 dataLine.add("2");
                 dataLine.add("");
                 dataLine.add("");
@@ -97,7 +87,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add("");
                 dataLine.add(fillS(row));
                 dataLine.add(fillT(row));
-                dataLine.add(fillU(row));
+                dataLine.add(String.valueOf(getCode(row)));
                 dataLine.add(fillU(row));
                 dataLine.add(isStart ? "Погрузка" : "Разгрузка");
                 dataLine.add(String.valueOf(counterCopy));
@@ -122,6 +112,40 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return data;
     }
 
+    private String fillL(int row) {
+        val carName = getCellValue(row, 3).replaceAll("\\\\", "");
+        val car = dictionaryService.getCarOrElse(carName, null);
+        if (carName.length() < 5 || car == null) {
+            return "2";
+        }
+        return String.valueOf(car.getTemperatureMin());
+    }
+
+    private String fillM(int row) {
+        val carName = getCellValue(row, 3).replaceAll("\\\\", "");
+        val car = dictionaryService.getCarOrElse(carName, null);
+        if (carName.length() < 5 || car == null) {
+            return "6";
+        }
+        return String.valueOf(car.getTemperatureMax());
+    }
+
+    private String fillJ(int row) {
+        val carName = getCellValue(row, 3).replaceAll("\\\\", "");
+        if (carName.length() < 5) {
+            val doubleValue = Double.parseDouble(carName.replaceAll(",", ".")) * 1000;
+            return String.valueOf((int) doubleValue);
+        }
+        val car = dictionaryService.getCar(carName);
+        return String.valueOf(car.getTonnage());
+    }
+
+    private String fillC(int row) {
+        val code = getCode(row);
+        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        return lentaDictionary == null ? "Нет региона" : "Лента (" + lentaDictionary.getRegion() + ")";
+    }
+
     private String fillAE(int row) {
         return WordUtils.capitalize(getCellValue(row, 2).toLowerCase());
     }
@@ -129,10 +153,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
     private String fillS(int row) throws ParseException {
         val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
-        val code = Long.parseLong(getCellValue(row, 0));
-        val lentaDictionary = addresses.stream()
-                .filter(e -> e.getLentaDictionaryKey() == code)
-                .findFirst().orElse(null);
+        val code = getCode(row);
+        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
             return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
         }
@@ -142,10 +164,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
     private String fillT(int row) throws ParseException {
         val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT);
-        val code = Long.parseLong(getCellValue(row, 0));
-        val lentaDictionary = addresses.stream()
-                .filter(e -> e.getLentaDictionaryKey() == code)
-                .findFirst().orElse(null);
+        val code = getCode(row);
+        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
             return convertDateFormat(date, TEMPLATE_DATE_DOT) + " 22:00";
         }
@@ -156,10 +176,14 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return dateResultString + " " + lentaDictionary.getTimeStock();
     }
 
+    private Long getCode(int row) {
+        return Long.parseLong(getCellValue(row, 0));
+    }
+
     private String fillU(int row) {
-        val code = Long.parseLong(getCellValue(row, 0));
-        val address = addresses.stream().filter(e -> e.getLentaDictionaryKey() == code).findFirst().orElse(null);
-        return address == null ? "Код адреса не найден в справочнике: " + code : address.getAddressName();
+        val code = getCode(row);
+        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        return lentaDictionary == null ? "Код адреса не найден в справочнике: " + code : lentaDictionary.getAddressName();
     }
 
     private String getValueOrDefault(int row, int slippage, int col) {

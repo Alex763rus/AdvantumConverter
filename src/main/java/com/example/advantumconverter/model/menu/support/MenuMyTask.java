@@ -2,10 +2,10 @@ package com.example.advantumconverter.model.menu.support;
 
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendDocumentWrap;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -129,9 +129,9 @@ public class MenuMyTask extends MenuTaskBase {
         resultText.append("Для решения задачи: ").append(prepareTaskId(task.getSupportTaskId())).append(NEW_LINE)
                 .append("- приложите корректный файл").append(NEW_LINE)
                 .append("- напишите краткое описание причин возникновения ошибки");
-        return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
+        return SendMessageWrap.init().setChatIdLong(user.getChatId())
                 .setText(resultText.toString())
-                .build().createSendMessage());
+                .build().createSendMessageList();
     }
 
 

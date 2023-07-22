@@ -5,14 +5,14 @@ import com.example.advantumconverter.model.jpa.SupportTask;
 import com.example.advantumconverter.model.jpa.SupportTaskRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
-import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import com.example.advantumconverter.service.excel.FileUploadService;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.vdurmont.emoji.EmojiParser;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendDocumentWrap;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -29,6 +29,7 @@ import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.Emoji.WARNING;
 import static com.example.advantumconverter.enums.SupportTaskState.NEW;
 import static com.example.advantumconverter.enums.UserRole.SUPPORT;
+import static com.example.advantumconverter.utils.StringUtils.prepareShield;
 import static com.example.advantumconverter.utils.StringUtils.prepareTaskId;
 
 @Slf4j
@@ -53,9 +54,9 @@ public class SupportService {
     public List<PartialBotApiMethod> processNewTask(User user, Update update, ConvertService convertService
             , String fullFileName, Exception ex) throws ParseException {
         if (user.getUserRole() == SUPPORT) {
-            return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
-                    .setText(ex.getMessage())
-                    .build().createSendMessage());
+            return SendMessageWrap.init().setChatIdLong(user.getChatId())
+                    .setText(prepareShield(ex.getMessage()))
+                    .build().createSendMessageList();
         }
         val message = update.getMessage();
         val inputFile = new InputFile(fileUploadService.uploadFileFromServer(fullFileName));

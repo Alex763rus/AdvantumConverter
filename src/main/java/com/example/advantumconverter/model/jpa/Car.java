@@ -24,5 +24,8 @@ public class Car {
     private int tonnage;
     @Column(name = "pallet")
     private int pallet;
-
+    @Column(name = "temperature_min")
+    private int temperatureMin;
+    @Column(name = "temperature_max")
+    private int temperatureMax;
 }

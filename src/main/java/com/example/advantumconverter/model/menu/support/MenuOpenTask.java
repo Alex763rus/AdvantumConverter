@@ -1,10 +1,10 @@
 package com.example.advantumconverter.model.menu.support;
 
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.model.wpapper.SendDocumentWrap;
-import com.example.advantumconverter.model.wpapper.SendMessageWrap;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendDocumentWrap;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
