@@ -34,7 +34,7 @@ public class MenuReloadDictionary extends Menu {
         return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText("Справочники успешно обновлены!")
-                .build().createSendMessageList();
+                .build().createMessageList();
     }
 
     @Override

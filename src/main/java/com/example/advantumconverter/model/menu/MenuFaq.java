@@ -66,7 +66,7 @@ public class MenuFaq extends Menu {
         answer.add(SendMessageWrap.init()
                 .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
                 .setText("Ответ: " + faq.getAnswer())
-                .build().createSendMessage());
+                .build().createMessage());
         if (filePath != null) {
             answer.add(SendDocumentWrap.init()
                     .setChatIdLong(user.getChatId())
@@ -80,21 +80,21 @@ public class MenuFaq extends Menu {
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
         val faq = faqRepository.findAll();
         if (faq.size() == 0) {
-            return Arrays.asList(SendMessageWrap.init()
+            return SendMessageWrap.init()
                     .setChatIdLong(user.getChatId())
                     .setText("Отсутствуют данные для faq, обратитесь к администратору")
-                    .build().createSendMessage());
+                    .build().createMessageList();
         }
         val btns = new LinkedHashMap<String, String>();
         for (int i = 0; i < faq.size(); ++i) {
             btns.put(String.valueOf(faq.get(i).getFaqId()), faq.get(i).getQuestion());
         }
         stateService.setState(user, FAQ_WAIT_QUESTION);
-        return Arrays.asList(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(update.getMessage().getChatId())
                 .setText("Выберете интересующий вопрос:")
                 .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                .build().createSendMessage());
+                .build().createMessageList();
     }
 
     @Override

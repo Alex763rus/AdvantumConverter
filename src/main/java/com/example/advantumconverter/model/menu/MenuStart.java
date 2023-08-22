@@ -56,11 +56,10 @@ public class MenuStart extends Menu {
                 break;
 
         }
-        return Arrays.asList(
-                SendMessageWrap.init()
+        return SendMessageWrap.init()
                         .setChatIdLong(user.getChatId())
                         .setText(EmojiParser.parseToUnicode(messageText))
-                        .build().createSendMessage());
+                        .build().createMessageList();
     }
 
     private String getMainEmployeeMenuText(User user) {

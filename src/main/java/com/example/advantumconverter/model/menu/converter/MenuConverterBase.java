@@ -33,10 +33,10 @@ public abstract class MenuConverterBase extends Menu {
                     val convertedBook = convertService.getConvertedBook(book);
                     val document = excelGenerateService.processXlsx(convertedBook, convertService.getFileNamePrefix(), SHEET_RESULT_NAME);
                     stateService.setState(user, FREE);
-                    return Arrays.asList(SendDocumentWrap.init()
+                    return SendDocumentWrap.init()
                             .setChatIdLong(update.getMessage().getChatId())
                             .setDocument(document)
-                            .build().createMessage());
+                            .build().createMessageList();
                 } catch (Exception ex) {
                     try {
                         return supportService.processNewTask(user, update, convertService, update.getMessage().getText(), ex);
@@ -57,9 +57,9 @@ public abstract class MenuConverterBase extends Menu {
             return errorMessageDefault(update);
         }
         stateService.setState(user, state);
-        return Arrays.asList(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(update.getMessage().getChatId())
                 .setText("Отправьте исходный файл " + fileName + ":")
-                .build().createSendMessage());
+                .build().createMessageList();
     }
 }

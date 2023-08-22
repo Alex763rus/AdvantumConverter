@@ -82,7 +82,7 @@ public class MenuMyTask extends MenuTaskBase {
                             SendMessageWrap.init()
                                     .setChatIdLong(task.getEmployeeChatId())
                                     .setText(resultText.toString())
-                                    .build().createSendMessage(),
+                                    .build().createMessage(),
                             SendDocumentWrap.init()
                                     .setChatIdLong(task.getEmployeeChatId())
                                     .setDocument(new InputFile(book))
@@ -90,7 +90,7 @@ public class MenuMyTask extends MenuTaskBase {
                             SendMessageWrap.init()
                                     .setChatIdLong(user.getChatId())
                                     .setText("Задача " + prepareTaskId(task.getSupportTaskId()) + " успешно закрыта!")
-                                    .build().createSendMessage()
+                                    .build().createMessage()
                     );
                 } catch (Exception ex) {
                     return errorMessage(update, "Ошибка во время формирования ответа пользователю:" + ex.getMessage());
@@ -131,7 +131,7 @@ public class MenuMyTask extends MenuTaskBase {
                 .append("- напишите краткое описание причин возникновения ошибки");
         return SendMessageWrap.init().setChatIdLong(user.getChatId())
                 .setText(resultText.toString())
-                .build().createSendMessageList();
+                .build().createMessageList();
     }
 
 
@@ -148,7 +148,7 @@ public class MenuMyTask extends MenuTaskBase {
         stateService.setState(user, SUPPORT_WAIT_MODE_WORK);
         return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
                         .setText(getTaskInfo(task))
-                        .build().createSendMessage(),
+                        .build().createMessage(),
                 SendDocumentWrap.init().setChatIdLong(user.getChatId())
                         .setDocument(inputFile)
                         .build().createMessage(),
@@ -156,7 +156,7 @@ public class MenuMyTask extends MenuTaskBase {
                         .setChatIdLong(user.getChatId())
                         .setText("Выполнить задачу:")
                         .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createSendMessage()
+                        .build().createMessage()
         );
     }
 

@@ -57,7 +57,7 @@ public class MenuOpenTask extends MenuTaskBase {
                     .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
                     .setText("Ошибка: Выбранную задачу уже взяли в работу." + NEW_LINE
                             + "Пожалуйста, выберите другую задачу:")
-                    .build().createSendMessage());
+                    .build().createMessage());
             supportsList.addAll(freelogic(user, update));
             return supportsList;
         }
@@ -72,7 +72,7 @@ public class MenuOpenTask extends MenuTaskBase {
 
         return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
                         .setText(resultText.toString())
-                        .build().createSendMessage(),
+                        .build().createMessage(),
                 SendDocumentWrap.init().setChatIdLong(user.getChatId())
                         .setDocument(inputFile)
                         .build().createMessage());

@@ -42,22 +42,21 @@ public abstract class MenuTaskBase extends Menu {
     protected List<PartialBotApiMethod> createMenuFromUserTasks(User user, Update update, List<SupportTask> supportTasks, String mainMessage, String notFoundTask) {
         if (supportTasks.size() == 0) {
             stateService.setState(user, FREE);
-            return Arrays.asList(SendMessageWrap.init()
+            return SendMessageWrap.init()
                     .setChatIdLong(user.getChatId())
                     .setText(notFoundTask)
-                    .build().createSendMessage());
+                    .build().createMessageList();
         }
         val btns = new LinkedHashMap<String, String>();
         for (int i = 0; i < supportTasks.size(); ++i) {
             btns.put(String.valueOf(supportTasks.get(i).getSupportTaskId()), prepareShield(String.valueOf(prepareTaskId(supportTasks.get(i).getSupportTaskId()))));
         }
         stateService.setState(user, SUPPORT_WAIT_CHOOSE_TASK);
-        return Arrays.asList(
-                SendMessageWrap.init()
+        return SendMessageWrap.init()
                         .setChatIdLong(update.getMessage().getChatId())
                         .setText(mainMessage)
                         .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createSendMessage());
+                        .build().createMessageList();
     }
 
 }

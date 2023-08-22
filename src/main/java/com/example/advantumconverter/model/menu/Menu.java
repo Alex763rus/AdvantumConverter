@@ -55,24 +55,24 @@ public abstract class Menu implements MenuActivity {
     private static final String DEFAULT_TEXT_ERROR = "Ошибка! Команда не найдена";
 
     protected List<PartialBotApiMethod> errorMessageDefault(Update update) {
-        return Arrays.asList(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(update.getMessage().getChatId())
                 .setText(DEFAULT_TEXT_ERROR)
-                .build().createSendMessage());
+                .build().createMessageList();
     }
 
     protected List<PartialBotApiMethod> errorMessage(Update update, String message) {
-        return Arrays.asList(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(update.getMessage().getChatId())
                 .setText(message)
-                .build().createSendMessage());
+                .build().createMessageList();
     }
 
     protected PartialBotApiMethod createAdminMessage(String message) {
         return SendMessageWrap.init()
                 .setChatIdString(botConfig.getAdminChatId())
                 .setText(message)
-                .build().createSendMessage();
+                .build().createMessage();
     }
 
 

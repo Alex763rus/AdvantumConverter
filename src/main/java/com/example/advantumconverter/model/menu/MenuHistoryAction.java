@@ -103,7 +103,7 @@ public class MenuHistoryAction extends Menu {
         return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText(answer.toString())
-                .build().createSendMessageList();
+                .build().createMessageList();
     }
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
@@ -120,21 +120,21 @@ public class MenuHistoryAction extends Menu {
     private List<PartialBotApiMethod> gerFreeLogicSupport(User user, Update update) {
         val companys = companyRepository.findAll();
         if (companys.size() == 0) {
-            return Arrays.asList(SendMessageWrap.init()
+            return SendMessageWrap.init()
                     .setChatIdLong(user.getChatId())
                     .setText("Компании отсутствуют")
-                    .build().createSendMessage());
+                    .build().createMessageList();
         }
         val btns = new LinkedHashMap<String, String>();
         for (int i = 0; i < companys.size(); ++i) {
             btns.put(String.valueOf(companys.get(i).getCompanyId()), prepareShield(companys.get(i).getCompanyName()));
         }
         stateService.setState(user, HISTORY_WAIT_COMPANY);
-        return Arrays.asList(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(update.getMessage().getChatId())
                 .setText("Выберите компанию:")
                 .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                .build().createSendMessage());
+                .build().createMessageList();
     }
 
     private List<PartialBotApiMethod> historyWaitCompanyLogic(User user, Update update) {
@@ -152,21 +152,21 @@ public class MenuHistoryAction extends Menu {
 
     private List<PartialBotApiMethod> showUsers(User user, List<User> users) {
         if (users.size() == 0) {
-            return Arrays.asList(SendMessageWrap.init()
+            return SendMessageWrap.init()
                     .setChatIdLong(user.getChatId())
                     .setText("В выбранной компании пользователи не найдены")
-                    .build().createSendMessage());
+                    .build().createMessageList();
         }
         stateService.setState(user, HISTORY_WAIT_USER);
         val btns = new LinkedHashMap<String, String>();
         for (int i = 0; i < users.size(); ++i) {
             btns.put(String.valueOf(users.get(i).getChatId()), prepareShield(users.get(i).getNameOrFirst()));
         }
-        return Arrays.asList(SendMessageWrap.init()
+        return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText("Выберите сотрудника:")
                 .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                .build().createSendMessage());
+                .build().createMessageList();
     }
     @Override
     public String getDescription() {

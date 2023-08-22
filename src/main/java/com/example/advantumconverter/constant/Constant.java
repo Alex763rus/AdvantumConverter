@@ -16,6 +16,7 @@ public final class Constant {
         public static final String FILE_NAME_LENTA = "Лента";
 
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
+        public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
 
         public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
 
@@ -43,6 +44,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
+        public static final String COMMAND_CONVERT_AGROPROM = "/convert_agroprom";
 
         public static final String COMMAND_SHOW_OPEN_TASK = "/show_open_task";
         public static final String COMMAND_SHOW_MY_TASK = "/show_my_task";

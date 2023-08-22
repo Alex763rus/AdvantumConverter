@@ -67,6 +67,9 @@ public class BotConfig {
 
     @Autowired
     private ConvertServiceImplDominos convertServiceImplDominos;
+
+    @Autowired
+    private ConvertServiceImplAgroprom convertServiceImplAgroprom;
     @Autowired
     private CompanyRepository companyRepository;
 
@@ -76,9 +79,9 @@ public class BotConfig {
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
         val lentaConverter = List.of(convertServiceImplLenta);
         val bushConverter = List.of(convertServiceImplBogorodsk, convertServiceImplCofix
-                , convertServiceImplSamokat, convertServiceImplDominos);
+                , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
-                , convertServiceImplSamokat, convertServiceImplDominos);
+                , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom);
 
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM), advantumConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA), lentaConverter);
@@ -95,10 +98,10 @@ public class BotConfig {
         val roleAccess = new HashMap<UserRole, List<String>>();
         roleAccess.put(NEED_SETTING, List.of(COMMAND_DEFAULT, COMMAND_START));
         roleAccess.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
-        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS));
-        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION));
+        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM));
+        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION, COMMAND_CONVERT_AGROPROM));
         roleAccess.put(SUPPORT, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
-                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY));
+                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM));
         roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY));
         roleSecurity.setRoleAccess(roleAccess);
 
@@ -106,7 +109,7 @@ public class BotConfig {
         val commandAccessList = new HashMap<Company, List<String>>();
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM)
                 , List.of(/*Общие:*/COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        /*Буш автопром:*/, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS
+                        /*Буш автопром:*/, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM
                         /*Лента:*/, COMMAND_CONVERT_LENTA
                         /*Саппорт:*/, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_RELOAD_DICTIONARY
                         /*админ:*/, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY
@@ -119,7 +122,7 @@ public class BotConfig {
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BUSH_AVTOPROM)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        , COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS
+                        , COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM
                 )
         );
         roleSecurity.setCompanyAccessList(commandAccessList);

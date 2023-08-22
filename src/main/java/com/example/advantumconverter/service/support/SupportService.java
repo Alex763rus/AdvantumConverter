@@ -56,7 +56,7 @@ public class SupportService {
         if (user.getUserRole() == SUPPORT) {
             return SendMessageWrap.init().setChatIdLong(user.getChatId())
                     .setText(prepareShield(ex.getMessage()))
-                    .build().createSendMessageList();
+                    .build().createMessageList();
         }
         val message = update.getMessage();
         val inputFile = new InputFile(fileUploadService.uploadFileFromServer(fullFileName));
@@ -75,14 +75,14 @@ public class SupportService {
         val userErrorMessage = SendMessageWrap.init()
                 .setChatIdLong(message.getChatId())
                 .setText(getErrorMessageText(supportEntity.getSupportTaskId()))
-                .build().createSendMessage();
+                .build().createMessage();
         supportMessages.add(userErrorMessage);
 
         for (User supportUser : supportUserList) {
             supportMessages.add(
                     SendMessageWrap.init().setChatIdLong(supportUser.getChatId())
                             .setText(getSupportMessageText(supportEntity))
-                            .build().createSendMessage());
+                            .build().createMessage());
             supportMessages.add(
                     SendDocumentWrap.init().setChatIdLong(supportUser.getChatId())
                             .setDocument(inputFile)

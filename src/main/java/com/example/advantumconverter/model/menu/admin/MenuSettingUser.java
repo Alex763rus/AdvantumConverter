@@ -65,13 +65,13 @@ public class MenuSettingUser extends Menu {
                 SendMessageWrap.init()
                         .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
                         .setText("Пользователь успешно настроен:" + prepareShield(userRefresh.toString()))
-                        .build().createSendMessage(),
+                        .build().createMessage(),
                 SendMessageWrap.init()
                         .setChatIdLong(userRefresh.getChatId())
                         .setText("Администратор настроил вашу учетную запись" + NEW_LINE
                                 + "Установлена роль:" + userRefresh.getUserRole().getTitle() + NEW_LINE
                                 + "Нажмите " + COMMAND_START + " для начала работы!")
-                        .build().createSendMessage());
+                        .build().createMessage());
     }
 
     private List<PartialBotApiMethod> adminSettingWaitCompany(User user, Update update) {
@@ -87,12 +87,11 @@ public class MenuSettingUser extends Menu {
         btns.put(MAIN_EMPLOYEE.name(), MAIN_EMPLOYEE.getTitle());
         btns.put(SUPPORT.name(), SUPPORT.getTitle());
         stateService.setState(user, ADMIN_SETTING_WAIT_ROLE);
-        return Arrays.asList(
-                SendMessageWrap.init()
+        return SendMessageWrap.init()
                         .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
                         .setText("Укажите роль:")
                         .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createSendMessage());
+                        .build().createMessageList();
     }
 
     private List<PartialBotApiMethod> adminSettingUsernameLogic(User user, Update update) {
@@ -107,33 +106,31 @@ public class MenuSettingUser extends Menu {
             btns.put(String.valueOf(company.get(i).getCompanyId()), company.get(i).getCompanyName());
         }
         stateService.setState(user, ADMIN_SETTING_WAIT_COMPANY);
-        return Arrays.asList(
-                SendMessageWrap.init()
+        return SendMessageWrap.init()
                         .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
                         .setText("Укажите компанию:")
                         .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createSendMessage());
+                        .build().createMessageList();
     }
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
         val users = userRepository.findUserByUserRole(NEED_SETTING);
         if ((users).size() == 0) {
-            return Arrays.asList(SendMessageWrap.init()
+            return SendMessageWrap.init()
                     .setChatIdLong(user.getChatId())
                     .setText("Отсутствуют контакты, требующие настройки")
-                    .build().createSendMessage());
+                    .build().createMessageList();
         }
         val btns = new LinkedHashMap<String, String>();
         for (int i = 0; i < users.size(); ++i) {
             btns.put(String.valueOf(users.get(i).getChatId()), users.get(i).getNameOrFirst());
         }
         stateService.setState(user, ADMIN_SETTING_WAIT_USERNAME);
-        return Arrays.asList(
-                SendMessageWrap.init()
+        return SendMessageWrap.init()
                         .setChatIdLong(update.getMessage().getChatId())
                         .setText("Настроить доступ контакту:")
                         .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createSendMessage());
+                        .build().createMessageList();
     }
 
     @Override
