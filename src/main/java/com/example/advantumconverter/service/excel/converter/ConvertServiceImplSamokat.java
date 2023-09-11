@@ -8,11 +8,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SAMOKAT;
+import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SAMOKAT;
-import static com.example.advantumconverter.utils.DateConverter.*;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
 public class ConvertServiceImplSamokat extends ConvertServiceBase implements ConvertService {
@@ -58,37 +62,37 @@ public class ConvertServiceImplSamokat extends ConvertServiceBase implements Con
                     dataLine.add(fillA(mainRow));
                     dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
                     dataLine.add("Самокат");
-                    dataLine.add("ООО \"Буш-Автопром\"");
-                    dataLine.add("");
-                    dataLine.add("Рефрижератор");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(BUSH_AUTOPROM_ORGANIZATION_NAME);
+                    dataLine.add(EMPTY);
+                    dataLine.add(REFRIGERATOR);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add("5");
                     dataLine.add("10");
                     dataLine.add("2");
                     dataLine.add("4");
                     dataLine.add("6");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(fillS(row, isStart));
                     dataLine.add(fillT(row, isStart));
                     dataLine.add(fillU(row, isStart));
                     dataLine.add(fillV(row, isStart));
-                    dataLine.add(isStart ? "Погрузка" : "Разгрузка");
+                    dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
                     dataLine.add(String.valueOf(counterCopy));
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add(getCellValue(mainRow, 3).replaceAll(" ", ""));
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(getCellValue(mainRow, 3).replaceAll(SPACE, EMPTY));
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(mainRow, 4));
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
 
                     ++counterCopy;
                     data.add(dataLine);
@@ -114,6 +118,7 @@ public class ConvertServiceImplSamokat extends ConvertServiceBase implements Con
         val textStart = "Московская область, Пушкинский район, г.п. Софрино, 48 км Ярославского шоссе, владение 1";
         return isStart ? textStart : getCellValue(row, 10);
     }
+
     private String fillA(int row) throws ParseException {
         return getCellValue(row, 1) + getCurrentDate(TEMPLATE_DATE);
     }
@@ -122,23 +127,23 @@ public class ConvertServiceImplSamokat extends ConvertServiceBase implements Con
         val date = getCurrentDate(TEMPLATE_DATE_DOT);
         val timeA = getCellDate(row, 0);
         val timeResult = isStart ? DateUtils.addHours(timeA, -2) : timeA;
-        return date + " " + convertDateFormat(timeResult, TEMPLATE_TIME);
+        return date + SPACE + convertDateFormat(timeResult, TEMPLATE_TIME);
     }
 
     private String fillT(int row, boolean isStart) throws ParseException {
         val date = getCurrentDate(TEMPLATE_DATE_DOT);
         val timeA = getCellDate(row, 0);
         val timeResult = isStart ? DateUtils.addHours(timeA, 1) : DateUtils.addHours(timeA, 4);
-        return date + " " + convertDateFormat(timeResult, TEMPLATE_TIME);
+        return date + SPACE + convertDateFormat(timeResult, TEMPLATE_TIME);
     }
 
     private String getValueOrDefault(int row, int slippage, int col) {
         row = row + slippage;
         if (row < START_ROW || row > LAST_ROW) {
-            return "";
+            return EMPTY;
         }
         if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-            return "";
+            return EMPTY;
         }
         return getCellValue(sheet.getRow(row).getCell(col));
     }
@@ -149,6 +154,6 @@ public class ConvertServiceImplSamokat extends ConvertServiceBase implements Con
         }
         val cur = getValueOrDefault(row, 0, 1);
         val prev1 = getValueOrDefault(row, -1, 1);
-        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(""));
+        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
     }
 }

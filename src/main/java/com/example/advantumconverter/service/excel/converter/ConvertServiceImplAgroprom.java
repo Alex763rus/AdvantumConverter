@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM;
+import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM;
-import static com.example.advantumconverter.utils.DateConverter.*;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
 public class ConvertServiceImplAgroprom extends ConvertServiceBase implements ConvertService {
@@ -48,37 +51,37 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
                     dataLine.add(getCellValue(row, 0));
                     dataLine.add(convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                     dataLine.add("Х5 ТЦ Новая Рига");
-                    dataLine.add("ООО \"БУШ-АВТОПРОМ\"");
-                    dataLine.add("");
-                    dataLine.add("Рефрижератор");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(BUSH_AUTOPROM_ORGANIZATION_NAME);
+                    dataLine.add(EMPTY);
+                    dataLine.add(REFRIGERATOR);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(row, 5));
                     dataLine.add(getCellValue(row, 6));
                     dataLine.add("3");
                     dataLine.add("5");
                     dataLine.add("3");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(fillS(iRepeat == 0, row));
                     dataLine.add(fillT(iRepeat == 0, row));
                     dataLine.add(getCellValue(row, 8));
                     dataLine.add(getCellValue(row, 8));
-                    dataLine.add(iRepeat == 0 ? "Погрузка" : "Разгрузка");
+                    dataLine.add(iRepeat == 0 ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
                     dataLine.add(String.valueOf(iRepeat));
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(row, 2));
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(row, 3));
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
 
                     data.add(dataLine);
                 }
@@ -98,7 +101,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     private String fillS(boolean isStart, int row) throws ParseException {
         if(isStart){
             val timeK = convertDateFormat(getCellValue(row, 10), TEMPLATE_TIME, TEMPLATE_TIME_SECOND);
-            val dateResult = getCellValue(row, 9) + " " + (isStart ? timeK : "TODO");
+            val dateResult = getCellValue(row, 9) + SPACE + (isStart ? timeK : "TODO");
             return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_SLASH, TEMPLATE_DATE_TIME_DOT);
         } else{
             val dateText = fillT(isStart, row);
@@ -114,7 +117,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
             return convertDateFormat(DateUtils.addHours(date, 2), TEMPLATE_DATE_TIME_DOT);
         } else{
             val timeN = convertDateFormat(getCellValue(row, 13), TEMPLATE_TIME, TEMPLATE_TIME_SECOND);
-            val dateResult = getCellValue(row, 12) + " " + timeN;
+            val dateResult = getCellValue(row, 12) + SPACE + timeN;
             return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_SLASH, TEMPLATE_DATE_TIME_DOT);
         }
     }
@@ -122,10 +125,10 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     private String getValueOrDefault(int row, int slippage, int col) {
         row = row + slippage;
         if (row < START_ROW || row > LAST_ROW) {
-            return "";
+            return EMPTY;
         }
         if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-            return "";
+            return EMPTY;
         }
         return getCellValue(sheet.getRow(row).getCell(col));
     }

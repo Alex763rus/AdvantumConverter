@@ -11,14 +11,12 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.*;
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
-import static com.example.advantumconverter.constant.Constant.SPACE;
 import static com.example.advantumconverter.enums.Emoji.BLUSH;
-import static com.example.advantumconverter.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.constant.Constant.TextConstants.*;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j
@@ -34,7 +32,7 @@ public class MenuStart extends Menu {
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        String messageText = "";
+        String messageText = EMPTY;
         switch (user.getUserRole()) {
             case NEED_SETTING:
                 log.warn("ожидает обработки новый пользователь ChatId:" + update.getMessage().getChatId());

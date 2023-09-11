@@ -4,7 +4,6 @@ import com.example.advantumconverter.model.jpa.SupportTask;
 import com.example.advantumconverter.model.jpa.SupportTaskRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.menu.Menu;
-import com.example.advantumconverter.utils.DateConverter;
 import jakarta.persistence.MappedSuperclass;
 import lombok.val;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
@@ -13,13 +12,18 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.State.FREE;
 import static com.example.advantumconverter.enums.State.SUPPORT_WAIT_CHOOSE_TASK;
-import static com.example.advantumconverter.utils.StringUtils.prepareShield;
-import static com.example.advantumconverter.utils.StringUtils.prepareTaskId;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.utils.DateConverterUtils.TEMPLATE_DATE_TIME_DOT;
+import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.utils.StringUtils.prepareTaskId;
 
 @MappedSuperclass
 public abstract class MenuTaskBase extends Menu {
@@ -33,7 +37,7 @@ public abstract class MenuTaskBase extends Menu {
         val taskInfo = new StringBuilder();
         taskInfo.append("Задача ").append(supportTask.getSupportTaskId()).append(NEW_LINE)
                 .append("Конвертер: ").append(supportTask.getConverterName()).append(NEW_LINE)
-                .append("Зарегистрирована: ").append(DateConverter.convertDateFormat(supportTask.getRegisteredAt(), DateConverter.TEMPLATE_DATE_TIME_DOT)).append(NEW_LINE)
+                .append("Зарегистрирована: ").append(convertDateFormat(supportTask.getRegisteredAt(), TEMPLATE_DATE_TIME_DOT)).append(NEW_LINE)
                 .append("Текст ошибки: ").append(supportTask.getErrorText()).append(NEW_LINE)
         ;
         return taskInfo.toString();

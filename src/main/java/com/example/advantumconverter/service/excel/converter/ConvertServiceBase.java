@@ -1,11 +1,6 @@
 package com.example.advantumconverter.service.excel.converter;
 
-import com.example.advantumconverter.model.jpa.Car;
-import com.example.advantumconverter.model.jpa.CarRepository;
-import com.example.advantumconverter.model.jpa.LentaDictionary;
-import com.example.advantumconverter.model.jpa.LentaDictionaryRepository;
 import com.example.advantumconverter.service.database.DictionaryService;
-import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -15,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import static com.example.advantumconverter.utils.DateConverter.convertDateFormat;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
 
 @Component
@@ -32,10 +30,10 @@ public class ConvertServiceBase {
 
     protected String getCellValue(int row, int col) {
         if (sheet.getRow(row) == null) {
-            return "";
+            return EMPTY;
         }
         if (sheet.getRow(row).getCell(col) == null) {
-            return "";
+            return EMPTY;
         }
         return getCellValue(sheet.getRow(row).getCell(col));
     }
@@ -47,10 +45,10 @@ public class ConvertServiceBase {
 
     protected String getCellWindowValue(XSSFSheet sheet, int row, int col) {
         if (sheet.getRow(row) == null) {
-            return "";
+            return EMPTY;
         }
         if (sheet.getRow(row).getCell(col) == null) {
-            return "";
+            return EMPTY;
         }
         return getCellValue(sheet.getRow(row).getCell(col));
     }
@@ -62,7 +60,7 @@ public class ConvertServiceBase {
         for (int row = 0; ; row++) {
             val cellValue = getCellWindowValue(windowSheet, row, 0);
             val nextValue = getCellWindowValue(windowSheet, row + 1, 0);
-            if (cellValue.equals("") && nextValue.equals("")) {
+            if (cellValue.equals(EMPTY) && nextValue.equals(EMPTY)) {
                 --row;
                 break;
             }
@@ -88,8 +86,8 @@ public class ConvertServiceBase {
     protected int getLastRow(int startRow) {
         int i = startRow;
         for (; ; i++) {
-            if (getCellValue(i, 0).equals("")) {
-                if (getCellValue(i + 1, 0).equals("")) {
+            if (getCellValue(i, 0).equals(EMPTY)) {
+                if (getCellValue(i + 1, 0).equals(EMPTY)) {
                     break;
                 }
             }

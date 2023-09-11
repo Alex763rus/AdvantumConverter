@@ -57,6 +57,9 @@ public class MenuService {
 
     @Autowired
     private MenuConvertAgroprom menuConvertAgroprom;
+
+    @Autowired
+    private MenuConvertAgropromDetail menuConvertAgropromDetail;
     @Autowired
     private MenuConvertSamokat menuConvertSamokat;
 
@@ -87,7 +90,7 @@ public class MenuService {
         // Список всех возможных обработчиков меню:
         security.setMainMenu(List.of(menuStart, menuConvertBogorodsk, menuConvertCofix, menuConvertSamokat
                         , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask, menuHistoryAction
-                        , menuReloadDictionary, menuConvertAgroprom
+                        , menuReloadDictionary, menuConvertAgroprom, menuConvertAgropromDetail
                 )
         );
     }

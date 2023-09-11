@@ -1,16 +1,15 @@
 package com.example.advantumconverter.model.jpa;
 
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import com.example.advantumconverter.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-import static com.example.advantumconverter.constant.Constant.EMPTY;
 
 @Getter
 @Setter

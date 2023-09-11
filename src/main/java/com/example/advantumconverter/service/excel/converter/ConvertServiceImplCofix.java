@@ -1,23 +1,23 @@
 package com.example.advantumconverter.service.excel.converter;
 
-import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.Car;
-import com.example.advantumconverter.model.jpa.CarRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_COFIX;
+import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_COFIX;
-import static com.example.advantumconverter.utils.DateConverter.*;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
 public class ConvertServiceImplCofix extends ConvertServiceBase implements ConvertService {
@@ -51,37 +51,37 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
                 dataLine.add(fillA(row));
                 dataLine.add(convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                 dataLine.add(FILE_NAME_COFIX);
-                dataLine.add("ООО \"Буш-Автопром\"");
-                dataLine.add("");
-                dataLine.add("Рефрижератор");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(BUSH_AUTOPROM_ORGANIZATION_NAME);
+                dataLine.add(EMPTY);
+                dataLine.add(REFRIGERATOR);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
                 dataLine.add(String.valueOf(findCar(row).getTonnage()));
                 dataLine.add(String.valueOf(findCar(row).getPallet()));
                 dataLine.add("2");
                 dataLine.add("4");
                 dataLine.add("6");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
                 dataLine.add(fillS(row));
                 dataLine.add(fillT(row));
                 dataLine.add(fillU(row));
                 dataLine.add(fillV(row));
-                dataLine.add(isStart(row) ? "Погрузка" : "Разгрузка");
+                dataLine.add(isStart(row) ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
                 dataLine.add(fillX(row));
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
                 dataLine.add(fillAC(row));
-                dataLine.add("");
+                dataLine.add(EMPTY);
                 dataLine.add(fillAE(row));
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
 
                 data.add(dataLine);
             }
@@ -109,13 +109,13 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
         val cur = getValueOrDefault(row, 0, 9);
         val next1 = getValueOrDefault(row, 1, 9);
         val next2 = getValueOrDefault(row, 2, 9);
-        val carName = next1.equals(next2) && !next1.equals("") ? next1 : cur;
+        val carName = next1.equals(next2) && !next1.equals(EMPTY) ? next1 : cur;
         return dictionaryService.getCar(carName);
     }
 
     private String fillS(int row) throws ParseException {
         val next1 = getValueOrDefault(row, 1, 0);
-        String dateResult = getCellValue(1, 0) + " " + (isStart(row) ? next1 : getCellValue(row, 5));
+        String dateResult = getCellValue(1, 0) + SPACE + (isStart(row) ? next1 : getCellValue(row, 5));
         return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_SLASH, TEMPLATE_DATE_TIME_DOT);
     }
 
@@ -139,7 +139,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
             if (isStart(i)) {
                 break;
             }
-            if (getValueOrDefault(i, 0, 0).equals("") && i != row) {
+            if (getValueOrDefault(i, 0, 0).equals(EMPTY) && i != row) {
                 break;
             }
         }
@@ -157,14 +157,14 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
     private String getFioTrack(int row, int column) {
         if (isStart(row)) {
             val result = getValueOrDefault(row, 1, column);
-            return result.equals("") ? "0" : result;
+            return result.equals(EMPTY) ? "0" : result;
         }
         for (int i = row; i >= START_ROW; --i) {
             val value = getValueOrDefault(i, 0, column);
-            if (!value.equals("")) {
+            if (!value.equals(EMPTY)) {
                 return value;
             }
-            if (getValueOrDefault(i, 0, 0).equals("") && i != row) {
+            if (getValueOrDefault(i, 0, 0).equals(EMPTY) && i != row) {
                 break;
             }
         }
@@ -174,10 +174,10 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
     private String getValueOrDefault(int row, int slippage, int col) {
         row = row + slippage;
         if (row < START_ROW || row > LAST_ROW) {
-            return "";
+            return EMPTY;
         }
         if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-            return "";
+            return EMPTY;
         }
         return getCellValue(sheet.getRow(row).getCell(col));
     }
@@ -188,7 +188,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
         }
         val cur = getValueOrDefault(row, 0, 3);
         val prev1 = getValueOrDefault(row, -1, 3);
-        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(""));
+        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
     }
 
 }

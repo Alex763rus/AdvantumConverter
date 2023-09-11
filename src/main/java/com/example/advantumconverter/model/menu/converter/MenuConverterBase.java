@@ -11,10 +11,9 @@ import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.SHEET_RESULT_NAME;
+import static com.example.advantumconverter.constant.Constant.Converter.SHEET_RESULT_NAME;
 import static com.example.advantumconverter.enums.FileType.USER_IN;
 import static com.example.advantumconverter.enums.State.FREE;
 
@@ -41,7 +40,6 @@ public abstract class MenuConverterBase extends Menu {
                     try {
                         return supportService.processNewTask(user, update, convertService, update.getMessage().getText(), ex);
                     } catch (Exception e) {
-                        int i = 0;
                         //todo
                     }
                 }

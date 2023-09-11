@@ -19,12 +19,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_SHOW_MY_TASK;
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
-import static com.example.advantumconverter.enums.FileType.*;
+import static com.example.advantumconverter.enums.FileType.SUPPORT_IN;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.SupportTaskState.DONE;
 import static com.example.advantumconverter.enums.SupportTaskState.IN_PROGRESS;
-import static com.example.advantumconverter.utils.StringUtils.prepareTaskId;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.utils.StringUtils.prepareTaskId;
 
 @Component
 @Slf4j

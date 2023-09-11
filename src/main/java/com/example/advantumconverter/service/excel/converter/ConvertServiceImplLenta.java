@@ -1,27 +1,23 @@
 package com.example.advantumconverter.service.excel.converter;
 
-import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
-import com.example.advantumconverter.model.jpa.Car;
-import com.example.advantumconverter.model.jpa.CarRepository;
-import com.example.advantumconverter.model.jpa.LentaDictionary;
-import com.example.advantumconverter.model.jpa.LentaDictionaryRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.val;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
+import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
-import static com.example.advantumconverter.utils.DateConverter.*;
-import static com.example.advantumconverter.utils.DateConverter.convertDateFormat;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
 public class ConvertServiceImplLenta extends ConvertServiceBase implements ConvertService {
@@ -71,36 +67,36 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
                 dataLine.add(fillC(row));
                 dataLine.add(getCellValue(row, 8));
-                dataLine.add("");
-                dataLine.add("Рефрижератор");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(REFRIGERATOR);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
                 dataLine.add(fillJ(row));
                 dataLine.add("1");
                 dataLine.add(fillL(row));
                 dataLine.add(fillM(row));
                 dataLine.add("2");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
                 dataLine.add(fillS(row));
                 dataLine.add(fillT(row));
                 dataLine.add(String.valueOf(getCode(row)));
                 dataLine.add(fillU(row));
-                dataLine.add(isStart ? "Погрузка" : "Разгрузка");
+                dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
                 dataLine.add(String.valueOf(counterCopy));
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add(getCellValue(row, 5).replaceAll(" ", ""));
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(getCellValue(row, 5).replaceAll(SPACE, EMPTY));
+                dataLine.add(EMPTY);
                 dataLine.add(fillAE(row));
-                dataLine.add("");
-                dataLine.add("");
-                dataLine.add("");
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
+                dataLine.add(EMPTY);
 
                 ++counterCopy;
                 data.add(dataLine);
@@ -113,7 +109,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillL(int row) {
-        val carName = getCellValue(row, 3).replaceAll("\\\\", "");
+        val carName = getCellValue(row, 3).replaceAll("\\\\", EMPTY);
         val car = dictionaryService.getCarOrElse(carName, null);
         if (carName.length() < 5 || car == null) {
             return "2";
@@ -122,7 +118,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillM(int row) {
-        val carName = getCellValue(row, 3).replaceAll("\\\\", "");
+        val carName = getCellValue(row, 3).replaceAll("\\\\", EMPTY);
         val car = dictionaryService.getCarOrElse(carName, null);
         if (carName.length() < 5 || car == null) {
             return "6";
@@ -131,7 +127,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillJ(int row) {
-        val carName = getCellValue(row, 3).replaceAll("\\\\", "");
+        val carName = getCellValue(row, 3).replaceAll("\\\\", EMPTY);
         if (carName.length() < 5) {
             val doubleValue = Double.parseDouble(carName.replaceAll(",", ".")) * 1000;
             return String.valueOf((int) doubleValue);
@@ -159,7 +155,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
             return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
         }
         val time = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME, TEMPLATE_TIME);
-        return date + " " + time;
+        return date + SPACE + time;
     }
 
     private String fillT(int row) throws ParseException {
@@ -173,7 +169,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         val timeShop = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME);
         val dateResult = timeShop.after(timeStock) ? DateUtils.addDays(date, 1) : date;
         val dateResultString = convertDateFormat(dateResult, TEMPLATE_DATE_DOT);
-        return dateResultString + " " + lentaDictionary.getTimeStock();
+        return dateResultString + SPACE + lentaDictionary.getTimeStock();
     }
 
     private Long getCode(int row) {
@@ -189,10 +185,10 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private String getValueOrDefault(int row, int slippage, int col) {
         row = row + slippage;
         if (row < START_ROW || row > LAST_ROW) {
-            return "";
+            return EMPTY;
         }
         if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-            return "";
+            return EMPTY;
         }
         return getCellValue(sheet.getRow(row).getCell(col));
     }
@@ -203,6 +199,6 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         }
         val cur = getValueOrDefault(row, 0, 1);
         val prev1 = getValueOrDefault(row, -1, 1);
-        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(""));
+        return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
     }
 }

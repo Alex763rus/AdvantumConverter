@@ -13,20 +13,15 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_FAQ;
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
-import static com.example.advantumconverter.enums.State.*;
+import static com.example.advantumconverter.enums.State.FAQ_WAIT_QUESTION;
+import static com.example.advantumconverter.enums.State.FREE;
 
 @Component
 @Slf4j

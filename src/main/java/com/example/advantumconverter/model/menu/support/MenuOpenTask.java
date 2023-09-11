@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_SHOW_OPEN_TASK;
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.SupportTaskState.IN_PROGRESS;
 import static com.example.advantumconverter.enums.SupportTaskState.NEW;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 
 @Component
 @Slf4j

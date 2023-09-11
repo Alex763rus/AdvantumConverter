@@ -16,10 +16,10 @@ import java.util.*;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_SETTING_NEW_USER;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.UserRole.*;
-import static com.example.advantumconverter.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j

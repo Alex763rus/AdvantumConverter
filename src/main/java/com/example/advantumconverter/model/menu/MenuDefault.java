@@ -7,11 +7,10 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_DEFAULT;
-import static com.example.advantumconverter.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j

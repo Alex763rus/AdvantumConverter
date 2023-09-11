@@ -1,6 +1,5 @@
 package com.example.advantumconverter.service.support;
 
-import com.example.advantumconverter.enums.FileType;
 import com.example.advantumconverter.model.jpa.SupportTask;
 import com.example.advantumconverter.model.jpa.SupportTaskRepository;
 import com.example.advantumconverter.model.jpa.User;
@@ -19,18 +18,17 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.io.File;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
 import static com.example.advantumconverter.enums.Emoji.WARNING;
 import static com.example.advantumconverter.enums.SupportTaskState.NEW;
 import static com.example.advantumconverter.enums.UserRole.SUPPORT;
-import static com.example.advantumconverter.utils.StringUtils.prepareShield;
-import static com.example.advantumconverter.utils.StringUtils.prepareTaskId;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.utils.StringUtils.prepareTaskId;
 
 @Slf4j
 @Service

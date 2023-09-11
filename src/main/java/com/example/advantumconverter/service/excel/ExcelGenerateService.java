@@ -2,18 +2,22 @@ package com.example.advantumconverter.service.excel;
 
 import com.example.advantumconverter.exception.ExcelGenerationException;
 import lombok.val;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.List;
 
-import static com.example.advantumconverter.utils.DateConverter.*;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
+
 
 @Service
 public class ExcelGenerateService {
@@ -95,7 +99,7 @@ public class ExcelGenerateService {
     private void createCellInt(Row row, int y, int x) {
         val cell = row.createCell(x);
         cell.setCellStyle(styleInt);
-        if (!data.get(y).get(x).equals("")) {
+        if (!data.get(y).get(x).equals(EMPTY)) {
             cell.setCellValue(Integer.parseInt(data.get(y).get(x)));
         }
     }

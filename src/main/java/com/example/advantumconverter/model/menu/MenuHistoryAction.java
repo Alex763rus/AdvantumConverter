@@ -12,13 +12,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.Command.*;
-import static com.example.advantumconverter.constant.Constant.NEW_LINE;
-import static com.example.advantumconverter.constant.Constant.SPACE;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_HISTORIC_ACTION;
 import static com.example.advantumconverter.enums.HistoryActionType.USER_ACTION;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.UserRole.EMPLOYEE;
-import static com.example.advantumconverter.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j

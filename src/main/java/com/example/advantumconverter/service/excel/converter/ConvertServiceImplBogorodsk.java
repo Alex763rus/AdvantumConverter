@@ -11,8 +11,11 @@ import java.text.ParseException;
 import java.util.*;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOGORODSK;
+import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOGORODSK;
-import static com.example.advantumconverter.utils.DateConverter.*;
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
 public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements ConvertService {
@@ -51,37 +54,37 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
                     dataLine.add(getCellValue(row, 1));
                     dataLine.add(convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                     dataLine.add("Х5 Богородск");
-                    dataLine.add("ООО \"Буш-Автопром\"");
-                    dataLine.add("");
-                    dataLine.add("Рефрижератор");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(BUSH_AUTOPROM_ORGANIZATION_NAME);
+                    dataLine.add(EMPTY);
+                    dataLine.add(REFRIGERATOR);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(row, 4));
                     dataLine.add(getCellValue(row, 5));
                     dataLine.add("2");
                     dataLine.add("4");
                     dataLine.add("6");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(fillS(row, copy));
                     dataLine.add(fillT(row, copy));
                     dataLine.add(fillU(row, copy));
                     dataLine.add(fillU(row, copy));
-                    dataLine.add(copy == 1 ? "Погрузка" : "Разгрузка");
+                    dataLine.add(copy == 1 ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
                     dataLine.add(String.valueOf(copy));
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(row, 14));
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
                     dataLine.add(getCellValue(row, 16));
-                    dataLine.add("");
-                    dataLine.add("");
-                    dataLine.add("");
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
+                    dataLine.add(EMPTY);
 
                     data.add(dataLine);
                 }
@@ -110,13 +113,13 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
     }
 
     private String fillS(int row, int copy) throws ParseException {
-        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + " ";
+        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + SPACE;
         val time = getTimeForS(row, copy);
         return date + convertDateFormat(time, TEMPLATE_TIME);
     }
 
     private String fillT(int row, int copy) throws ParseException {
-        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + " ";
+        val date = convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT) + SPACE;
         val time = DateUtils.addHours(getTimeForS(row, copy), 2);
         return date + convertDateFormat(time, TEMPLATE_TIME);
     }
