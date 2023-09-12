@@ -14,10 +14,11 @@ public final class Constant {
 
         public static final String REFRIGERATOR = "Рефрижератор";
         public static final String BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО \"Буш-Автопром\"";
-
         public static String SHEET_RESULT_NAME = "ИМПОРТ";
         public static String LOAD_THE_GOODS = "Погрузка";
         public static String UNLOAD_THE_GOODS = "Разгрузка";
+        public static String COMPANY_OOO_LENTA = "ООО ''ЛЕНТА''";
+        public static String COMPANY_OOO_LENTA_HIRING = COMPANY_OOO_LENTA + " найм";
 
     }
 

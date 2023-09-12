@@ -66,7 +66,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add(getCellValue(row, 1));
                 dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
                 dataLine.add(fillC(row));
-                dataLine.add(getCellValue(row, 8));
+                dataLine.add(fillD(row));
                 dataLine.add(EMPTY);
                 dataLine.add(REFRIGERATOR);
                 dataLine.add(EMPTY);
@@ -91,7 +91,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add(EMPTY);
                 dataLine.add(EMPTY);
                 dataLine.add(EMPTY);
-                dataLine.add(getCellValue(row, 5).replaceAll(SPACE, EMPTY));
+                dataLine.add(getCarNumber(row));
                 dataLine.add(EMPTY);
                 dataLine.add(fillAE(row));
                 dataLine.add(EMPTY);
@@ -106,6 +106,19 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                     + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
         }
         return data;
+    }
+
+    private String getCarNumber(int row) {
+        return getCellValue(row, 5).replaceAll(SPACE, EMPTY);
+    }
+
+    private String fillD(int row) {
+        val companyName = getCellValue(row, 8);
+        if (companyName.equals(COMPANY_OOO_LENTA)
+                && (dictionaryService.getCarNumberOrElse(getCarNumber(row), null) != null)) {
+            return COMPANY_OOO_LENTA_HIRING;
+        }
+        return companyName;
     }
 
     private String fillL(int row) {

@@ -1,10 +1,7 @@
 package com.example.advantumconverter.service.database;
 
 import com.example.advantumconverter.exception.CarNotFoundException;
-import com.example.advantumconverter.model.jpa.Car;
-import com.example.advantumconverter.model.jpa.CarRepository;
-import com.example.advantumconverter.model.jpa.LentaDictionary;
-import com.example.advantumconverter.model.jpa.LentaDictionaryRepository;
+import com.example.advantumconverter.model.jpa.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -24,8 +21,12 @@ public class DictionaryService {
     @Autowired
     private LentaDictionaryRepository lentaDictionaryRepository;
 
+    @Autowired
+    private CarNumberRepository carNumberRepository;
+
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
+    private Set<CarNumber> carNumbers;
 
     @PostConstruct
     public void init() {
@@ -40,15 +41,25 @@ public class DictionaryService {
         val carsIter = carRepository.findAll();
         cars = new HashSet<>();
         carsIter.forEach(cars::add);
+
+        val carNumbersIter = carNumberRepository.findAll();
+        carNumbers = new HashSet<>();
+        carNumbersIter.forEach(carNumbers::add);
     }
 
     public Car getCar(final String carName) {
         return cars.stream().filter(e -> e.getCarName().equals(carName))
                 .findFirst().orElseThrow(() -> new CarNotFoundException(carName));
     }
+
     public Car getCarOrElse(final String carName, final Car car) {
         return cars.stream().filter(e -> e.getCarName().equals(carName))
                 .findFirst().orElse(car);
+    }
+
+    public CarNumber getCarNumberOrElse(final String carNumberName, final CarNumber carNumber) {
+        return carNumbers.stream().filter(e -> e.getCarNumber().equals(carNumberName))
+                .findFirst().orElse(carNumber);
     }
 
     public LentaDictionary getDictionary(final long lentaDictionaryKey) {
