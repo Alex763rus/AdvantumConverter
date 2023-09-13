@@ -14,7 +14,7 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM;
 import static com.example.advantumconverter.enums.State.CONVERT_FILE_AGROPROM;
 
-@Component
+@Component(COMMAND_CONVERT_AGROPROM)
 @Slf4j
 public class MenuConvertAgroprom extends MenuConverterBase {
 

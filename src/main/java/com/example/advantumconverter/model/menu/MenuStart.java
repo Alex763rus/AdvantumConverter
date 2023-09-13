@@ -18,7 +18,7 @@ import static com.example.advantumconverter.enums.Emoji.BLUSH;
 import static org.example.tgcommons.constant.Constant.TextConstants.*;
 import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
-@Component
+@Component(COMMAND_START)
 @Slf4j
 public class MenuStart extends Menu {
 
@@ -34,30 +34,17 @@ public class MenuStart extends Menu {
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
         String messageText = EMPTY;
         switch (user.getUserRole()) {
-            case NEED_SETTING:
+            case NEED_SETTING -> {
                 log.warn("ожидает обработки новый пользователь ChatId:" + update.getMessage().getChatId());
                 messageText = "Добрый день, " + prepareShield(user.getNameOrFirst()) + "! " + BLUSH.getCode() + "\n\nВы успешно зарегистрированы в системе.\nОжидайте, после настройки вашего аккаунта вам придет сообщение";
-                break;
-            case BLOCKED:
-                messageText = "Доступ запрещен";
-            case EMPLOYEE:
-                messageText = getEmployeeMenuText(user);
-                break;
-            case MAIN_EMPLOYEE:
-                messageText = getMainEmployeeMenuText(user);
-                break;
-            case SUPPORT:
-                messageText = getSupportMenuText(user);
-                break;
-            case ADMIN:
-                messageText = getAdminMenuText(user);
-                break;
-
+            }
+            case BLOCKED -> messageText = "Доступ запрещен";
+            case EMPLOYEE -> messageText = getEmployeeMenuText(user);
+            case MAIN_EMPLOYEE -> messageText = getMainEmployeeMenuText(user);
+            case SUPPORT -> messageText = getSupportMenuText(user);
+            case ADMIN -> messageText = getAdminMenuText(user);
         }
-        return SendMessageWrap.init()
-                        .setChatIdLong(user.getChatId())
-                        .setText(EmojiParser.parseToUnicode(messageText))
-                        .build().createMessageList();
+        return createMessageList(user, EmojiParser.parseToUnicode(messageText));
     }
 
     private String getMainEmployeeMenuText(User user) {

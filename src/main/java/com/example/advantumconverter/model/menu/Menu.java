@@ -6,7 +6,6 @@ import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.service.database.UserService;
 import com.example.advantumconverter.service.excel.ExcelGenerateService;
 import com.example.advantumconverter.service.excel.FileUploadService;
-import com.example.advantumconverter.service.menu.ButtonService;
 import com.example.advantumconverter.service.menu.StateService;
 import com.example.advantumconverter.service.support.SupportService;
 import jakarta.persistence.MappedSuperclass;
@@ -34,9 +33,6 @@ public abstract class Menu implements MenuActivity {
 
     @Autowired
     protected ExcelGenerateService excelGenerateService;
-
-    @Autowired
-    protected ButtonService buttonService;
 
     @Autowired
     protected CompanyRepository companyRepository;

@@ -10,11 +10,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM_DETAIL;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM_DETAIL;
 import static com.example.advantumconverter.enums.State.CONVERT_FILE_AGROPROM_DETAIL;
 
-@Component
+@Component(COMMAND_CONVERT_AGROPROM_DETAIL)
 @Slf4j
 public class MenuConvertAgropromDetail extends MenuConverterBase {
 

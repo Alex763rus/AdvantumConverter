@@ -11,11 +11,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOGORODSK;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_COFIX;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_COFIX;
 import static com.example.advantumconverter.enums.State.CONVERT_FILE_COFIX;
 
-@Component
+@Component(COMMAND_CONVERT_COFIX)
 @Slf4j
 public class MenuConvertCofix extends MenuConverterBase {
 

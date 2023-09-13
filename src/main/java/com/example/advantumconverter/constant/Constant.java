@@ -60,4 +60,13 @@ public final class Constant {
         public static final String COMMAND_SETTING_NEW_USER = "/setting_user";
     }
 
+    @NoArgsConstructor(access = PRIVATE)
+    public final class Exception {
+        public static final String CAR_NOT_FOUND = "Машина не найдена в настройках: ";
+
+        public static final String CONVERT_PROCESSING_ERROR = "Ошибка обработки файла: ";
+
+        public static final String EXCEL_GENERATION_ERROR = "Ошибка формирования файла: ";
+    }
+
 }

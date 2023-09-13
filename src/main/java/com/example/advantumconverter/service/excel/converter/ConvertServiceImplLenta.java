@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
@@ -115,7 +116,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private String fillD(int row) {
         val companyName = getCellValue(row, 8);
         if (companyName.equals(COMPANY_OOO_LENTA)
-                && (dictionaryService.getCarNumberOrElse(getCarNumber(row), null) != null)) {
+                && (dictionaryService.getCarNumberOrElse(getCarNumber(row), null) == null)) {
             return COMPANY_OOO_LENTA_HIRING;
         }
         return companyName;
@@ -160,8 +161,13 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
 
+    private Date getExpectedTimeIncome(int row) throws ParseException {
+        val date = getCellValue(row, 9);
+        return convertDateFormat(date, date.contains(".") ? TEMPLATE_DATE_TIME_DOT : TEMPLATE_DATE_TIME_SLASH);
+    }
+
     private String fillS(int row) throws ParseException {
-        val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
+        val date = convertDateFormat(getExpectedTimeIncome(row), TEMPLATE_DATE_DOT);
         val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
@@ -172,7 +178,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillT(int row) throws ParseException {
-        val date = convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_TIME_DOT);
+        val date = getExpectedTimeIncome(row);
         val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {

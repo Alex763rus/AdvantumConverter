@@ -1,10 +1,13 @@
 package com.example.advantumconverter.model.menu.admin;
 
 import com.example.advantumconverter.enums.UserRole;
+import com.example.advantumconverter.model.jpa.Company;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
 import com.example.advantumconverter.model.menu.Menu;
 import lombok.extern.slf4j.Slf4j;
+import org.example.tgcommons.model.button.Button;
+import org.example.tgcommons.model.button.ButtonsDescription;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,14 +17,13 @@ import lombok.val;
 
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_SETTING_NEW_USER;
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
+import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.UserRole.*;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
-@Component
+@Component(COMMAND_SETTING_NEW_USER)
 @Slf4j
 public class MenuSettingUser extends Menu {
 
@@ -81,17 +83,15 @@ public class MenuSettingUser extends Menu {
         val company = companyRepository.findCompanyByCompanyId(Long.parseLong(update.getCallbackQuery().getData()));
         val userSetting = userTmp.get(user);
         userSetting.setCompany(company);
-        val btns = new LinkedHashMap<String, String>();
-        btns.put(BLOCKED.name(), BLOCKED.getTitle());
-        btns.put(EMPLOYEE.name(), EMPLOYEE.getTitle());
-        btns.put(MAIN_EMPLOYEE.name(), MAIN_EMPLOYEE.getTitle());
-        btns.put(SUPPORT.name(), SUPPORT.getTitle());
         stateService.setState(user, ADMIN_SETTING_WAIT_ROLE);
-        return SendMessageWrap.init()
-                        .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
-                        .setText("Укажите роль:")
-                        .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createMessageList();
+
+        val buttons = new ArrayList<Button>();
+        buttons.add(Button.init().setKey(BLOCKED.name()).setValue(BLOCKED.getTitle()).build());
+        buttons.add(Button.init().setKey(EMPLOYEE.name()).setValue(EMPLOYEE.getTitle()).build());
+        buttons.add(Button.init().setKey(MAIN_EMPLOYEE.name()).setValue(MAIN_EMPLOYEE.getTitle()).build());
+        buttons.add(Button.init().setKey(SUPPORT.name()).setValue(SUPPORT.getTitle()).build());
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
+        return createMessageList(user, "Укажите роль:", buttonsDescription);
     }
 
     private List<PartialBotApiMethod> adminSettingUsernameLogic(User user, Update update) {
@@ -101,36 +101,29 @@ public class MenuSettingUser extends Menu {
         val userSetting = userRepository.findUserByChatId(Long.parseLong(update.getCallbackQuery().getData()));
         userTmp.put(user, userSetting);
         val company = companyRepository.findAll();
-        val btns = new LinkedHashMap<String, String>();
-        for (int i = 0; i < company.size(); ++i) {
-            btns.put(String.valueOf(company.get(i).getCompanyId()), company.get(i).getCompanyName());
+        val buttons = new ArrayList<Button>();
+        for (Company value : company) {
+            buttons.add(Button.init().setKey(String.valueOf(value.getCompanyId()))
+                    .setValue(value.getCompanyName()).build());
         }
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         stateService.setState(user, ADMIN_SETTING_WAIT_COMPANY);
-        return SendMessageWrap.init()
-                        .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
-                        .setText("Укажите компанию:")
-                        .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createMessageList();
+        return createMessageList(user, "Укажите компанию:", buttonsDescription);
     }
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
         val users = userRepository.findUserByUserRole(NEED_SETTING);
         if ((users).size() == 0) {
-            return SendMessageWrap.init()
-                    .setChatIdLong(user.getChatId())
-                    .setText("Отсутствуют контакты, требующие настройки")
-                    .build().createMessageList();
+            return createMessageList(user, "Отсутствуют контакты, требующие настройки");
         }
-        val btns = new LinkedHashMap<String, String>();
-        for (int i = 0; i < users.size(); ++i) {
-            btns.put(String.valueOf(users.get(i).getChatId()), users.get(i).getNameOrFirst());
+        val buttons = new ArrayList<Button>();
+        for (User value : users) {
+            buttons.add(Button.init().setKey(String.valueOf(value.getChatId()))
+                    .setValue(value.getNameOrFirst()).build());
         }
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         stateService.setState(user, ADMIN_SETTING_WAIT_USERNAME);
-        return SendMessageWrap.init()
-                        .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Настроить доступ контакту:")
-                        .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createMessageList();
+        return createMessageList(user, "Настроить доступ контакту:", buttonsDescription);
     }
 
     @Override

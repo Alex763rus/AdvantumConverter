@@ -4,6 +4,8 @@ import com.example.advantumconverter.model.jpa.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
+import org.example.tgcommons.model.button.Button;
+import org.example.tgcommons.model.button.ButtonsDescription;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
-@Component
+@Component(COMMAND_HISTORIC_ACTION)
 @Slf4j
 public class MenuHistoryAction extends Menu {
 
@@ -41,15 +43,12 @@ public class MenuHistoryAction extends Menu {
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
         try {
-            switch (stateService.getState(user)) {
-                case FREE:
-                    return freelogic(user, update);
-                case HISTORY_WAIT_USER:
-                    return historyWaitUserLogic(user, update);
-                case HISTORY_WAIT_COMPANY:
-                    return historyWaitCompanyLogic(user, update);
-            }
-            return errorMessageDefault(update);
+            return switch (stateService.getState(user)) {
+                case FREE -> freelogic(user, update);
+                case HISTORY_WAIT_USER -> historyWaitUserLogic(user, update);
+                case HISTORY_WAIT_COMPANY -> historyWaitCompanyLogic(user, update);
+                default -> errorMessageDefault(update);
+            };
         } catch (Exception ex) {
             log.error(ex.toString());
             return errorMessage(update, ex.toString());
@@ -100,41 +99,30 @@ public class MenuHistoryAction extends Menu {
             answer.append(NEW_LINE).append(NEW_LINE);
         }
         stateService.setState(user, FREE);
-        return SendMessageWrap.init()
-                .setChatIdLong(user.getChatId())
-                .setText(answer.toString())
-                .build().createMessageList();
+        return createMessageList(user, answer.toString());
     }
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
-        switch (user.getUserRole()) {
-            case MAIN_EMPLOYEE:
-                return getFreeLogicMainEmployee(user, update);
-            case SUPPORT:
-                return gerFreeLogicSupport(user, update);
-            default:
-                return errorMessage(update, "У вашей роли не должно быть сюда доступа.." + user.getUserRole());
-        }
+        return switch (user.getUserRole()) {
+            case MAIN_EMPLOYEE -> getFreeLogicMainEmployee(user, update);
+            case SUPPORT -> gerFreeLogicSupport(user, update);
+            default -> errorMessage(update, "У вашей роли не должно быть сюда доступа.." + user.getUserRole());
+        };
     }
 
     private List<PartialBotApiMethod> gerFreeLogicSupport(User user, Update update) {
         val companys = companyRepository.findAll();
         if (companys.size() == 0) {
-            return SendMessageWrap.init()
-                    .setChatIdLong(user.getChatId())
-                    .setText("Компании отсутствуют")
-                    .build().createMessageList();
+            return createMessageList(user, "Компании отсутствуют");
         }
-        val btns = new LinkedHashMap<String, String>();
-        for (int i = 0; i < companys.size(); ++i) {
-            btns.put(String.valueOf(companys.get(i).getCompanyId()), prepareShield(companys.get(i).getCompanyName()));
+        val buttons = new ArrayList<Button>();
+        for (Company company : companys) {
+            buttons.add(Button.init().setKey(String.valueOf(company.getCompanyId()))
+                    .setValue(prepareShield(company.getCompanyName())).build());
         }
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         stateService.setState(user, HISTORY_WAIT_COMPANY);
-        return SendMessageWrap.init()
-                .setChatIdLong(update.getMessage().getChatId())
-                .setText("Выберите компанию:")
-                .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                .build().createMessageList();
+        return createMessageList(user, "Выберите компанию:", buttonsDescription);
     }
 
     private List<PartialBotApiMethod> historyWaitCompanyLogic(User user, Update update) {
@@ -145,6 +133,7 @@ public class MenuHistoryAction extends Menu {
         val users = userRepository.findUserByCompany(company);
         return showUsers(user, users);
     }
+
     private List<PartialBotApiMethod> getFreeLogicMainEmployee(User user, Update update) {
         val users = userRepository.findUserByCompanyAndAndUserRole(user.getCompany(), EMPLOYEE);
         return showUsers(user, users);
@@ -152,22 +141,18 @@ public class MenuHistoryAction extends Menu {
 
     private List<PartialBotApiMethod> showUsers(User user, List<User> users) {
         if (users.size() == 0) {
-            return SendMessageWrap.init()
-                    .setChatIdLong(user.getChatId())
-                    .setText("В выбранной компании пользователи не найдены")
-                    .build().createMessageList();
+            return createMessageList(user, "В выбранной компании пользователи не найдены");
         }
         stateService.setState(user, HISTORY_WAIT_USER);
-        val btns = new LinkedHashMap<String, String>();
-        for (int i = 0; i < users.size(); ++i) {
-            btns.put(String.valueOf(users.get(i).getChatId()), prepareShield(users.get(i).getNameOrFirst()));
+        val buttons = new ArrayList<Button>();
+        for (User value : users) {
+            buttons.add(Button.init().setKey(String.valueOf(value.getChatId()))
+                    .setValue(prepareShield(value.getNameOrFirst())).build());
         }
-        return SendMessageWrap.init()
-                .setChatIdLong(user.getChatId())
-                .setText("Выберите сотрудника:")
-                .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                .build().createMessageList();
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
+        return createMessageList(user, "Выберите сотрудника:", buttonsDescription);
     }
+
     @Override
     public String getDescription() {
         return "Активность пользователя";

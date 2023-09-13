@@ -4,6 +4,8 @@ import com.example.advantumconverter.model.jpa.FaqRepository;
 import com.example.advantumconverter.model.jpa.User;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.button.Button;
+import org.example.tgcommons.model.button.ButtonsDescription;
 import org.example.tgcommons.model.wrapper.SendDocumentWrap;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_FA
 import static com.example.advantumconverter.enums.State.FAQ_WAIT_QUESTION;
 import static com.example.advantumconverter.enums.State.FREE;
 
-@Component
+@Component(COMMAND_FAQ)
 @Slf4j
 public class MenuFaq extends Menu {
 
@@ -75,21 +77,16 @@ public class MenuFaq extends Menu {
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
         val faq = faqRepository.findAll();
         if (faq.size() == 0) {
-            return SendMessageWrap.init()
-                    .setChatIdLong(user.getChatId())
-                    .setText("Отсутствуют данные для faq, обратитесь к администратору")
-                    .build().createMessageList();
+            return createMessageList(user, "Отсутствуют данные для faq, обратитесь к администратору");
         }
-        val btns = new LinkedHashMap<String, String>();
-        for (int i = 0; i < faq.size(); ++i) {
-            btns.put(String.valueOf(faq.get(i).getFaqId()), faq.get(i).getQuestion());
+        val buttons = new ArrayList<Button>();
+        for (com.example.advantumconverter.model.jpa.Faq value : faq) {
+            buttons.add(Button.init().setKey(String.valueOf(value.getFaqId()))
+                    .setValue(value.getQuestion()).build());
         }
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         stateService.setState(user, FAQ_WAIT_QUESTION);
-        return SendMessageWrap.init()
-                .setChatIdLong(update.getMessage().getChatId())
-                .setText("Выберете интересующий вопрос:")
-                .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                .build().createMessageList();
+        return createMessageList(user, "Выберете интересующий вопрос:", buttonsDescription);
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_RELOAD_DICTIONARY;
 
-@Component
+@Component(COMMAND_RELOAD_DICTIONARY)
 @Slf4j
 public class MenuReloadDictionary extends Menu {
 

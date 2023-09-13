@@ -1,6 +1,6 @@
 package com.example.advantumconverter.service.menu;
 
-import com.example.advantumconverter.model.dictionary.security.Security;
+import com.example.advantumconverter.service.SecurityService;
 import com.example.advantumconverter.model.menu.*;
 import com.example.advantumconverter.model.menu.admin.MenuSettingUser;
 import com.example.advantumconverter.model.menu.converter.*;
@@ -12,6 +12,7 @@ import com.example.advantumconverter.service.database.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.constant.Constant;
 import org.example.tgcommons.model.wrapper.EditMessageTextWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,6 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,71 +42,21 @@ public class MenuService {
 
 
     @Autowired
-    private MenuHistoryAction menuHistoryAction;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
-    private Security security;
+    private SecurityService securityService;
 
-    @Autowired
-    private MenuConvertBogorodsk menuConvertBogorodsk;
-    @Autowired
-    private MenuConvertCofix menuConvertCofix;
-
-    @Autowired
-    private MenuConvertAgroprom menuConvertAgroprom;
-
-    @Autowired
-    private MenuConvertAgropromDetail menuConvertAgropromDetail;
-    @Autowired
-    private MenuConvertSamokat menuConvertSamokat;
-
-    @Autowired
-    private MenuConvertDominos menuConvertDominos;
-    @Autowired
-    private MenuConvertLenta menuConvertLenta;
-
-    @Autowired
-    private MenuSettingUser menuSettingUser;
-
-    @Autowired
-    private MenuOpenTask menuOpenTask;
-
-    @Autowired
-    private MenuMyTask menuMyTask;
-
-    @Autowired
-    private MenuReloadDictionary menuReloadDictionary;
-
-    @Autowired
-    private MenuFaq menuFaq;
     @Autowired
     private MenuStart menuStart;
-
-    @PostConstruct
-    public void init() {
-        // Список всех возможных обработчиков меню:
-        security.setMainMenu(List.of(menuStart, menuConvertBogorodsk, menuConvertCofix, menuConvertSamokat
-                        , menuConvertLenta, menuConvertDominos, menuSettingUser, menuFaq, menuOpenTask, menuMyTask, menuHistoryAction
-                        , menuReloadDictionary, menuConvertAgroprom, menuConvertAgropromDetail
-                )
-        );
-    }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {
         val user = userService.getUser(update);
         MenuActivity menuActivity = null;
         if (update.hasMessage()) {
-            for (val menu : security.getMainMenu()) {
-                if (menu.getMenuComand().equals(update.getMessage().getText())) {
-                    if (security.checkAccess(user, menu.getMenuComand())) {
-                        menuActivity = menu;
-                    } else {
-                        menuActivity = menuActivityDefault;
-                    }
-                }
+            val menu = securityService.getMenuActivity(update.getMessage().getText());
+            if (menu != null) {
+                menuActivity = securityService.checkAccess(user, menu.getMenuComand()) ? menu : menuActivityDefault;
             }
         }
         if (menuActivity != null) {
@@ -146,11 +96,8 @@ public class MenuService {
     }
 
     public List<BotCommand> getMainMenuComands() {
-        val listofCommands = new ArrayList<BotCommand>();
-        security.getMainMenu().stream()
-                .filter(e -> e.getMenuComand().equals(COMMAND_START))
-                .forEach(e -> listofCommands.add(new BotCommand(e.getMenuComand(), e.getDescription())));
-        return listofCommands;
+        val menu = securityService.getMenuActivity(Constant.Command.COMMAND_START);
+        return List.of(new BotCommand(menu.getMenuComand(), menu.getDescription()));
     }
 
     private String getChatId(Update update) {

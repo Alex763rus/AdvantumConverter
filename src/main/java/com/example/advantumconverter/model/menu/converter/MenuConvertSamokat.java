@@ -11,11 +11,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SAMOKAT;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SAMOKAT;
 import static com.example.advantumconverter.enums.State.CONVERT_FILE_SAMOKAT;
 
-@Component
+@Component(COMMAND_CONVERT_SAMOKAT)
 @Slf4j
 public class MenuConvertSamokat extends MenuConverterBase {
 

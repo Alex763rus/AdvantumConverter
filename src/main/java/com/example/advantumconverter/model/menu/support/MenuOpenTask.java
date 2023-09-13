@@ -20,7 +20,7 @@ import static com.example.advantumconverter.enums.SupportTaskState.IN_PROGRESS;
 import static com.example.advantumconverter.enums.SupportTaskState.NEW;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 
-@Component
+@Component(COMMAND_SHOW_OPEN_TASK)
 @Slf4j
 public class MenuOpenTask extends MenuTaskBase {
 

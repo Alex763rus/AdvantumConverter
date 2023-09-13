@@ -2,7 +2,6 @@ package com.example.advantumconverter.model.menu;
 
 import com.example.advantumconverter.model.jpa.User;
 import lombok.extern.slf4j.Slf4j;
-import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,10 +22,7 @@ public class MenuDefault extends Menu {
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        return SendMessageWrap.init()
-                        .setChatIdLong(update.getMessage().getChatId())
-                        .setText("Не найдена доступная команда с именем: " + prepareShield(update.getMessage().getText()))
-                        .build().createMessageList();
+        return createMessageList(user, "Не найдена доступная команда с именем: " + prepareShield(update.getMessage().getText()));
     }
 
     @Override

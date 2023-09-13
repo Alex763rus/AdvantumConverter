@@ -6,14 +6,15 @@ import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.menu.Menu;
 import jakarta.persistence.MappedSuperclass;
 import lombok.val;
-import org.example.tgcommons.model.wrapper.SendMessageWrap;
+import org.example.tgcommons.model.button.Button;
+import org.example.tgcommons.model.button.ButtonsDescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,21 +47,16 @@ public abstract class MenuTaskBase extends Menu {
     protected List<PartialBotApiMethod> createMenuFromUserTasks(User user, Update update, List<SupportTask> supportTasks, String mainMessage, String notFoundTask) {
         if (supportTasks.size() == 0) {
             stateService.setState(user, FREE);
-            return SendMessageWrap.init()
-                    .setChatIdLong(user.getChatId())
-                    .setText(notFoundTask)
-                    .build().createMessageList();
+            return createMessageList(user, notFoundTask);
         }
-        val btns = new LinkedHashMap<String, String>();
-        for (int i = 0; i < supportTasks.size(); ++i) {
-            btns.put(String.valueOf(supportTasks.get(i).getSupportTaskId()), prepareShield(String.valueOf(prepareTaskId(supportTasks.get(i).getSupportTaskId()))));
+        val buttons = new ArrayList<Button>();
+        for (SupportTask supportTask : supportTasks) {
+            buttons.add(Button.init().setKey(String.valueOf(supportTask.getSupportTaskId()))
+                    .setValue(prepareShield(String.valueOf(prepareTaskId(supportTask.getSupportTaskId())))).build());
         }
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         stateService.setState(user, SUPPORT_WAIT_CHOOSE_TASK);
-        return SendMessageWrap.init()
-                        .setChatIdLong(update.getMessage().getChatId())
-                        .setText(mainMessage)
-                        .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createMessageList();
+        return createMessageList(user, mainMessage, buttonsDescription);
     }
 
 }

@@ -4,6 +4,8 @@ import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.button.Button;
+import org.example.tgcommons.model.button.ButtonsDescription;
 import org.example.tgcommons.model.wrapper.SendDocumentWrap;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Component;
@@ -24,9 +26,10 @@ import static com.example.advantumconverter.enums.State.*;
 import static com.example.advantumconverter.enums.SupportTaskState.DONE;
 import static com.example.advantumconverter.enums.SupportTaskState.IN_PROGRESS;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 import static org.example.tgcommons.utils.StringUtils.prepareTaskId;
 
-@Component
+@Component(COMMAND_SHOW_MY_TASK)
 @Slf4j
 public class MenuMyTask extends MenuTaskBase {
 
@@ -142,21 +145,17 @@ public class MenuMyTask extends MenuTaskBase {
         val task = supportTaskRepository.findById(Long.parseLong(update.getCallbackQuery().getData())).get();
         userTmp.put(user, task);
         val inputFile = new InputFile(fileUploadService.uploadFileFromServer(task.getFilePath()));
-        val btns = new LinkedHashMap<String, String>();
-        btns.put(SUPPORT_WAIT_RESOLVE_TASK.name(), "Выполнить");
-        btns.put(CANCEL.name(), "Отмена");
+        val buttons = new ArrayList<Button>();
+        buttons.add(Button.init().setKey(SUPPORT_WAIT_RESOLVE_TASK.name()).setValue("Выполнить").build());
+        buttons.add(Button.init().setKey(CANCEL.name()).setValue("Отмена").build());
+        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         stateService.setState(user, SUPPORT_WAIT_MODE_WORK);
-        return List.of(SendMessageWrap.init().setChatIdLong(user.getChatId())
-                        .setText(getTaskInfo(task))
-                        .build().createMessage(),
+
+        return List.of(createMessage(user, getTaskInfo(task)),
                 SendDocumentWrap.init().setChatIdLong(user.getChatId())
                         .setDocument(inputFile)
                         .build().createMessage(),
-                SendMessageWrap.init()
-                        .setChatIdLong(user.getChatId())
-                        .setText("Выполнить задачу:")
-                        .setInlineKeyboardMarkup(buttonService.createVerticalMenu(btns))
-                        .build().createMessage()
+                createMessage(user, "Выполнить задачу:", buttonsDescription)
         );
     }
 
