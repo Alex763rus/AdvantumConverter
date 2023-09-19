@@ -82,8 +82,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add(EMPTY);
                 dataLine.add(EMPTY);
                 dataLine.add(EMPTY);
-                dataLine.add(fillS(row));
-                dataLine.add(fillT(row));
+                dataLine.add(fillS(row, isStart));
+                dataLine.add(fillT(row, isStart));
                 dataLine.add(String.valueOf(getCode(row)));
                 dataLine.add(fillU(row));
                 dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
@@ -166,8 +166,12 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return convertDateFormat(date, date.contains(".") ? TEMPLATE_DATE_TIME_DOT : TEMPLATE_DATE_TIME_SLASH);
     }
 
-    private String fillS(int row) throws ParseException {
-        val date = convertDateFormat(getExpectedTimeIncome(row), TEMPLATE_DATE_DOT);
+    private String fillS(int row, boolean isStart) throws ParseException {
+        val dateTime = getExpectedTimeIncome(row);
+        if (isStart) {
+            return convertDateFormat(dateTime, TEMPLATE_DATE_TIME_DOT);
+        }
+        val date = convertDateFormat(dateTime, TEMPLATE_DATE_DOT);
         val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
@@ -177,16 +181,20 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return date + SPACE + time;
     }
 
-    private String fillT(int row) throws ParseException {
-        val date = getExpectedTimeIncome(row);
+    private String fillT(int row, boolean isStart) throws ParseException {
+        val dateTime = getExpectedTimeIncome(row);
+        if (isStart) {
+            val result = DateUtils.addMinutes(dateTime, 90);
+            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
+        }
         val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
-            return convertDateFormat(date, TEMPLATE_DATE_DOT) + " 22:00";
+            return convertDateFormat(dateTime, TEMPLATE_DATE_DOT) + " 22:00";
         }
         val timeStock = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME);
         val timeShop = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME);
-        val dateResult = timeShop.after(timeStock) ? DateUtils.addDays(date, 1) : date;
+        val dateResult = timeShop.after(timeStock) ? DateUtils.addDays(dateTime, 1) : dateTime;
         val dateResultString = convertDateFormat(dateResult, TEMPLATE_DATE_DOT);
         return dateResultString + SPACE + lentaDictionary.getTimeStock();
     }
