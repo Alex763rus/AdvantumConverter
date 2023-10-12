@@ -24,9 +24,13 @@ public class DictionaryService {
     @Autowired
     private CarNumberRepository carNumberRepository;
 
+    @Autowired
+    private LentaCarRepository lentaCarRepository;
+
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
     private Set<CarNumber> carNumbers;
+    private Set<LentaCar> lentaCars;
 
     @PostConstruct
     public void init() {
@@ -45,6 +49,10 @@ public class DictionaryService {
         val carNumbersIter = carNumberRepository.findAll();
         carNumbers = new HashSet<>();
         carNumbersIter.forEach(carNumbers::add);
+
+        val lentaCarIter = lentaCarRepository.findAll();
+        lentaCars = new HashSet<>();
+        lentaCarIter.forEach(lentaCars::add);
     }
 
     public Car getCar(final String carName) {
@@ -60,6 +68,11 @@ public class DictionaryService {
     public CarNumber getCarNumberOrElse(final String carNumberName, final CarNumber carNumber) {
         return carNumbers.stream().filter(e -> e.getCarNumber().equals(carNumberName))
                 .findFirst().orElse(carNumber);
+    }
+
+    public LentaCar getLentaCarOrElse(final String carNumberName, final LentaCar lentaCar) {
+        return lentaCars.stream().filter(e -> e.getCarNumber().equals(carNumberName))
+                .findFirst().orElse(lentaCar);
     }
 
     public LentaDictionary getDictionary(final long lentaDictionaryKey) {

@@ -41,7 +41,7 @@ public class ConvertServiceImplAgropromDetail extends ConvertServiceBase impleme
         try {
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW);
-            val dateB = convertDateFormat(getCellValue(row, 17), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
+            val dateB = convertDateFormat(getCellValue(row, 15), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_DOT);
             for (; row <= LAST_ROW; ++row) {
                 dataLine = new ArrayList<String>();
                 dataLine.add(getCellValue(row, 1));
