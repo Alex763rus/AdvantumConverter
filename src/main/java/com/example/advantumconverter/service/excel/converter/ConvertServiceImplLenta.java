@@ -2,6 +2,7 @@ package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.model.jpa.LentaDictionary;
 import lombok.val;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -44,6 +45,9 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private String START_ROW_TEXT = "ТК/РЦ";
 
 
+    private Date stockIn = null; //из файла, ожидаемая дата прибытия, дата въезда на погрузку
+    private Date stockOut = null;           //дата выезда с погрузки
+
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
@@ -54,7 +58,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         int row = START_ROW;
         int counterCopy = 1;
         ArrayList<String> dataLine = new ArrayList();
-        Date expectedDateIncome = null;
+
         try {
 
             LAST_ROW = getLastRow(START_ROW);
@@ -62,7 +66,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
             for (; row <= LAST_ROW; ++row) {
                 val isStart = isStart(row);
                 if (isStart) {
-                    expectedDateIncome = getExpectedTimeIncome(row);
+                    stockIn = getExpectedTimeIncome(row);
+                    stockOut = DateUtils.addHours(stockIn, 3);
                     counterCopy = 1;
                 }
                 dataLine = new ArrayList<>();
@@ -84,8 +89,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 dataLine.add(EMPTY);
                 dataLine.add(EMPTY);
                 dataLine.add(EMPTY);
-                dataLine.add(fillS(expectedDateIncome, row, isStart));
-                dataLine.add(fillT(expectedDateIncome, row, isStart));
+                dataLine.add(fillS(row, isStart));
+                dataLine.add(fillT(row, isStart));
                 dataLine.add(String.valueOf(getCode(row)));
                 dataLine.add(fillU(row));
                 dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
@@ -111,21 +116,73 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return data;
     }
 
+    private String fillS(int row, boolean isStart) throws ParseException {
+        if (isStart) {
+            return convertDateFormat(stockIn, TEMPLATE_DATE_TIME_DOT);
+        }
+        val date = convertDateFormat(stockIn, TEMPLATE_DATE_DOT);
+        val code = getCode(row);
+        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        if (lentaDictionary == null) {
+            return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
+        }
+        val timeShop = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME);
+        val timeStock = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME);
+        val dateTimeS = timeShop.after(timeStock) ? DateUtils.addDays(stockIn, -1) : stockIn;
+        //ЕСЛИ РАСЧИТАННОЕ ВРЕМЯ УБЫТИЯ меньше чем дата прибытия на погрузку, то плюсуем 1 день и в S и в T
+        val dateTimeT = calculateDateTimeT(row, lentaDictionary);
+        val result = dateTimeT.before(stockIn) ? DateUtils.addDays(dateTimeS, 1) : dateTimeS;
+        //Если второе время меньше первого, то у первого времени отнимать 1 день
+        val dateTimeResultT = convertDateFormat(fillT(row, isStart), TEMPLATE_DATE_TIME_DOT);
+        val answer = dateTimeResultT.before(result) ? DateUtils.addDays(result, -1) : result;
+
+        return convertDateFormat(answer, TEMPLATE_DATE_TIME_DOT);
+    }
+
+    private String fillT(int row, boolean isStart) throws ParseException {
+        if (isStart) {
+            val result = DateUtils.addHours(stockIn, 3);
+            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
+        }
+        val code = getCode(row);
+        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        if (lentaDictionary == null) {
+            return convertDateFormat(stockIn, TEMPLATE_DATE_DOT) + " 22:00";
+        }
+        //ЕСЛИ РАСЧИТАННОЕ ВРЕМЯ УБЫТИЯ меньше чем дата прибытия на погрузку, то плюсуем 1 день и в S и в T
+        val dateTimeT = calculateDateTimeT(row, lentaDictionary);
+        val result = dateTimeT.before(stockIn) ? DateUtils.addDays(dateTimeT, 1) : dateTimeT;
+        return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
+    }
+
+    private Date calculateDateTimeT(int row, LentaDictionary lentaDictionary) throws ParseException {
+        val timeStock = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME, TEMPLATE_TIME);
+        val dateResultString = convertDateFormat(stockIn, TEMPLATE_DATE_DOT);
+        val dateTimeResult = dateResultString + SPACE + (isLentaCarAndTemperate(row) ? "18:00" : timeStock);
+        return convertDateFormat(dateTimeResult, TEMPLATE_DATE_TIME_DOT);
+    }
+
+    private boolean isLentaCarAndTemperate(int row) {
+        val carName = getCarName(row);
+        val car = dictionaryService.getCarOrElse(carName, null);
+        return carName.length() > 5 && car != null && car.getTemperatureMin() <= -18;
+    }
+
     private String getCarNumber(int row) {
         return getCellValue(row, 5).replaceAll(SPACE, EMPTY);
     }
 
     private String fillD(int row) {
         val companyName = getCellValue(row, 8);
-        if (companyName.equals(COMPANY_OOO_LENTA)
-                && (dictionaryService.getLentaCarOrElse(getCarNumber(row), null) == null)) {
+        if (companyName.toUpperCase().contains("ЛЕНТА")
+                && (dictionaryService.getCarNumberOrElse(getCarNumber(row), null) == null)) {
             return COMPANY_OOO_LENTA_HIRING;
         }
         return companyName;
     }
 
     private String fillL(int row) {
-        val carName = getCellValue(row, 3).replaceAll("\\\\", EMPTY);
+        val carName = getCarName(row);
         val car = dictionaryService.getCarOrElse(carName, null);
         if (carName.length() < 5 || car == null) {
             return "2";
@@ -134,7 +191,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillM(int row) {
-        val carName = getCellValue(row, 3).replaceAll("\\\\", EMPTY);
+        val carName = getCarName(row);
         val car = dictionaryService.getCarOrElse(carName, null);
         if (carName.length() < 5 || car == null) {
             return "6";
@@ -148,7 +205,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         if (lentaCar != null) {
             return String.valueOf(lentaCar.getTonnage());
         }
-        val carName = getCellValue(row, 3).replaceAll("\\\\", EMPTY);
+        val carName = getCarName(row);
         if (carName.length() < 5) {
             val doubleValue = Double.parseDouble(carName.replaceAll(",", ".")) * 1000;
             return String.valueOf((int) doubleValue);
@@ -173,36 +230,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return convertDateFormat(date, date.contains(".") ? TEMPLATE_DATE_TIME_DOT : TEMPLATE_DATE_TIME_SLASH);
     }
 
-    private String fillS(Date expectedDateIncome, int row, boolean isStart) throws ParseException {
-        if (isStart) {
-            return convertDateFormat(expectedDateIncome, TEMPLATE_DATE_TIME_DOT);
-        }
-        val date = convertDateFormat(expectedDateIncome, TEMPLATE_DATE_DOT);
-        val code = getCode(row);
-        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
-        if (lentaDictionary == null) {
-            return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
-        }
-        val timeShop = convertDateFormat(lentaDictionary.getTimeShop(), TEMPLATE_TIME);
-        val timeStock = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME);
-        val dateResult = timeShop.after(timeStock) ? DateUtils.addDays(expectedDateIncome, -1) : expectedDateIncome;
-        val dateResultString = convertDateFormat(dateResult, TEMPLATE_DATE_DOT);
-        return dateResultString + SPACE + lentaDictionary.getTimeShop();
-    }
-
-    private String fillT(Date expectedDateIncome, int row, boolean isStart) throws ParseException {
-        if (isStart) {
-            val result = DateUtils.addHours(expectedDateIncome, 3);
-            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
-        }
-        val code = getCode(row);
-        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
-        if (lentaDictionary == null) {
-            return convertDateFormat(expectedDateIncome, TEMPLATE_DATE_DOT) + " 22:00";
-        }
-        val timeStock = convertDateFormat(lentaDictionary.getTimeStock(), TEMPLATE_TIME, TEMPLATE_TIME);
-        val dateResultString = convertDateFormat(expectedDateIncome, TEMPLATE_DATE_DOT);
-        return dateResultString + SPACE + timeStock;
+    private String getCarName(int row) {
+        return getCellValue(row, 3).replaceAll("\\\\", EMPTY);
     }
 
     private Long getCode(int row) {
