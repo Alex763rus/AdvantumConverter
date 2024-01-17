@@ -12,6 +12,8 @@ public enum State {
 
     CONVERT_FILE_LENTA,
 
+    CONVERT_FILE_OZON,
+
     CONVERT_FILE_DOMINOS,
 
     CONVERT_FILE_AGROPROM,

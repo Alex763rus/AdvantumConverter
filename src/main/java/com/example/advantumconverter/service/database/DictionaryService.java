@@ -8,8 +8,14 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Slf4j
 @Service
@@ -27,10 +33,14 @@ public class DictionaryService {
     @Autowired
     private LentaCarRepository lentaCarRepository;
 
+    @Autowired
+    private OzonDictionaryRepository ozonDictionaryRepository;
+
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
     private Set<CarNumber> carNumbers;
     private Set<LentaCar> lentaCars;
+    private Set<OzonDictionary> ozonDictionaries;
 
     @PostConstruct
     public void init() {
@@ -53,6 +63,11 @@ public class DictionaryService {
         val lentaCarIter = lentaCarRepository.findAll();
         lentaCars = new HashSet<>();
         lentaCarIter.forEach(lentaCars::add);
+
+        val ozonDictionaryIter = ozonDictionaryRepository.findAll();
+        ozonDictionaries = new HashSet<>();
+        ozonDictionaryIter.forEach(ozonDictionaries::add);
+
     }
 
     public Car getCar(final String carName) {
@@ -81,4 +96,38 @@ public class DictionaryService {
                 .findFirst().orElse(null);
     }
 
+    public OzonDictionary getBestDictionary(final String stockBrief, int hTime) {
+        val dictionaryWithStockBrief = ozonDictionaries.stream()
+                .filter(dictionary -> dictionary.getStockBrief().equals(stockBrief))
+                .collect(Collectors.toList());
+
+        val windowDictionary = dictionaryWithStockBrief.stream()
+                .filter(dictionary -> hTime >= getHour(dictionary.getStockInTime()))
+                .filter(dictionary -> getHour(dictionary.getStockOutTime()) == 0 || hTime < getHour(dictionary.getStockOutTime()))
+                .findFirst().orElse(null);
+        if (windowDictionary != null) {
+            return windowDictionary;
+        }
+//        val windowBefore = dictionaryWithStockBrief.stream()
+//                .filter(dictionary -> hTime > getHour(dictionary.getStockInTime()))
+//                .sorted((p1, p2) -> ((Integer) getHour(p2.getStockInTime())).compareTo((Integer) getHour(p1.getStockInTime())))
+//                .findFirst().orElse(null);
+//        if (windowBefore != null) {
+//            return windowBefore;
+//        }
+        return dictionaryWithStockBrief.stream()
+                .filter(dictionary -> hTime < getHour(dictionary.getStockInTime()))
+                .sorted((p1, p2) -> ((Integer) getHour(p1.getStockInTime())).compareTo((Integer) getHour(p2.getStockInTime())))
+                .findFirst().orElse(null);
+    }
+
+
+    private int getHour(String time) {
+        try {
+            val date = convertDateFormat(time, TEMPLATE_TIME);
+            return date.getHours();
+        } catch (ParseException e) {
+            throw new RuntimeException("Ошибка при сравнении времени справочника озона: " + e);
+        }
+    }
 }

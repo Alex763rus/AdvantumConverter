@@ -25,6 +25,7 @@ public final class Constant {
     @NoArgsConstructor(access = PRIVATE)
     public final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
+        public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
         public static final String FILE_NAME_AGROPROM_DETAIL = "Х5 Агропром Торг (Детал)";
@@ -39,6 +40,7 @@ public final class Constant {
         public static final String COMPANY_ADVANTUM = "Адвантум";
         public static final String COMPANY_NAME_LENTA = "Лента";
         public static final String COMPANY_NAME_BUSH_AVTOPROM = "Буш-Автопром";
+        public static final String COMPANY_NAME_OZON = "Озон";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -50,6 +52,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_BOGORODSK = "/convert_bogorodsk";
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
+        public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
         public static final String COMMAND_CONVERT_AGROPROM = "/convert_agroprom";
