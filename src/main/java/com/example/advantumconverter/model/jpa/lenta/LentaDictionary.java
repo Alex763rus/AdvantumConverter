@@ -1,4 +1,4 @@
-package com.example.advantumconverter.model.jpa;
+package com.example.advantumconverter.model.jpa.lenta;
 
 import com.example.advantumconverter.enums.LentaDictionaryType;
 import jakarta.persistence.*;

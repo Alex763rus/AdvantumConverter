@@ -36,11 +36,12 @@ public class ExcelGenerateService {
         styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
         styleInt = getStyle("0");
         int y = 0;
+        int x = 0;
         try {
             for (; y < data.size(); y++) {
                 val row = sheet.createRow(y);
                 if (y == 0) {
-                    for (int x = 0; x < data.get(y).size(); x++) {
+                    for (x = 0; x < data.get(y).size(); x++) {
                         val cell = row.createCell(x);
                         cell.setCellValue(data.get(y).get(x));
                     }
@@ -86,7 +87,7 @@ public class ExcelGenerateService {
             workbook.close();
             return new InputFile(tmpFile);
         } catch (Exception e) {
-            throw new ExcelGenerationException("Строка:" + y + ". " + e.getMessage());
+            throw new ExcelGenerationException("Строка:" + y + ", " + "Столбец:" + x + ". " + e.getMessage());
         }
     }
 

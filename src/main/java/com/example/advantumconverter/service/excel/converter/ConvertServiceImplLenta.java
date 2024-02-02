@@ -2,7 +2,7 @@ package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
-import com.example.advantumconverter.model.jpa.LentaDictionary;
+import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
 import lombok.val;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;

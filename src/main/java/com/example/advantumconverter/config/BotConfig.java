@@ -75,6 +75,8 @@ public class BotConfig {
     @Autowired
     private ConvertServiceImplOzon convertServiceImplOzon;
     @Autowired
+    private ConvertServiceImplMetro convertServiceImplMetro;
+    @Autowired
     private CompanyRepository companyRepository;
 
     @Bean
@@ -85,13 +87,15 @@ public class BotConfig {
         val bushConverter = List.of(convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
-                , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon);
+                , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro);
         val ozonConverter = List.of(convertServiceImplOzon);
+        val metroConverter = List.of(convertServiceImplMetro);
 
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM), advantumConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA), lentaConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BUSH_AVTOPROM), bushConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_OZON), ozonConverter);
+        companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_METRO), metroConverter);
         companySetting.setCompanyConverter(companyConverter);
         return companySetting;
     }
@@ -102,10 +106,10 @@ public class BotConfig {
         val roleAccess = new HashMap<UserRole, List<String>>();
         roleAccess.put(NEED_SETTING, List.of(COMMAND_DEFAULT, COMMAND_START));
         roleAccess.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
-        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON));
-        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON));
+        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO));
+        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO));
         roleAccess.put(SUPPORT, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
-                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON));
+                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO));
         roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY));
         return roleAccess;
     }
@@ -119,6 +123,7 @@ public class BotConfig {
                         /*Буш автопром:*/, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL
                         /*Лента:*/, COMMAND_CONVERT_LENTA
                         /*Озон:*/, COMMAND_CONVERT_OZON
+                        /*Метро:*/, COMMAND_CONVERT_METRO
                         /*Саппорт:*/, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_RELOAD_DICTIONARY
                         /*админ:*/, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY
                 )
@@ -136,6 +141,11 @@ public class BotConfig {
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_OZON)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
                         , COMMAND_CONVERT_OZON
+                )
+        );
+        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_METRO)
+                , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
+                        , COMMAND_CONVERT_METRO
                 )
         );
         return commandAccessList;

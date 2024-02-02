@@ -1,4 +1,4 @@
-package com.example.advantumconverter.model.jpa;
+package com.example.advantumconverter.model.jpa.lenta;
 
 import org.springframework.data.repository.CrudRepository;
 
