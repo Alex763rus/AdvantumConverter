@@ -4,7 +4,6 @@ import com.example.advantumconverter.config.BotConfig;
 import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.service.database.UserService;
-import com.example.advantumconverter.service.excel.ExcelGenerateService;
 import com.example.advantumconverter.service.excel.FileUploadService;
 import com.example.advantumconverter.service.menu.StateService;
 import com.example.advantumconverter.service.support.SupportService;
@@ -30,9 +29,6 @@ public abstract class Menu implements MenuActivity {
 
     @Autowired
     protected FileUploadService fileUploadService;
-
-    @Autowired
-    protected ExcelGenerateService excelGenerateService;
 
     @Autowired
     protected CompanyRepository companyRepository;

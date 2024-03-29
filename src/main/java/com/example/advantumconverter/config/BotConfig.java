@@ -2,10 +2,11 @@ package com.example.advantumconverter.config;
 
 import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
-import com.example.advantumconverter.service.SecurityService;
 import com.example.advantumconverter.model.jpa.Company;
 import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.service.excel.converter.*;
+import com.example.advantumconverter.service.excel.converter.booker.ConvertServiceImplBooker;
+import com.example.advantumconverter.service.excel.converter.client.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.val;
@@ -77,6 +78,8 @@ public class BotConfig {
     @Autowired
     private ConvertServiceImplMetro convertServiceImplMetro;
     @Autowired
+    private ConvertServiceImplBooker convertServiceImplBooker;
+    @Autowired
     private CompanyRepository companyRepository;
 
     @Bean
@@ -87,7 +90,7 @@ public class BotConfig {
         val bushConverter = List.of(convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
-                , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro);
+                , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplBooker);
         val ozonConverter = List.of(convertServiceImplOzon);
         val metroConverter = List.of(convertServiceImplMetro);
 
@@ -106,10 +109,10 @@ public class BotConfig {
         val roleAccess = new HashMap<UserRole, List<String>>();
         roleAccess.put(NEED_SETTING, List.of(COMMAND_DEFAULT, COMMAND_START));
         roleAccess.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
-        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO));
-        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO));
+        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER));
+        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER));
         roleAccess.put(SUPPORT, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
-                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO));
+                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER));
         roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY));
         return roleAccess;
     }
@@ -124,6 +127,7 @@ public class BotConfig {
                         /*Лента:*/, COMMAND_CONVERT_LENTA
                         /*Озон:*/, COMMAND_CONVERT_OZON
                         /*Метро:*/, COMMAND_CONVERT_METRO
+                        /*Бухгалтерия*/, COMMAND_CONVERT_BOOKER
                         /*Саппорт:*/, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_RELOAD_DICTIONARY
                         /*админ:*/, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY
                 )

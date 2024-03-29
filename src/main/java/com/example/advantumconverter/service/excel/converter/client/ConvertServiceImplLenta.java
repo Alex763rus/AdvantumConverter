@@ -1,8 +1,10 @@
-package com.example.advantumconverter.service.excel.converter;
+package com.example.advantumconverter.service.excel.converter.client;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
+import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -16,6 +18,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
+import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -30,6 +33,12 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     @Override
     public String getFileNamePrefix() {
         return getConverterName() + "_";
+    }
+
+
+    @Override
+    public String getExcelType() {
+        return CLIENT;
     }
 
     @Override
@@ -51,7 +60,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutput);
+        data.add(Header.headersOutputClient);
         sheet = book.getSheetAt(0);
         START_ROW = getStartRow(START_ROW_TEXT);
 

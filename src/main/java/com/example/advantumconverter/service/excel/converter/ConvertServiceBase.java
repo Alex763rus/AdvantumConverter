@@ -109,4 +109,19 @@ public class ConvertServiceBase {
     protected String getCurrentDate(String format) throws ParseException {
         return convertDateFormat(new Date(), format);
     }
+
+    protected Long getLongValue(int row, int col) {
+        val cellValue = getCellValue(row, col);
+        return cellValue.equals(EMPTY) ? null : Long.parseLong(cellValue);
+    }
+
+    protected Integer getIntegerValue(int row, int col) {
+        val cellValue = getCellValue(row, col);
+        return cellValue.equals(EMPTY) ? null : Integer.parseInt(cellValue);
+    }
+
+    protected Double getDoubleValue(int row, int col) {
+        val cellValue = getCellValue(row, col);
+        return cellValue.equals(EMPTY) ? null : Double.parseDouble(cellValue);
+    }
 }

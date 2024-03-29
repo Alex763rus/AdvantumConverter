@@ -1,7 +1,7 @@
 package com.example.advantumconverter.model.menu.converter;
 
 import com.example.advantumconverter.model.jpa.User;
-import com.example.advantumconverter.service.excel.converter.ConvertServiceImplOzon;
+import com.example.advantumconverter.service.excel.converter.client.ConvertServiceImplOzon;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

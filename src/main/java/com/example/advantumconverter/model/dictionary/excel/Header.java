@@ -1,9 +1,8 @@
 package com.example.advantumconverter.model.dictionary.excel;
 
-import lombok.*;
+import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -25,7 +24,7 @@ public class Header {
         return cellStyle;
     }
 
-    public static List<String> headersOutput = List.of(
+    public static List<String> headersOutputClient = List.of(
             "Номер заявки\n" +
                     "(Тип поля: строка)"
             , "Дата заявки\n" +
@@ -100,5 +99,11 @@ public class Header {
                     "(Тип поля: строка)"
             , "ID водителя в ВИС\n" +
                     "(Тип поля: строка)"
+    );
+
+    public static List<String> headersOutputBooker = List.of(
+            "ИНН",
+            "Количество по полю Гос.номер",
+            "Сумма по полю Тариф за ТС, руб"
     );
 }

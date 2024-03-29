@@ -1,7 +1,9 @@
-package com.example.advantumconverter.service.excel.converter;
+package com.example.advantumconverter.service.excel.converter.client;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
+import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
+import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -38,7 +41,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutput);
+        data.add(Header.headersOutputClient);
         int row = START_ROW;
         ArrayList<String> dataLine = new ArrayList();
         try {
@@ -96,6 +99,11 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     @Override
     public String getFileNamePrefix() {
         return getConverterName() + "_";
+    }
+
+    @Override
+    public String getExcelType() {
+        return CLIENT;
     }
 
     private String fillS(boolean isStart, int row) throws ParseException {

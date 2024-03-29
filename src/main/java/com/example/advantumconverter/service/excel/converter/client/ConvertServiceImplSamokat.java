@@ -1,7 +1,9 @@
-package com.example.advantumconverter.service.excel.converter;
+package com.example.advantumconverter.service.excel.converter.client;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
+import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SAMOKAT;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
+import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SAMOKAT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -39,10 +42,16 @@ public class ConvertServiceImplSamokat extends ConvertServiceBase implements Con
         return COMMAND_CONVERT_SAMOKAT;
     }
 
+
+    @Override
+    public String getExcelType() {
+        return CLIENT;
+    }
+
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutput);
+        data.add(Header.headersOutputClient);
         int row = START_ROW;
         int mainRow = START_ROW;
         int counterCopy = 1;

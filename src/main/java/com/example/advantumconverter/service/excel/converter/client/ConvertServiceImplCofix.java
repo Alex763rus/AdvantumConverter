@@ -1,32 +1,29 @@
-package com.example.advantumconverter.service.excel.converter;
+package com.example.advantumconverter.service.excel.converter.client;
 
-import com.example.advantumconverter.exception.CarNotFoundException;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.Car;
-import com.example.advantumconverter.model.jpa.CarRepository;
-import jakarta.annotation.PostConstruct;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
+import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_DOMINOS;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_COFIX;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_DOMINOS;
+import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_COFIX;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
-public class ConvertServiceImplDominos extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplCofix extends ConvertServiceBase implements ConvertService {
 
     private final int START_ROW = 2;
     private int LAST_ROW;
@@ -34,18 +31,18 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
 
     @Override
     public String getConverterName() {
-        return FILE_NAME_DOMINOS;
+        return FILE_NAME_COFIX;
     }
 
     @Override
     public String getConverterCommand() {
-        return COMMAND_CONVERT_DOMINOS;
+        return COMMAND_CONVERT_COFIX;
     }
 
     @Override
     public List<List<String>> getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutput);
+        data.add(Header.headersOutputClient);
         int row = START_ROW;
         ArrayList<String> dataLine = new ArrayList();
         try {
@@ -56,7 +53,7 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
                 dataLine = new ArrayList<String>();
                 dataLine.add(fillA(row));
                 dataLine.add(convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
-                dataLine.add(FILE_NAME_DOMINOS);
+                dataLine.add(FILE_NAME_COFIX);
                 dataLine.add(BUSH_AUTOPROM_ORGANIZATION_NAME);
                 dataLine.add(EMPTY);
                 dataLine.add(REFRIGERATOR);
@@ -110,7 +107,6 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
         val date = convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH, TEMPLATE_DATE);
         return (next1.equals(next2) ? next1 : cur) + date;
     }
-
 
     private Car findCar(int row) {
         val cur = getValueOrDefault(row, 0, 9);
@@ -198,4 +194,9 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
         return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
     }
 
+
+    @Override
+    public String getExcelType() {
+        return CLIENT;
+    }
 }

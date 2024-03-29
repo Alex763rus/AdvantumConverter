@@ -23,12 +23,12 @@ public final class Constant {
         public static String UNLOAD_THE_GOODS = "Разгрузка";
         public static String COMPANY_OOO_LENTA = "ООО ''ЛЕНТА''";
         public static String COMPANY_OOO_LENTA_HIRING = COMPANY_OOO_LENTA + " найм";
-        public  static String COMPANY_OZON_FRESH = "OZON FRESH";
-        public  static String COMPANY_METRO = "Метро Групп Логистик";
-        public  static String COMPANY_DEAL_AUTO_TRANS = "ООО ДиалАвтоТранс";
-        public  static String COMPANY_DEAL_AUTO_TRANS_INN = "6324744734";
-        public  static String COMPANY_DEAL_AUTO_TRANS_INCORRECT = "ООО \"Диалавтотранс\"";
-        public  static String LEFT_FOR_A_FLIGHT = "Уехал";
+        public static String COMPANY_OZON_FRESH = "OZON FRESH";
+        public static String COMPANY_METRO = "Метро Групп Логистик";
+        public static String COMPANY_DEAL_AUTO_TRANS = "ООО ДиалАвтоТранс";
+        public static String COMPANY_DEAL_AUTO_TRANS_INN = "6324744734";
+        public static String COMPANY_DEAL_AUTO_TRANS_INCORRECT = "ООО \"Диалавтотранс\"";
+        public static String LEFT_FOR_A_FLIGHT = "Уехал";
 
     }
 
@@ -39,6 +39,7 @@ public final class Constant {
         public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
+        public static final String FILE_NAME_BOOKER = "Бухгалтерия";
         public static final String FILE_NAME_AGROPROM_DETAIL = "Х5 Агропром Торг (Детал)";
         public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
         public static final String FILE_NAME_SAMOKAT = "Самокат";
@@ -56,6 +57,21 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
+    public final class ExcelType {
+        public static final String CLIENT = "Client";
+        public static final String BOOKER = "Booker";
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
+    public final class BookerListName {
+        public static final String BOOKER_X5 = "X5";
+        public static final String BOOKER_OZON = "Ozon";
+        public static final String BOOKER_ASHAN = "Ashan";
+        public static final String BOOKER_AV = "av";
+        public static final String BOOKER_METRO = "metro";
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
     public final class Command {
         public static final String COMMAND_DEFAULT = "/default";
         public static final String COMMAND_START = "/start";
@@ -69,6 +85,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
         public static final String COMMAND_CONVERT_AGROPROM = "/convert_agroprom";
+        public static final String COMMAND_CONVERT_BOOKER = "/convert_booker";
         public static final String COMMAND_CONVERT_AGROPROM_DETAIL = "/convert_agroprom_detail";
         public static final String COMMAND_SHOW_OPEN_TASK = "/show_open_task";
         public static final String COMMAND_SHOW_MY_TASK = "/show_my_task";
