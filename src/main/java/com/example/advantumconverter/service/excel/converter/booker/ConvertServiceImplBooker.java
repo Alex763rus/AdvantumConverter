@@ -1,8 +1,10 @@
 package com.example.advantumconverter.service.excel.converter.booker;
 
+import com.example.advantumconverter.exception.ExcelListNotFoundException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.booker.BookerInputData;
 import com.example.advantumconverter.model.pojo.booker.BookerOutputData;
+import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -21,7 +23,8 @@ import static com.example.advantumconverter.constant.Constant.BookerListName.*;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOOKER;
 import static com.example.advantumconverter.constant.Constant.ExcelType.BOOKER;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOOKER;
-import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static java.util.Collections.emptyList;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
@@ -32,7 +35,7 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
     private final String UNION_KEY = "%s_%s";
-
+    private StringBuilder message;
     @Autowired
     private Map<String, BookerListService> bookerListServiceMap;
 
@@ -46,18 +49,18 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
         return COMMAND_CONVERT_BOOKER;
     }
 
-    @Override
-    public List<List<String>> getConvertedBook(XSSFWorkbook book) {
-        Map<String, BookerInputData> calculatedData = new HashMap<>();
-        //сгруппировать по инн + номер машины. Взять максимальные значения разъездов
-        val loadedData = new ArrayList<BookerInputData>();
+    private List<BookerInputData> getConvertedData(XSSFWorkbook book, String converterName) {
+        try {
+            return bookerListServiceMap.get(converterName).getConvertedList(book, converterName);
+        } catch (ExcelListNotFoundException ex) {
+            message.append(ex.getMessage()).append(NEW_LINE);
+            return emptyList();
+        }
+    }
 
-        loadedData.addAll(bookerListServiceMap.get(BOOKER_X5).getConvertedList(book, BOOKER_X5));
-        loadedData.addAll(bookerListServiceMap.get(BOOKER_ASHAN).getConvertedList(book, BOOKER_ASHAN));
-        loadedData.addAll(bookerListServiceMap.get(BOOKER_AV).getConvertedList(book, BOOKER_AV));
-        loadedData.addAll(bookerListServiceMap.get(BOOKER_METRO).getConvertedList(book, BOOKER_METRO));
-
+    private ArrayList<List<String>> calculate(List<BookerInputData> loadedData) {
         //Группировка по инн и номеру машины:
+        Map<String, BookerInputData> calculatedData = new HashMap<>();
         for (BookerInputData bookerInputData : loadedData) {
             val key = String.format(UNION_KEY, bookerInputData.getInn(), bookerInputData.getCarNumber());
             val bookerInputDataTmp = calculatedData.get(key);
@@ -88,7 +91,6 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
                         .build());
             }
         }
-
         calculatedData.replaceAll(
                 (k, bookerInputData) -> bookerInputData.toBuilder().setRateTc(calculateRateTc(bookerInputData)).build()
         );
@@ -97,6 +99,9 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
         //Группировка по инн:
         for (Map.Entry calculated : calculatedData.entrySet()) {
             val bookerOutputData = (BookerInputData) calculated.getValue();
+            if (bookerOutputData.getRateTc() == 0) {
+                continue;
+            }
             val key = bookerOutputData.getInn();
             val bookerOutputDataTmp = bookerOutputDataMap.get(key);
             if (bookerOutputDataTmp == null) {
@@ -122,6 +127,45 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
             );
         }
         return data;
+    }
+
+    @Override
+    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
+        message = new StringBuilder();
+        //сгруппировать по инн + номер машины. Взять максимальные значения разъездов
+        val loadedData = new ArrayList<BookerInputData>();
+
+        val loadedDataX5 = getConvertedData(book, BOOKER_X5);
+        val loadedDataAshan = getConvertedData(book, BOOKER_ASHAN);
+        val loadedDataAV = getConvertedData(book, BOOKER_AV);
+        val loadedDataMetro = getConvertedData(book, BOOKER_METRO);
+//        val loadedDataOzon = getConvertedData(book, BOOKER_OZON);
+
+        loadedData.addAll(loadedDataX5);
+        loadedData.addAll(loadedDataAshan);
+        loadedData.addAll(loadedDataAV);
+        loadedData.addAll(loadedDataMetro);
+//        loadedData.addAll(loadedDataOzon);
+
+        val dataAll = calculate(loadedData);
+
+//        val data2 = new ArrayList<List<String>>();
+//        data2.add(Header.headersOutputBooker);
+//        data2.add(List.of("1", "2", "777"));
+//        createConvertedList("Статистика клиенты", data2)
+
+        val excelLists = List.of(
+                createConvertedList("Итого для 1С", dataAll)
+                , createConvertedList(BOOKER_X5, calculate(loadedDataX5))
+                , createConvertedList(BOOKER_ASHAN, calculate(loadedDataAshan))
+                , createConvertedList(BOOKER_AV, calculate(loadedDataAV))
+                , createConvertedList(BOOKER_METRO, calculate(loadedDataMetro))
+//                createConvertedList(BOOKER_OZON, calculate(loadedDataMetro))
+        );
+        if (message.isEmpty()) {
+            message.append("Готово!");
+        }
+        return createConvertedBook(getFileNamePrefix(), excelLists, message.toString());
     }
 
     private Double calculateRateTc(BookerInputData bookerInputData) {
@@ -193,67 +237,4 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
         }
     }
 
-    private String getValueOrDefault(int row, int slippage, int col) {
-        row = row + slippage;
-        if (row < START_ROW || row > LAST_ROW) {
-            return EMPTY;
-        }
-        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-            return EMPTY;
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
-    }
-/*
- int row = START_ROW;
-//        ArrayList<String> dataLine = new ArrayList();
-//        try {
-//            sheet = book.getSheetAt(0);
-//            LAST_ROW = getLastRow(START_ROW);
-//            LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
-//            for (; row <= LAST_ROW; ++row) {
-//                for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-//                    dataLine = new ArrayList<String>();
-//                    dataLine.add(getCellValue(row, 0));
-//                    dataLine.add(convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
-//                    dataLine.add("Х5 ТЦ Новая Рига");
-//                    dataLine.add(BUSH_AUTOPROM_ORGANIZATION_NAME);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(REFRIGERATOR);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(getCellValue(row, 5));
-//                    dataLine.add(getCellValue(row, 6));
-//                    dataLine.add("3");
-//                    dataLine.add("5");
-//                    dataLine.add("3");
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(fillS(iRepeat == 0, row));
-//                    dataLine.add(fillT(iRepeat == 0, row));
-//                    dataLine.add(getCellValue(row, 8));
-//                    dataLine.add(getCellValue(row, 8));
-//                    dataLine.add(iRepeat == 0 ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
-//                    dataLine.add(String.valueOf(iRepeat));
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(getCellValue(row, 2));
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(getCellValue(row, 3));
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//                    dataLine.add(EMPTY);
-//
-//                    data.add(dataLine);
-//                }
-//            }
-//        } catch (Exception e) {
-//            throw new ConvertProcessingException("не удалось обработать строку:" + row
-//                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
-//        }
- */
 }

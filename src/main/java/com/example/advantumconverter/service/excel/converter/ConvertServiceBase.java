@@ -1,5 +1,8 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.exception.ExcelListNotFoundException;
+import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
+import com.example.advantumconverter.model.pojo.converter.ConvertedList;
 import com.example.advantumconverter.service.database.DictionaryService;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -13,6 +16,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
@@ -28,6 +32,21 @@ public class ConvertServiceBase {
 
     protected int LAST_COLUMN_NUMBER;
 
+    protected XSSFSheet getExcelList(XSSFWorkbook book, String listName) {
+        return Optional.ofNullable(book.getSheet(listName))
+                .orElseThrow(() -> new ExcelListNotFoundException(listName));
+    }
+
+    //    private String getValueOrDefault(int row, int slippage, int col) {
+//        row = row + slippage;
+//        if (row < START_ROW || row > LAST_ROW) {
+//            return EMPTY;
+//        }
+//        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
+//            return EMPTY;
+//        }
+//        return getCellValue(sheet.getRow(row).getCell(col));
+//    }
     protected String getCellValue(int row, int col) {
         if (sheet.getRow(row) == null) {
             return EMPTY;
@@ -116,12 +135,43 @@ public class ConvertServiceBase {
     }
 
     protected Integer getIntegerValue(int row, int col) {
-        val cellValue = getCellValue(row, col);
-        return cellValue.equals(EMPTY) ? null : Integer.parseInt(cellValue);
+        return convertToIntegerOrNull(getCellValue(row, col));
+    }
+
+    private Integer convertToIntegerOrNull(String value) {
+        try {
+            if (value.equals(EMPTY)) {
+                return null;
+            }
+            return Integer.parseInt(value);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     protected Double getDoubleValue(int row, int col) {
         val cellValue = getCellValue(row, col);
         return cellValue.equals(EMPTY) ? null : Double.parseDouble(cellValue);
+    }
+
+    protected ConvertedBook createDefaultBook(String bookName,
+                                              String excelListName
+            , List<List<String>> excelListContent, String message) {
+        return createConvertedBook(bookName, List.of(createConvertedList(excelListName, excelListContent)), message);
+    }
+
+    protected ConvertedBook createConvertedBook(String bookName, List<ConvertedList> book, String message) {
+        return ConvertedBook.init()
+                .setBookName(bookName)
+                .setBook(book)
+                .setMessage(message)
+                .build();
+    }
+
+    protected ConvertedList createConvertedList(String excelListName, List<List<String>> excelListContent) {
+        return ConvertedList.init()
+                .setExcelListName(excelListName)
+                .setExcelListContent(excelListContent)
+                .build();
     }
 }

@@ -3,6 +3,7 @@ package com.example.advantumconverter.service.excel.converter.client;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
+import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -58,7 +59,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private Date stockOut = null;           //дата выезда с погрузки
 
     @Override
-    public List<List<String>> getConvertedBook(XSSFWorkbook book) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutputClient);
         sheet = book.getSheetAt(0);
@@ -122,7 +123,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
             throw new ConvertProcessingException("не удалось обработать строку:" + row
                     + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
         }
-        return data;
+        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
     }
 
     private String fillS(int row, boolean isStart) throws ParseException {

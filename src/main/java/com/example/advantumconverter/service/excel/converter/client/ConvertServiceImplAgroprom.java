@@ -2,6 +2,7 @@ package com.example.advantumconverter.service.excel.converter.client;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -39,7 +40,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     }
 
     @Override
-    public List<List<String>> getConvertedBook(XSSFWorkbook book) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutputClient);
         int row = START_ROW;
@@ -93,7 +94,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
             throw new ConvertProcessingException("не удалось обработать строку:" + row
                     + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
         }
-        return data;
+        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
     }
 
     @Override

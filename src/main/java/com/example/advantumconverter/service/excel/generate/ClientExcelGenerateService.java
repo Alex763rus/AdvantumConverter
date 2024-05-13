@@ -1,6 +1,7 @@
 package com.example.advantumconverter.service.excel.generate;
 
 import com.example.advantumconverter.exception.ExcelGenerationException;
+import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,10 +30,11 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
     private CellStyle styleDateTimeDot;
     private CellStyle styleInt;
 
-    public InputFile createXlsx(List<List<String>> dataIn, String fileNamePrefix, String sheetName) {
-        this.data = dataIn;
+    public InputFile createXlsx(ConvertedBook convertedBook) {
+        val book = convertedBook.getBook().get(0);
+        this.data = book.getExcelListContent();
         workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(sheetName);
+        Sheet sheet = workbook.createSheet(book.getExcelListName());
         styleDateDot = getStyle(TEMPLATE_DATE_DOT);
         styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
         styleInt = getStyle("0");
@@ -83,7 +85,7 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
                     createCellString(row, y, 33);
                 }
             }
-            val tmpFile = Files.createTempFile(fileNamePrefix, ".xlsx").toFile();
+            val tmpFile = Files.createTempFile(convertedBook.getBookName(), ".xlsx").toFile();
             workbook.write(new FileOutputStream(tmpFile));
             workbook.close();
             return new InputFile(tmpFile);

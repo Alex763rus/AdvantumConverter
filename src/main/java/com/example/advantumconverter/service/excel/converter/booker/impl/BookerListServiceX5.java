@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.example.advantumconverter.constant.Constant.BookerListName.BOOKER_X5;
+import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LIST_CONVERT_ERROR;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 
@@ -35,11 +36,8 @@ public class BookerListServiceX5 extends ConvertServiceBase implements BookerLis
         int row = START_ROW;
         val data = new ArrayList<BookerInputData>();
         ArrayList<String> dataLine = new ArrayList();
+        sheet = getExcelList(book, listName);
         try {
-            sheet = book.getSheet(listName);
-            if(sheet == null){
-                return data;
-            }
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
@@ -60,27 +58,31 @@ public class BookerListServiceX5 extends ConvertServiceBase implements BookerLis
                                 .setCarNumber(carNumber)
                                 .setRate(prepareRate(row, 9))
 
-                                .setRnic(getIntegerValue(row, 10))
+                                .setRnic(prepareRnic(row, 10))
                                 .setX5(getIntegerValue(row, 11))
-                                .setAshan(0)//getIntegerValue(row, 12)
-                                .setMetro(0)//getIntegerValue(row, 13)
-                                .setOzon(0)//getIntegerValue(row, 14)
-                                .setAv(0)//getIntegerValue(row, 15)
-                                .setBilla(0)//getIntegerValue(row, 16)
+                                .setAshan(0)
+                                .setMetro(0)
+                                .setOzon(0)
+                                .setAv(0)
+                                .setBilla(0)
                                 .setMagnit(getIntegerValue(row, 17))
                                 .setLoginet(getIntegerValue(row, 18))
                                 .setOboz(getIntegerValue(row, 19))
                                 .setRezident(getIntegerValue(row, 20))
                                 .setVerniy(getIntegerValue(row, 21))
-                                .setAtmc(0)//getIntegerValue(row, 22)
+                                .setAtmc(0)
                                 .build()
                 );
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать лист: " + listName + " строку:" + row
-                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
+            throw ConvertProcessingException.of(EXCEL_LIST_CONVERT_ERROR, listName, row, dataLine, e.getMessage());
         }
         return data;
+    }
+
+    private Integer prepareRnic(int row, int col) {
+        val res = getIntegerValue(row, col);
+        return res == null ? 0 : res;
     }
 
     private String getInn(int row) {
@@ -95,7 +97,7 @@ public class BookerListServiceX5 extends ConvertServiceBase implements BookerLis
 
     private Double prepareRate(int row, int col) {
         val inn = getInn(row);
-        val rate = getDoubleValue(row, 9);
+        val rate = getDoubleValue(row, col);
         if (rate == null && inn != null) {
             return DEFAULT_RATE;
         }

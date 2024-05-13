@@ -16,6 +16,7 @@ public final class Constant {
 
         public static final String REFRIGERATOR = "Рефрижератор";
         public static final String BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО \"Буш-Автопром\"";
+        public static final String SBER_BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО Буш-Автопром";
         public static String SHEET_RESULT_NAME = "ИМПОРТ";
         public static String LOAD_THE_GOODS = "Погрузка";
         public static String DC_NOGINSK = "DC Noginsk";
@@ -39,6 +40,7 @@ public final class Constant {
         public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
+        public static final String FILE_NAME_SBER = "СберЛогистика";
         public static final String FILE_NAME_BOOKER = "Бухгалтерия";
         public static final String FILE_NAME_AGROPROM_DETAIL = "Х5 Агропром Торг (Детал)";
         public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
@@ -54,6 +56,7 @@ public final class Constant {
         public static final String COMPANY_NAME_BUSH_AVTOPROM = "Буш-Автопром";
         public static final String COMPANY_NAME_OZON = "Озон";
         public static final String COMPANY_NAME_METRO = "Метро";
+        public static final String COMPANY_NAME_SBER = "СберЛогистика";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -85,6 +88,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
         public static final String COMMAND_CONVERT_AGROPROM = "/convert_agroprom";
+        public static final String COMMAND_CONVERT_SBER = "/convert_sber";
         public static final String COMMAND_CONVERT_BOOKER = "/convert_booker";
         public static final String COMMAND_CONVERT_AGROPROM_DETAIL = "/convert_agroprom_detail";
         public static final String COMMAND_SHOW_OPEN_TASK = "/show_open_task";
@@ -102,6 +106,11 @@ public final class Constant {
         public static final String DICTIONARY_ERROR = "Ошибка при обращении к справочнику: ";
 
         public static final String EXCEL_GENERATION_ERROR = "Ошибка формирования файла: ";
+
+        public static final String EXCEL_LIST_NOT_FOUND_WARNING = "Не найден лист: %s";
+
+        public static final String EXCEL_LIST_CONVERT_ERROR =
+                "не удалось обработать лист: %s, строку: %d, после значения: %s. Ошибка: %s";
     }
 
 }

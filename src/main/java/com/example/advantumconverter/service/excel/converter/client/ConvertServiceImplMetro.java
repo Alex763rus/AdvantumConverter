@@ -3,6 +3,7 @@ package com.example.advantumconverter.service.excel.converter.client;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.DictionaryException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import jakarta.annotation.PostConstruct;
@@ -67,7 +68,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
     }
 
     @Override
-    public List<List<String>> getConvertedBook(XSSFWorkbook book) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
         val data = new ArrayList<List<String>>();
         processedRows = new HashSet<>();
         val currentFlights = new ArrayList<Flight>();
@@ -141,7 +142,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                     + " , flight:" + flight
                     + ". Ошибка:" + e);
         }
-        return data;
+        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
     }
 
 

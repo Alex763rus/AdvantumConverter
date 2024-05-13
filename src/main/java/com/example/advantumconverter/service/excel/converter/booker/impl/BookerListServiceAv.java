@@ -2,19 +2,20 @@ package com.example.advantumconverter.service.excel.converter.booker.impl;
 
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.pojo.booker.BookerInputData;
+import com.example.advantumconverter.model.pojo.converter.BookerListKey;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import com.example.advantumconverter.service.excel.converter.booker.BookerListService;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.val;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.example.advantumconverter.constant.Constant.BookerListName.BOOKER_AV;
-import static com.example.advantumconverter.constant.Constant.BookerListName.BOOKER_X5;
+import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LIST_CONVERT_ERROR;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 
@@ -36,12 +37,9 @@ public class BookerListServiceAv extends ConvertServiceBase implements BookerLis
         int row = START_ROW;
         val data = new ArrayList<BookerInputData>();
         ArrayList<String> dataLine = new ArrayList();
-        Set<ListKey> listKeys = new HashSet<>();
+        Set<BookerListKey> listKeys = new HashSet<>();
+        sheet = getExcelList(book, listName);
         try {
-            sheet = book.getSheet(listName);
-            if(sheet == null){
-                return data;
-            }
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
@@ -50,12 +48,12 @@ public class BookerListServiceAv extends ConvertServiceBase implements BookerLis
                 if (isEmpty(inn) || inn.equals("0") || isEmpty(carNumber) || carNumber.equals("0")) {
                     continue;
                 }
-                val listKey = ListKey.init()
+                val listKey = BookerListKey.init()
                         .setCounterparty(getCellValue(row, 2))
                         .setCarNumber(carNumber)
                         .setInn(inn)
                         .build();
-                if(listKeys.contains(listKey)){
+                if (listKeys.contains(listKey)) {
                     continue;
                 }
                 listKeys.add(listKey);
@@ -84,8 +82,7 @@ public class BookerListServiceAv extends ConvertServiceBase implements BookerLis
                 );
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать лист: " + listName + " строку:" + row
-                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
+            throw ConvertProcessingException.of(EXCEL_LIST_CONVERT_ERROR, listName, row, dataLine, e.getMessage());
         }
         return data;
     }
@@ -97,27 +94,5 @@ public class BookerListServiceAv extends ConvertServiceBase implements BookerLis
     private String prepareInn(int row) {
         val inn = getInn(row);
         return checkedInn.contains(inn) ? DEFAULT_INN : inn;
-    }
-
-    @Getter
-    @Setter
-    @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
-    private static class ListKey {
-        private String counterparty; //Контрагент
-        private String carNumber; //Гос.номер
-        private String inn; //ИНН
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ListKey listKey = (ListKey) o;
-            return counterparty.equals(listKey.counterparty) && carNumber.equals(listKey.carNumber) && inn.equals(listKey.inn);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(counterparty, carNumber, inn);
-        }
     }
 }

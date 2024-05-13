@@ -38,14 +38,13 @@ public abstract class MenuConverterBase extends Menu {
                     val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
                     update.getMessage().setText(fileFullPath);
                     val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
-                    val convertedBook = convertService.getConvertedBook(book);
-
+                    val convertedBook = convertService.getConvertedBook(book, convertService.getFileNamePrefix());
                     val excelService = excelGenerateServiceMap.get(convertService.getExcelType());
-                    val document = excelService.createXlsx(convertedBook, convertService.getFileNamePrefix(), SHEET_RESULT_NAME);
+                    val document = excelService.createXlsx(convertedBook);
                     stateService.setState(user, FREE);
                     return SendDocumentWrap.init()
                             .setChatIdLong(update.getMessage().getChatId())
-                            .setCaption("Готово!")
+                            .setCaption(convertedBook.getMessage())
                             .setDocument(document)
                             .build().createMessageList();
                 } catch (Exception ex) {

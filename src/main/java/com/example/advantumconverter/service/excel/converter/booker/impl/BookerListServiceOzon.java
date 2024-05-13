@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.example.advantumconverter.constant.Constant.BookerListName.BOOKER_OZON;
+import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LIST_CONVERT_ERROR;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 
@@ -38,11 +39,8 @@ public class BookerListServiceOzon extends ConvertServiceBase implements BookerL
         int row = START_ROW;
         val data = new ArrayList<BookerInputData>();
         ArrayList<String> dataLine = new ArrayList();
+        sheet = getExcelList(book, listName);
         try {
-            sheet = book.getSheet(listName);
-            if(sheet == null){
-                return data;
-            }
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
@@ -80,8 +78,7 @@ public class BookerListServiceOzon extends ConvertServiceBase implements BookerL
                 );
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать лист: " + listName + " строку:" + row
-                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
+            throw ConvertProcessingException.of(EXCEL_LIST_CONVERT_ERROR, listName, row, dataLine, e.getMessage());
         }
         return data;
     }
@@ -94,7 +91,6 @@ public class BookerListServiceOzon extends ConvertServiceBase implements BookerL
         val inn = getInn(row);
         return checkedInn.contains(inn) ? OZON_INN : inn;
     }
-
 
     private Double prepareRate(int row, int col) {
         val inn = getInn(row);
