@@ -31,22 +31,13 @@ public class ConvertServiceBase {
     protected XSSFSheet sheet;
 
     protected int LAST_COLUMN_NUMBER;
+    protected int LAST_ROW;
 
     protected XSSFSheet getExcelList(XSSFWorkbook book, String listName) {
         return Optional.ofNullable(book.getSheet(listName))
                 .orElseThrow(() -> new ExcelListNotFoundException(listName));
     }
 
-    //    private String getValueOrDefault(int row, int slippage, int col) {
-//        row = row + slippage;
-//        if (row < START_ROW || row > LAST_ROW) {
-//            return EMPTY;
-//        }
-//        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-//            return EMPTY;
-//        }
-//        return getCellValue(sheet.getRow(row).getCell(col));
-//    }
     protected String getCellValue(int row, int col) {
         if (sheet.getRow(row) == null) {
             return EMPTY;
@@ -174,4 +165,16 @@ public class ConvertServiceBase {
                 .setExcelListContent(excelListContent)
                 .build();
     }
+
+
+    //    private String getValueOrDefault(int row, int slippage, int col) {
+//        row = row + slippage;
+//        if (row < START_ROW || row > LAST_ROW) {
+//            return EMPTY;
+//        }
+//        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
+//            return EMPTY;
+//        }
+//        return getCellValue(sheet.getRow(row).getCell(col));
+//    }
 }

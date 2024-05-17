@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM_DETAIL;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
+import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM_DETAIL;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
@@ -37,7 +38,7 @@ public class ConvertServiceImplAgropromDetail extends ConvertServiceBase impleme
     }
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutputClient);
         int row = START_ROW;
@@ -86,20 +87,13 @@ public class ConvertServiceImplAgropromDetail extends ConvertServiceBase impleme
                 data.add(dataLine);
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать строку:" + row
-                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
+            throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + "_","Экспорт", data, "Готово!");
     }
 
     @Override
-    public String getFileNamePrefix() {
-        return getConverterName() + "_";
-    }
-
-
-    @Override
-    public String getExcelType() {
-        return CLIENT;
+    public ExcelType getExcelType() {
+        return ExcelType.CLIENT;
     }
 }

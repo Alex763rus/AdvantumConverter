@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.booker;
 
+import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.booker.BookerInputData;
@@ -21,8 +22,8 @@ import java.util.Map;
 
 import static com.example.advantumconverter.constant.Constant.BookerListName.*;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOOKER;
-import static com.example.advantumconverter.constant.Constant.ExcelType.BOOKER;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOOKER;
+import static com.example.advantumconverter.enums.ExcelType.BOOKER;
 import static java.util.Collections.emptyList;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -130,7 +131,7 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
     }
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
         message = new StringBuilder();
         //сгруппировать по инн + номер машины. Взять максимальные значения разъездов
         val loadedData = new ArrayList<BookerInputData>();
@@ -165,7 +166,7 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
         if (message.isEmpty()) {
             message.append("Готово!");
         }
-        return createConvertedBook(getFileNamePrefix(), excelLists, message.toString());
+        return createConvertedBook(getConverterName() + "_", excelLists, message.toString());
     }
 
     private Double calculateRateTc(BookerInputData bookerInputData) {
@@ -204,12 +205,7 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
     }
 
     @Override
-    public String getFileNamePrefix() {
-        return getConverterName() + "_";
-    }
-
-    @Override
-    public String getExcelType() {
+    public ExcelType getExcelType() {
         return BOOKER;
     }
 

@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
@@ -16,8 +17,9 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
+import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM;
+import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
@@ -26,8 +28,6 @@ import static org.example.tgcommons.utils.DateConverterUtils.*;
 public class ConvertServiceImplAgroprom extends ConvertServiceBase implements ConvertService {
 
     private final int START_ROW = 1;
-    private int LAST_ROW;
-    private int LAST_COLUMN_NUMBER;
 
     @Override
     public String getConverterName() {
@@ -40,7 +40,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     }
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutputClient);
         int row = START_ROW;
@@ -91,28 +91,22 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
                 }
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать строку:" + row
-                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
+            throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
     }
 
     @Override
-    public String getFileNamePrefix() {
-        return getConverterName() + "_";
-    }
-
-    @Override
-    public String getExcelType() {
+    public ExcelType getExcelType() {
         return CLIENT;
     }
 
     private String fillS(boolean isStart, int row) throws ParseException {
-        if(isStart){
+        if (isStart) {
             val timeK = convertDateFormat(getCellValue(row, 10), TEMPLATE_TIME, TEMPLATE_TIME_SECOND);
             val dateResult = getCellValue(row, 9) + SPACE + (isStart ? timeK : "TODO");
             return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_SLASH, TEMPLATE_DATE_TIME_DOT);
-        } else{
+        } else {
             val dateText = fillT(isStart, row);
             val date = convertDateFormat(dateText, TEMPLATE_DATE_TIME_DOT);
             return convertDateFormat(DateUtils.addHours(date, -2), TEMPLATE_DATE_TIME_DOT);
@@ -120,26 +114,15 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     }
 
     private String fillT(boolean isStart, int row) throws ParseException {
-        if(isStart){
+        if (isStart) {
             val dateText = fillS(isStart, row);
             val date = convertDateFormat(dateText, TEMPLATE_DATE_TIME_DOT);
             return convertDateFormat(DateUtils.addHours(date, 2), TEMPLATE_DATE_TIME_DOT);
-        } else{
+        } else {
             val timeN = convertDateFormat(getCellValue(row, 13), TEMPLATE_TIME, TEMPLATE_TIME_SECOND);
             val dateResult = getCellValue(row, 12) + SPACE + timeN;
             return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_SLASH, TEMPLATE_DATE_TIME_DOT);
         }
-    }
-
-    private String getValueOrDefault(int row, int slippage, int col) {
-        row = row + slippage;
-        if (row < START_ROW || row > LAST_ROW) {
-            return EMPTY;
-        }
-        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-            return EMPTY;
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
     }
 
 }

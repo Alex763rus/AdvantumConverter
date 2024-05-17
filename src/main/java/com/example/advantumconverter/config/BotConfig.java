@@ -4,7 +4,7 @@ import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.Company;
 import com.example.advantumconverter.model.jpa.CompanyRepository;
-import com.example.advantumconverter.service.excel.converter.*;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.booker.ConvertServiceImplBooker;
 import com.example.advantumconverter.service.excel.converter.client.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,9 +81,10 @@ public class BotConfig {
     @Autowired
     private ConvertServiceImplBooker convertServiceImplBooker;
     @Autowired
-    private CompanyRepository companyRepository;
-    @Autowired
     private ConvertServiceImplSber convertServiceImplSber;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Bean
     public CompanySetting companySetting() {

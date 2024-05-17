@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
@@ -17,8 +18,9 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOGORODSK;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
+import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOGORODSK;
+import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
@@ -29,10 +31,6 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
 
     private int LAST_ROW;
 
-    @Override
-    public String getFileNamePrefix() {
-        return getConverterName() + "_";
-    }
 
     @Override
     public String getConverterName() {
@@ -45,7 +43,7 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
     }
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutputClient);
         int row = START_ROW;
@@ -96,25 +94,18 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
                 }
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать строку:" + row
-                    + " , после значения:" + dataLine + ". Ошибка:" + e.getMessage());
+            throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
     }
 
     private Date getTimeForS(int row, int copy) {
-        int column = 0;
-        switch (copy) {
-            case 1:
-                column = 3;
-                break;
-            case 2:
-                column = 20;
-                break;
-            case 3:
-                column = 22;
-                break;
-        }
+        int column = switch (copy) {
+            case 1 -> 3;
+            case 2 -> 20;
+            case 3 -> 22;
+            default -> 0;
+        };
         return getCellDate(row, column);
     }
 
@@ -131,24 +122,17 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
     }
 
     private String fillU(int row, int copy) {
-        int column = 0;
-        switch (copy) {
-            case 1:
-                column = 13;
-                break;
-            case 2:
-                column = 21;
-                break;
-            case 3:
-                column = 23;
-                break;
-        }
+        int column = switch (copy) {
+            case 1 -> 13;
+            case 2 -> 21;
+            case 3 -> 23;
+            default -> 0;
+        };
         return getCellValue(row, column);
     }
 
-
     @Override
-    public String getExcelType() {
+    public ExcelType getExcelType() {
         return CLIENT;
     }
 }

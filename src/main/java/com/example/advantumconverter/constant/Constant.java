@@ -111,6 +111,10 @@ public final class Constant {
 
         public static final String EXCEL_LIST_CONVERT_ERROR =
                 "не удалось обработать лист: %s, строку: %d, после значения: %s. Ошибка: %s";
+
+        public static final String EXCEL_LINE_CONVERT_ERROR =
+                "не удалось обработать строку: %d, после значения: %s. Ошибка: %s";
+
     }
 
 }

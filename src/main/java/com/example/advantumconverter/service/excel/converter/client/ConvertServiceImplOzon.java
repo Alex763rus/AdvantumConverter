@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.DictionaryException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -18,8 +19,8 @@ import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_OZON;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.ExcelType.CLIENT;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_OZON;
+import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
@@ -29,10 +30,6 @@ public class ConvertServiceImplOzon extends ConvertServiceBase implements Conver
     private final int START_ROW = 1;
     private int LAST_ROW;
 
-    @Override
-    public String getFileNamePrefix() {
-        return getConverterName() + "_";
-    }
 
     @Override
     public String getConverterName() {
@@ -67,12 +64,12 @@ public class ConvertServiceImplOzon extends ConvertServiceBase implements Conver
 
 
     @Override
-    public String getExcelType() {
+    public ExcelType getExcelType() {
         return CLIENT;
     }
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book, String fileNamePrefix) {
+    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         processedRows = new HashSet<>();
         val currentFlights = new ArrayList<Flight>();
@@ -146,7 +143,7 @@ public class ConvertServiceImplOzon extends ConvertServiceBase implements Conver
                     + " , flight:" + flight
                     + ". Ошибка:" + e);
         }
-        return createDefaultBook(getFileNamePrefix(),"Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
     }
 
     private String fillS(boolean isStart, final List<Flight> currentFlights, int iFlight) throws ParseException {
