@@ -24,7 +24,7 @@ import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 @Component
 public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements ConvertService {
     private final int START_ROW = 1;
@@ -96,7 +96,7 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
     }
 
     private Date getTimeForS(int row, int copy) {

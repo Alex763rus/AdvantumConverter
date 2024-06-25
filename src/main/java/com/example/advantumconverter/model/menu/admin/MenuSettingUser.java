@@ -113,7 +113,7 @@ public class MenuSettingUser extends Menu {
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
         val users = userRepository.findUserByUserRole(NEED_SETTING);
-        if ((users).size() == 0) {
+        if ((users).isEmpty()) {
             return createMessageList(user, "Отсутствуют контакты, требующие настройки");
         }
         val buttons = new ArrayList<Button>();

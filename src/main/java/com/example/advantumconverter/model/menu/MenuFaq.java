@@ -76,7 +76,7 @@ public class MenuFaq extends Menu {
 
     private List<PartialBotApiMethod> freelogic(User user, Update update) {
         val faq = faqRepository.findAll();
-        if (faq.size() == 0) {
+        if (faq.isEmpty()) {
             return createMessageList(user, "Отсутствуют данные для faq, обратитесь к администратору");
         }
         val buttons = new ArrayList<Button>();

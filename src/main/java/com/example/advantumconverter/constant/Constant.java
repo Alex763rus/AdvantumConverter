@@ -33,6 +33,17 @@ public final class Constant {
 
     }
 
+    //TODO вынести в библиотеку:
+    @NoArgsConstructor(access = PRIVATE)
+    public final class Heap {
+        public static final String MINUS = "-";
+        public static final String TWO_SPACE = "  ";
+        public static final String UNDERSCORE = "_";
+        public static final String DONE = "Готово!";
+        public static final String EXPORT = "Экспорт";
+
+    }
+
     @NoArgsConstructor(access = PRIVATE)
     public final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
@@ -41,6 +52,7 @@ public final class Constant {
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
         public static final String FILE_NAME_SBER = "СберЛогистика";
+        public static final String FILE_NAME_ART_FRUIT = "Артфруд";
         public static final String FILE_NAME_BOOKER = "Бухгалтерия";
         public static final String FILE_NAME_AGROPROM_DETAIL = "Х5 Агропром Торг (Детал)";
         public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
@@ -57,6 +69,7 @@ public final class Constant {
         public static final String COMPANY_NAME_OZON = "Озон";
         public static final String COMPANY_NAME_METRO = "Метро";
         public static final String COMPANY_NAME_SBER = "СберЛогистика";
+        public static final String COMPANY_NAME_ART_FRUIT = "ArtFruit";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -89,6 +102,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
         public static final String COMMAND_CONVERT_AGROPROM = "/convert_agroprom";
         public static final String COMMAND_CONVERT_SBER = "/convert_sber";
+        public static final String COMMAND_CONVERT_ART_FRUIT = "/convert_art_fruit";
         public static final String COMMAND_CONVERT_BOOKER = "/convert_booker";
         public static final String COMMAND_CONVERT_AGROPROM_DETAIL = "/convert_agroprom_detail";
         public static final String COMMAND_SHOW_OPEN_TASK = "/show_open_task";

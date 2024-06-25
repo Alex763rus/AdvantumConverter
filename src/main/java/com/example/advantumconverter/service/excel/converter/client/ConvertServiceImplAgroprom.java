@@ -19,6 +19,7 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -93,7 +94,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
     }
 
     @Override

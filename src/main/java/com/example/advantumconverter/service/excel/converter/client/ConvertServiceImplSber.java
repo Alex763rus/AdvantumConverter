@@ -21,10 +21,13 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SBER;
+import static com.example.advantumconverter.constant.Constant.Heap.MINUS;
+import static com.example.advantumconverter.constant.Constant.Heap.TWO_SPACE;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplSber extends ConvertServiceBase implements ConvertService {
@@ -33,8 +36,6 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
     private final static String YAROSLAVSKOE_HIGHWAY = "Ярославское шоссе 222";
-    private final static String TWO_SPACE = "  ";
-    private final static String MINUS = "-";
     private final static String EXPECTED_TIME_FORMULA = "CHOOSE(1+(B2>=12)+(B2>=23)+(B2>=34)+(B2>=45)+(B2>=56)+(B2>=67)+(B2>=78)+(B2>=89),\"4:00\",\"5:00\",\"6:00\",\"7:00\",\"8:00\",\"9:00\",\"10:00\",\"11:00\")";
 
     @Override
@@ -122,7 +123,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
     }
 
     private String prepareTemperature(int row) {
@@ -177,7 +178,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             val flightNumber = getFlightTime(Integer.parseInt(getCellValue(row, 7)));
             return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + flightNumber.getTime();
         } else {
-            val time = getCellValue(row, 14).split("-")[0];
+            val time = getCellValue(row, 14).split(MINUS)[0];
             return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
         }
     }

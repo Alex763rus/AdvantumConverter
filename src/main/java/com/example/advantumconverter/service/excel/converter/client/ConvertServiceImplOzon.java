@@ -24,6 +24,7 @@ import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplOzon extends ConvertServiceBase implements ConvertService {
@@ -143,7 +144,7 @@ public class ConvertServiceImplOzon extends ConvertServiceBase implements Conver
                     + " , flight:" + flight
                     + ". Ошибка:" + e);
         }
-        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
     }
 
     private String fillS(boolean isStart, final List<Flight> currentFlights, int iFlight) throws ParseException {

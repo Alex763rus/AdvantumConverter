@@ -225,7 +225,7 @@ public class DictionaryService {
                 .filter(dict -> codes.contains(dict.getMetroTimeDictionaryKey().getCode()))
                 .sorted(Comparator.comparing(p -> (p.getMetroTimeDictionaryKey().getPriority())))
                 .toList();
-        return dictionaries.size() == 0 ? null : dictionaries.get(0);
+        return dictionaries.isEmpty() ? null : dictionaries.get(0);
     }
 
     public String getMetroTimeStart(Long timeId, Set<String> codes) {

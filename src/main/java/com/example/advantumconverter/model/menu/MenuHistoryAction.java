@@ -80,7 +80,7 @@ public class MenuHistoryAction extends Menu {
         historyActionsTo.stream().sorted(comparator);
         val answer = new StringBuilder();
         answer.append("Действия пользователя: " + prepareShield(userEmployee.getNameOrFirst())).append(SPACE);
-        if (historyActionsTo.size() == 0) {
+        if (historyActionsTo.isEmpty()) {
             answer.append("не найдены");
         }
         answer.append(NEW_LINE);
@@ -112,7 +112,7 @@ public class MenuHistoryAction extends Menu {
 
     private List<PartialBotApiMethod> gerFreeLogicSupport(User user, Update update) {
         val companys = companyRepository.findAll();
-        if (companys.size() == 0) {
+        if (companys.isEmpty()) {
             return createMessageList(user, "Компании отсутствуют");
         }
         val buttons = new ArrayList<Button>();
@@ -140,7 +140,7 @@ public class MenuHistoryAction extends Menu {
     }
 
     private List<PartialBotApiMethod> showUsers(User user, List<User> users) {
-        if (users.size() == 0) {
+        if (users.isEmpty()) {
             return createMessageList(user, "В выбранной компании пользователи не найдены");
         }
         stateService.setState(user, HISTORY_WAIT_USER);

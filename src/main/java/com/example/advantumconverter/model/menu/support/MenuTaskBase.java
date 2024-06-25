@@ -45,7 +45,7 @@ public abstract class MenuTaskBase extends Menu {
     }
 
     protected List<PartialBotApiMethod> createMenuFromUserTasks(User user, Update update, List<SupportTask> supportTasks, String mainMessage, String notFoundTask) {
-        if (supportTasks.size() == 0) {
+        if (supportTasks.isEmpty()) {
             stateService.setState(user, FREE);
             return createMessageList(user, notFoundTask);
         }

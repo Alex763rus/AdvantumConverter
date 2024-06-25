@@ -19,6 +19,7 @@ import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LI
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM_DETAIL;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplAgropromDetail extends ConvertServiceBase implements ConvertService {
@@ -89,7 +90,7 @@ public class ConvertServiceImplAgropromDetail extends ConvertServiceBase impleme
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + "_","Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE,EXPORT, data, DONE);
     }
 
     @Override

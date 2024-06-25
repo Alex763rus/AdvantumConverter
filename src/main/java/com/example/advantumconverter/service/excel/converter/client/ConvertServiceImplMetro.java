@@ -25,6 +25,7 @@ import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplMetro extends ConvertServiceBase implements ConvertService {
@@ -139,7 +140,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                     + " , flight:" + flight
                     + ". Ошибка:" + e);
         }
-        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
     }
 
 
@@ -194,7 +195,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
         if (isStart) {
             val dateL = convertDateFormat(getCellValue(row, 11), "dd/MM/yy", TEMPLATE_DATE_DOT);
             val timeR = getCellValue(row, 17);
-            val dateResultString = dateL + " " + timeR;
+            val dateResultString = dateL + SPACE + timeR;
             return dateResultString;
         } else {
 //            Приезд на разгрузку:
@@ -208,7 +209,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                 throw new DictionaryException("Не найдено временное окно в справочнике окон Метро по запросу: "
                         + magazineId + " [" + String.join(",", magazineCodes) + "]");
             }
-            val dateResultString = dateY + " " + dictionary;
+            val dateResultString = dateY + SPACE + dictionary;
             return dateResultString;
         }
     }
@@ -235,7 +236,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
             //L - дата + W время
             val dateL = convertDateFormat(getCellValue(row, 11), "dd/MM/yy", TEMPLATE_DATE_DOT);
             val timeW = getCellValue(row, 22);
-            dateResultString = dateL + " " + timeW;
+            dateResultString = dateL + SPACE + timeW;
         } else {
             //Выезд с ращгрузки:
             //Дата - Y, время из справочника:Справочник_временных_окон_приемки
@@ -248,7 +249,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                 throw new DictionaryException("Не найдено временное окно в справочнике окон Метро по запросу: "
                         + magazineId + " [" + String.join(",", magazineCodes) + "]");
             }
-            dateResultString = dateY + " " + dictionary;
+            dateResultString = dateY + SPACE + dictionary;
         }
         val dateResult = convertDateFormat(dateResultString, TEMPLATE_DATE_TIME_DOT);
         val dateS = convertDateFormat(fillS(isStart, row), TEMPLATE_DATE_TIME_DOT);

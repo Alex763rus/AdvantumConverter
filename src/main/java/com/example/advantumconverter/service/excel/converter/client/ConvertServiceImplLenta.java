@@ -22,11 +22,12 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
+import static com.example.advantumconverter.constant.Constant.Heap.MINUS;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 @Component
 public class ConvertServiceImplLenta extends ConvertServiceBase implements ConvertService {
     private int START_ROW;
@@ -118,7 +119,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + "_", "Экспорт", data, "Готово!");
+        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
     }
 
     private String fillS(int row, boolean isStart) throws ParseException {
@@ -241,7 +242,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
     private Long getCode(int row) {
         val cellValue = getCellValue(row, 0);
-        val indexDash = cellValue.indexOf("-");
+        val indexDash = cellValue.indexOf(MINUS);
         val longValue = indexDash != -1 ? cellValue.substring(0, indexDash) : cellValue;
         return Long.parseLong(longValue);
     }

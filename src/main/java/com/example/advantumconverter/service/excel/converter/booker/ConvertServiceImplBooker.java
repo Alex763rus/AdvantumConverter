@@ -23,6 +23,8 @@ import java.util.Map;
 import static com.example.advantumconverter.constant.Constant.BookerListName.*;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BOOKER;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOOKER;
+import static com.example.advantumconverter.constant.Constant.Heap.DONE;
+import static com.example.advantumconverter.constant.Constant.Heap.UNDERSCORE;
 import static com.example.advantumconverter.enums.ExcelType.BOOKER;
 import static java.util.Collections.emptyList;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
@@ -164,9 +166,9 @@ public class ConvertServiceImplBooker extends ConvertServiceBase implements Conv
 //                createConvertedList(BOOKER_OZON, calculate(loadedDataMetro))
         );
         if (message.isEmpty()) {
-            message.append("Готово!");
+            message.append(DONE);
         }
-        return createConvertedBook(getConverterName() + "_", excelLists, message.toString());
+        return createConvertedBook(getConverterName() + UNDERSCORE, excelLists, message.toString());
     }
 
     private Double calculateRateTc(BookerInputData bookerInputData) {
