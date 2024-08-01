@@ -6,6 +6,8 @@ target/
 src/main/resources/StandConfig/*
 src/main/resources/application.properties
 src/main/resources/logback.xml
+src/dbdata/*
+tmp/*
 
 ### STS ###
 .apt_generated

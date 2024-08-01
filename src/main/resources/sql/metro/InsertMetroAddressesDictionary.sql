@@ -1,8 +1,8 @@
-# Распределительный центр метро
+-- # Распределительный центр метро
 -- #     ="select '"&A2&"', '"&B2&"' union all"
 -- drop table metro_addresses_dictionary;
 -- select * from metro_addresses_dictionary;
-select count(*) from metro_addresses_dictionary;
+-- select count(*) from metro_addresses_dictionary;
 REPLACE INTO metro_addresses_dictionary(addresses_id, addresses_name)
 select 'рынок Северный (остановка)', 'рынок Северный (остановка)' union all
 select '53', 'Ростов на Дону, ул. 40-летия Победы, 340' union all

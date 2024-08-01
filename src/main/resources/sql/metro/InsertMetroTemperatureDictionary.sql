@@ -1,8 +1,8 @@
-# Справочник температурных режимов метро
+-- # Справочник температурных режимов метро
 -- #     ="select '"&A5&"', '"&C5&"', '"&B5&"' union all"
 -- drop table metro_temperature_dictionary;
 -- select * from metro_temperature_dictionary;
-select count(*) from metro_temperature_dictionary;
+-- select count(*) from metro_temperature_dictionary;
 REPLACE INTO metro_temperature_dictionary(temperature_id, min_temperature, max_temperature)
 select '1', '0', '2' union all
 select '-1', '-2', '0' union all
