@@ -29,6 +29,7 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
     private CellStyle styleDateDot;
     private CellStyle styleDateTimeDot;
     private CellStyle styleInt;
+    private CellStyle styleDouble;
 
     public InputFile createXlsx(ConvertedBook convertedBook) {
         val book = convertedBook.getBook().get(0);
@@ -38,6 +39,7 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
         styleDateDot = getStyle(TEMPLATE_DATE_DOT);
         styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
         styleInt = getStyle("0");
+        styleDouble = getStyle("0,000000");
         int y = 0;
         int x = 0;
         try {
@@ -73,8 +75,8 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
                     createCellString(row, y, 21);
                     createCellString(row, y, 22);
                     createCellInt(row, y, 23);
-                    createCellInt(row, y, 24);
-                    createCellInt(row, y, 25);
+                    createCellDouble(row, y, 24);
+                    createCellDouble(row, y, 25);
                     createCellString(row, y, 26);
                     createCellString(row, y, 27);
                     createCellString(row, y, 28);
@@ -117,5 +119,13 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
         cell1.setCellValue(convertDateFormat(data.get(y).get(x), dateFormat));
         cell1.setCellStyle(cellStyle);
 
+    }
+
+    private void createCellDouble(Row row, int y, int x) throws ParseException {
+        val cell = row.createCell(x);
+        cell.setCellStyle(styleDouble);
+        if (!data.get(y).get(x).equals(EMPTY)) {
+            cell.setCellValue(Double.parseDouble(data.get(y).get(x)));
+        }
     }
 }

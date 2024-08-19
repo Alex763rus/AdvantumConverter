@@ -21,12 +21,12 @@ import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
-import static org.example.tgcommons.utils.DateConverterUtils.TEMPLATE_DATE_DOT;
+import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
 public class ConvertServiceImplArtFruit extends ConvertServiceBase implements ConvertService {
 
-    private final int START_ROW = 3;
+    private final int START_ROW = 6;
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
     private final static String STOCK_ART_FRUIT = "Склад Артфрут";
@@ -69,27 +69,28 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         ArrayList<String> dataLine = new ArrayList();
         Set<String> addressesInReis = new HashSet<>();
 
-        val carNumbers = readCarNumbers(book);
+//        val carNumbers = readCarNumbers(book);
         boolean isStart = true;
         int lastNumberUnloading = -1;
         int numberUnloadingCounter = 0;
         int repeat = 0;
-        double tonnage = 0.0;
-        String numberOrderStart = EMPTY;
+        String tonnage = EMPTY;
+
+        String lastNumberOrderStart = EMPTY;
         try {
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
-                val numberUnloading = getIntegerValue(row, 12);
-                isStart = numberUnloading != lastNumberUnloading;
+                val numberOrderStart = getCellValue(row, 0);
+
+                isStart = !lastNumberOrderStart.equals(numberOrderStart);
                 if (isStart) {
                     addressesInReis.clear();
-                    lastNumberUnloading = numberUnloading;
-                    numberOrderStart = getCellValue(row, 0);
+                    lastNumberOrderStart = numberOrderStart;
                     numberUnloadingCounter = 0;
                     repeat = 2;
-                    tonnage = calculateTonnage(row);
+                    tonnage = getCellValue(row, 11).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
                 } else {
                     repeat = 1;
                 }
@@ -102,7 +103,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
 
                     dataLine = new ArrayList<String>();
                     dataLine.add(numberOrderStart);
-                    dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
+                    dataLine.add(getDateFromFile(row));
                     dataLine.add(FILE_NAME_ART_FRUIT);
                     dataLine.add(FILE_NAME_ART_FRUIT);
                     dataLine.add(EMPTY);
@@ -110,8 +111,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
-                    dataLine.add(String.valueOf((int) Math.ceil(tonnage)));
-                    dataLine.add("12");
+                    dataLine.add(tonnage);
+                    dataLine.add(getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY));
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
@@ -125,13 +126,13 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     dataLine.add(address);
                     dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
                     dataLine.add(String.valueOf(isStart ? 0 : numberUnloadingCounter));
+                    dataLine.add(isStart ? EMPTY : getCellValue(row, 26).replaceAll(",", "."));
+                    dataLine.add(isStart ? EMPTY : getCellValue(row, 27).replaceAll(",", "."));
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
+                    dataLine.add(getCellValue(row, 30));
                     dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(carNumbers.getOrDefault(getCellValue(row, 12), EMPTY));
-                    dataLine.add(EMPTY);
-                    dataLine.add(IVANOV_IVAN_IVANOVICH);
+                    dataLine.add(getCellValue(row, 32));
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
@@ -169,31 +170,36 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         return tonnage;
     }
 
+    private String getDateFromFile(int row) {
+        try {
+            return convertDateFormat(getCellValue(row, 1), TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String fillS(boolean isStart, int row) throws ParseException {
         if (isStart) {
-            return getCurrentDate(TEMPLATE_DATE_DOT) + SPACE + "5:00";
+            return getDateFromFile(row) + SPACE + "5:00";
         } else {
-            val time = getCellValue(row, 6).split(MINUS)[0];
-            return getCurrentDate(TEMPLATE_DATE_DOT) + SPACE + time;
+            return convertDateFormat(getCellValue(row, 20), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT);
         }
     }
 
     private String fillT(boolean isStart, int row) throws ParseException {
         if (isStart) {
-            return getCurrentDate(TEMPLATE_DATE_DOT) + SPACE + "10:00";
+            return getDateFromFile(row) + SPACE + "10:00";
         } else {
-            val time = getCellValue(row, 6).split(MINUS)[1];
-            return getCurrentDate(TEMPLATE_DATE_DOT) + SPACE + time;
+            return convertDateFormat(getCellValue(row, 21), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT);
         }
     }
 
     private String fillU(boolean isStart, int row) {
-        return isStart ? STOCK_ART_FRUIT :
-                clearDoubleSpace(getCellValue(row, 3) + UNDERSCORE + getCellValue(row, 4));
+        return isStart ? STOCK_ART_FRUIT : clearDoubleSpace(getCellValue(row, 22));
     }
 
     private String fillV(boolean isStart, int row) {
-        return isStart ? STOCK_ART_FRUIT_ADDRESS : clearDoubleSpace(getCellValue(row, 4));
+        return isStart ? STOCK_ART_FRUIT_ADDRESS : clearDoubleSpace(getCellValue(row, 23));
     }
 
     private String clearDoubleSpace(String text) {

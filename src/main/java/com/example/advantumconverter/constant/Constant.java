@@ -52,7 +52,7 @@ public final class Constant {
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
         public static final String FILE_NAME_SBER = "СберЛогистика";
-        public static final String FILE_NAME_ART_FRUIT = "Артфруд";
+        public static final String FILE_NAME_ART_FRUIT = "Артфрут";
         public static final String FILE_NAME_BOOKER = "Бухгалтерия";
         public static final String FILE_NAME_AGROPROM_DETAIL = "Х5 Агропром Торг (Детал)";
         public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
