@@ -2,6 +2,7 @@ package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public interface ConvertService {
@@ -24,8 +25,19 @@ public interface ConvertService {
      * @param book - вложенный в сообщение входящий excel документ
      * @return ConvertedBook - сформированный документ
      */
-    ConvertedBook getConvertedBook(XSSFWorkbook book);
+    @Deprecated
+    default ConvertedBook getConvertedBook(XSSFWorkbook book){
+       return null;
+    }
 
+    /**
+     * @param book - вложенный в сообщение входящий excel документ
+     * @return ConvertedBook - сформированный документ
+     * обновленный DTO
+     */
+    default ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book){
+        return null;
+    }
 
     /**
      * @return тип возвращаемого эксель файла из перечисления ExcelType

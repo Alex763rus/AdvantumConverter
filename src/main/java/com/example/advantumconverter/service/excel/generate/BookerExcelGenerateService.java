@@ -3,6 +3,7 @@ package com.example.advantumconverter.service.excel.generate;
 import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -72,6 +73,11 @@ public class BookerExcelGenerateService implements ExcelGenerateService {
         } catch (Exception e) {
             throw new ExcelGenerationException("Ошибка во время формирования файла:" + e.getMessage());
         }
+    }
+
+    @Override
+    public InputFile createXlsxV2(ConvertedBookV2 convertedBook) {
+        throw new RuntimeException("Не реализовано. Требуется реализация");
     }
 
 

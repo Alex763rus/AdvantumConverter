@@ -3,6 +3,7 @@ package com.example.advantumconverter.service.excel.converter;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.database.DictionaryService;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -129,7 +130,7 @@ public class ConvertServiceBase {
         return convertToIntegerOrNull(getCellValue(row, col));
     }
 
-    private Integer convertToIntegerOrNull(String value) {
+    protected Integer convertToIntegerOrNull(String value) {
         try {
             if (value.equals(EMPTY)) {
                 return null;

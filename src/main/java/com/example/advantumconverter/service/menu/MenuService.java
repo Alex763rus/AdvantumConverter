@@ -1,15 +1,11 @@
 package com.example.advantumconverter.service.menu;
 
-import com.example.advantumconverter.service.SecurityService;
-import com.example.advantumconverter.model.menu.*;
-import com.example.advantumconverter.model.menu.admin.MenuSettingUser;
-import com.example.advantumconverter.model.menu.converter.*;
-import com.example.advantumconverter.model.menu.support.MenuMyTask;
-import com.example.advantumconverter.model.menu.support.MenuOpenTask;
-import com.example.advantumconverter.model.menu.support.MenuReloadDictionary;
+import com.example.advantumconverter.model.menu.MenuActivity;
+import com.example.advantumconverter.model.menu.MenuDefault;
+import com.example.advantumconverter.model.menu.MenuStart;
 import com.example.advantumconverter.service.HistoryActionService;
+import com.example.advantumconverter.service.SecurityService;
 import com.example.advantumconverter.service.database.UserService;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.example.tgcommons.constant.Constant;
@@ -39,7 +35,6 @@ public class MenuService {
 
     @Autowired
     private HistoryActionService historyActionService;
-
 
     @Autowired
     private UserService userService;

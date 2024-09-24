@@ -17,7 +17,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.advantumconverter.constant.Constant.Converter.SHEET_RESULT_NAME;
 import static com.example.advantumconverter.enums.FileType.USER_IN;
 import static com.example.advantumconverter.enums.State.FREE;
 
@@ -38,13 +37,17 @@ public abstract class MenuConverterBase extends Menu {
                     val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
                     update.getMessage().setText(fileFullPath);
                     val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
-                    val convertedBook = convertService.getConvertedBook(book);
+                    var convertedBook = convertService.getConvertedBook(book);
+                    var convertedBookV2 = convertService.getConvertedBookV2(book);
                     val excelService = excelGenerateServiceMap.get(convertService.getExcelType().getExcelType());
-                    val document = excelService.createXlsx(convertedBook);
+                    val document = convertedBook != null
+                            ? excelService.createXlsx(convertedBook)
+                            : excelService.createXlsxV2(convertedBookV2);
+                    val message = convertedBook != null ? convertedBook.getMessage() : convertedBookV2.getMessage();
                     stateService.setState(user, FREE);
                     return SendDocumentWrap.init()
                             .setChatIdLong(update.getMessage().getChatId())
-                            .setCaption(convertedBook.getMessage())
+                            .setCaption(message)
                             .setDocument(document)
                             .build().createMessageList();
                 } catch (Exception ex) {

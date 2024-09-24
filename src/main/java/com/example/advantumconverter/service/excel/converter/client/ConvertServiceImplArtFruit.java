@@ -3,7 +3,9 @@ package com.example.advantumconverter.service.excel.converter.client;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
-import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -11,7 +13,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_ART_FRUIT;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
@@ -22,6 +27,7 @@ import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
+import static org.example.tgcommons.utils.NumberConverter.convertToDoubleOrNull;
 
 @Component
 public class ConvertServiceImplArtFruit extends ConvertServiceBase implements ConvertService {
@@ -32,7 +38,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     private final static String STOCK_ART_FRUIT = "Склад Артфрут";
     private final static String STOCK_ART_FRUIT_ADDRESS = "г. Москва,поселение марушкинское вн.тер.г. 63 кв-л, д.1Б стр 8, скл б/н";
     private final static String VEHICLES_SHEET_NAME = "Vehicles";
-    private final static String IVANOV_IVAN_IVANOVICH = "Иванов Иван Иванович";
+    private final static String TIME_10_00_STRING = "10:00";
+    private final static String TIME_5_00_STRING = "5:00";
 
 
     @Override
@@ -45,31 +52,12 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         return COMMAND_CONVERT_ART_FRUIT;
     }
 
-
-    private Map<String, String> readCarNumbers(XSSFWorkbook book) {
-        sheet = book.getSheet(VEHICLES_SHEET_NAME);
-        LAST_ROW = getLastRow(START_ROW);
-        val carNumbers = new HashMap<String, String>();
-        for (int row = 2; row <= LAST_ROW; ++row) {
-            val keyM = getCellValue(row, 12);
-            val valueB = getCellValue(row, 1);
-            val carNumberStartIndex = valueB.lastIndexOf(SPACE);
-            if (carNumberStartIndex > 0) {
-                carNumbers.put(keyM, valueB.substring(carNumberStartIndex));
-            }
-        }
-        return carNumbers;
-    }
-
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
-        val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutputClient);
+    public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
+        val data = new ArrayList<ConvertedListDataV2>();
         int row = START_ROW;
-        ArrayList<String> dataLine = new ArrayList();
         Set<String> addressesInReis = new HashSet<>();
-
-//        val carNumbers = readCarNumbers(book);
+        ConvertedListDataV2 dataLine = null;
         boolean isStart = true;
         int lastNumberUnloading = -1;
         int numberUnloadingCounter = 0;
@@ -101,42 +89,50 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     }
                     addressesInReis.add(address);
 
-                    dataLine = new ArrayList<String>();
-                    dataLine.add(numberOrderStart);
-                    dataLine.add(getDateFromFile(row));
-                    dataLine.add(FILE_NAME_ART_FRUIT);
-                    dataLine.add(FILE_NAME_ART_FRUIT);
-                    dataLine.add(EMPTY);
-                    dataLine.add(REFRIGERATOR);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(tonnage);
-                    dataLine.add(getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY));
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(fillS(isStart, row));
-                    dataLine.add(fillT(isStart, row));
-                    dataLine.add(fillU(isStart, row));
-                    dataLine.add(address);
-                    dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
-                    dataLine.add(String.valueOf(isStart ? 0 : numberUnloadingCounter));
-                    dataLine.add(isStart ? EMPTY : getCellValue(row, 26).replaceAll(",", "."));
-                    dataLine.add(isStart ? EMPTY : getCellValue(row, 27).replaceAll(",", "."));
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(getCellValue(row, 30));
-                    dataLine.add(EMPTY);
-                    dataLine.add(getCellValue(row, 32));
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-
+                    dataLine = ConvertedListDataV2.init()
+                            .setColumnAdata(numberOrderStart)
+                            .setColumnBdata(convertDateFormat(getDateFromFile(row), TEMPLATE_DATE_DOT))
+                            .setColumnCdata(FILE_NAME_ART_FRUIT)
+                            .setColumnDdata(FILE_NAME_ART_FRUIT)
+                            .setColumnEdata(null)
+                            .setColumnFdata(REFRIGERATOR)
+                            .setColumnGdata(EMPTY)
+                            .setColumnHdata(EMPTY)
+                            .setColumnIdata(null)
+                            .setColumnJdata(convertToIntegerOrNull(tonnage))
+                            .setColumnKdata(convertToIntegerOrNull(
+                                    getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
+                            ))
+                            .setColumnLdata(null)
+                            .setColumnMdata(null)
+                            .setColumnNdata(null)
+                            .setColumnOdata(null)
+                            .setColumnPdata(null)
+                            .setColumnQdata(null)
+                            .setColumnRdata(null)
+                            .setColumnSdata(convertDateFormat(fillS(isStart, row), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnTdata(convertDateFormat(fillT(isStart, row), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnUdata(fillU(isStart, row))
+                            .setColumnVdata(address)
+                            .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
+                            .setColumnXdata(isStart ? 0 : numberUnloadingCounter)
+                            .setColumnYdata(
+                                    isStart ? null : convertToDoubleOrNull(
+                                            getCellValue(row, 26).replaceAll(",", "."))
+                            )
+                            .setColumnZdata(
+                                    isStart ? null : convertToDoubleOrNull(
+                                            getCellValue(row, 27).replaceAll(",", "."))
+                            )
+                            .setColumnAaData(EMPTY)
+                            .setColumnAbData(EMPTY)
+                            .setColumnAcData(getCellValue(row, 30))
+                            .setColumnAdData(EMPTY)
+                            .setColumnAeData(getCellValue(row, 32))
+                            .setColumnAfData(null)
+                            .setColumnAgData(EMPTY)
+                            .setColumnAhData(EMPTY)
+                            .build();
                     data.add(dataLine);
                     ++numberUnloadingCounter;
                     if (!isStart) {
@@ -149,25 +145,22 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
+        return ConvertedBookV2.init()
+                .setBookV2(List.of(
+                        ConvertedListV2.init()
+                                .setHeadersV2(Header.headersOutputClient)
+                                .setExcelListName(EXPORT)
+                                .setExcelListContentV2(data)
+                                .build()
+                ))
+                .setMessage(DONE)
+                .setBookName(getConverterName() + UNDERSCORE)
+                .build();
     }
 
     @Override
     public ExcelType getExcelType() {
         return CLIENT;
-    }
-
-    private double calculateTonnage(int row) {
-        double tonnage = 0.0;
-        val key = getCellValue(row, 12);
-        for (; row <= LAST_ROW; ++row) {
-            val colM = getCellValue(row, 12);
-            if (!colM.equals(key)) {
-                break;
-            }
-            tonnage += Double.parseDouble(getCellValue(row, 10).replace(",", "."));
-        }
-        return tonnage;
     }
 
     private String getDateFromFile(int row) {
@@ -180,7 +173,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
 
     private String fillS(boolean isStart, int row) throws ParseException {
         if (isStart) {
-            return getDateFromFile(row) + SPACE + "5:00";
+            return getDateFromFile(row) + SPACE + TIME_5_00_STRING;
         } else {
             return convertDateFormat(getCellValue(row, 20), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT);
         }
@@ -188,7 +181,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
 
     private String fillT(boolean isStart, int row) throws ParseException {
         if (isStart) {
-            return getDateFromFile(row) + SPACE + "10:00";
+            return getDateFromFile(row) + SPACE + TIME_10_00_STRING;
         } else {
             return convertDateFormat(getCellValue(row, 21), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT);
         }

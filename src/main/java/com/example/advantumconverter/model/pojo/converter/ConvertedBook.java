@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
-public class ConvertedBook {
+public class ConvertedBook implements ConvertedBookDto {
 
     private String bookName;
 
