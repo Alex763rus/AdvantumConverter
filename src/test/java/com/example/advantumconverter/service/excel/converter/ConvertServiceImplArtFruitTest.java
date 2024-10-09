@@ -1,8 +1,6 @@
 package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.model.dictionary.excel.Header;
-import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
-import com.example.advantumconverter.model.pojo.converter.ConvertedList;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
@@ -27,7 +25,6 @@ import static constant.TestConstant.TestFileOut.EXCEL_ART_FRUIT_OUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-import static org.example.tgcommons.utils.NumberConverter.convertToDoubleOrNull;
 import static org.example.tgcommons.utils.NumberConverter.convertToIntegerOrNull;
 import static utils.ExcelReader.read;
 
@@ -85,14 +82,8 @@ public class ConvertServiceImplArtFruitTest {
                             .setColumnVdata(getCellValue(sheet, row, 21))
                             .setColumnWdata(getCellValue(sheet, row, 22))
                             .setColumnXdata(convertToIntegerOrNull(getCellValue(sheet, row, 23)))
-                            .setColumnYdata(
-                                    convertToDoubleOrNull(
-                                            getCellValue(sheet, row, 24)
-                                    ))
-                            .setColumnZdata(
-                                    convertToDoubleOrNull(
-                                            getCellValue(sheet, row, 25)
-                                    ))
+                            .setColumnYdata(getNumericCellValue(sheet, row, 24))
+                            .setColumnZdata(getNumericCellValue(sheet, row, 25))
                             .setColumnAaData(getCellValue(sheet, row, 26))
                             .setColumnAbData(getCellValue(sheet, row, 27))
                             .setColumnAcData(getCellValue(sheet, row, 28))
@@ -149,4 +140,25 @@ public class ConvertServiceImplArtFruitTest {
         return formatter.formatCellValue(xssfCell);
     }
 
+    private Double getNumericCellValue(XSSFSheet sheet, int row, int col) {
+        if (sheet.getRow(row) == null) {
+            return null;
+        }
+        if (sheet.getRow(row).getCell(col) == null) {
+            return null;
+        }
+        return getNumericCellValue(sheet.getRow(row).getCell(col));
+    }
+
+    private Double getNumericCellValue(XSSFCell xssfCell) {
+        if(getCellValue(xssfCell).equals(EMPTY)){
+            return null;
+        }
+        return xssfCell.getNumericCellValue();
+    }
+
+    protected Double getDoubleValue(XSSFSheet sheet, int row, int col) {
+        val cellValue = getCellValue(sheet, row, col);
+        return cellValue.equals(EMPTY) ? null : Double.parseDouble(cellValue);
+    }
 }

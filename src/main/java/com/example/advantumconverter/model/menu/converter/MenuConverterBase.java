@@ -34,6 +34,10 @@ public abstract class MenuConverterBase extends Menu {
             if (update.getMessage().hasDocument()) {
                 try {
                     val field = update.getMessage().getDocument();
+                    if (!field.getFileName().contains(".xlsx")
+                            && !field.getFileName().contains(".xlsm")) {
+                        return errorMessage(update, "Ошибка. Неизвестный формат файла. \nОтправьте документ формата .xlsx");
+                    }
                     val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
                     update.getMessage().setText(fileFullPath);
                     val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
