@@ -8,7 +8,7 @@ import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
-import lombok.val;
+import lombok.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
@@ -30,14 +30,9 @@ import static org.example.tgcommons.utils.NumberConverter.convertToDoubleOrNull;
 @Component
 public class ConvertServiceImplArtFruit extends ConvertServiceBase implements ConvertService {
 
-    private final int START_ROW = 7;
+    private final int START_ROW = 4;
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
-    private final static String STOCK_ART_FRUIT = "Склад Артфрут";
-    private final static String STOCK_ART_FRUIT_ADDRESS = "г. Москва,поселение марушкинское вн.тер.г. 63 кв-л, д.1Б стр 8, скл б/н";
-    private final static String VEHICLES_SHEET_NAME = "Vehicles";
-    private final static String TIME_10_00_STRING = "10:00";
-    private final static String TIME_5_00_STRING = "5:00";
     private List<String> warnings = new ArrayList<>();
 
     @Override
@@ -56,6 +51,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         val data = new ArrayList<ConvertedListDataV2>();
         int row = START_ROW;
         Set<String> addressesInReis = new HashSet<>();
+        Set<AddressInReis> uniqReisAndAddress = new HashSet<>();
         ConvertedListDataV2 dataLine = null;
         boolean isStart = true;
         int lastNumberUnloading = -1;
@@ -68,78 +64,102 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
+
+            String startAddress = null;
+
+            for (int rowTmp = row; rowTmp <= LAST_ROW; ++rowTmp) {
+                val numberOrderStart = getCellValue(row, 0);
+                isStart = !lastNumberOrderStart.equals(numberOrderStart);
+                if (isStart) {
+                    startAddress = fillV(row);
+                    lastNumberOrderStart = numberOrderStart;
+                }
+                var number = getCellValue(rowTmp, 1);
+                var taskNumber = getCellValue(rowTmp, 0);
+                val numbersTmp = new ArrayList<String>();
+                numbersTmp.add(number);
+                val address = fillV(rowTmp);
+                val addressInReisTmp = AddressInReis.init()
+                        .setTaskNumber(taskNumber)
+                        .setAddress(address)
+                        .setStartAddress(startAddress)
+                        .setNumbers(numbersTmp)
+                        .build();
+                var addressInReisTmpSearch = uniqReisAndAddress.stream()
+                        .filter(e -> e.equals(addressInReisTmp))
+                        .toList();
+                if (addressInReisTmpSearch.isEmpty()) {
+                    uniqReisAndAddress.add(addressInReisTmp);
+                } else {
+                    addressInReisTmpSearch.get(0).getNumbers().add(number);
+                }
+            }
+
+            AddressInReis addressInReisTmp = null;
             for (; row <= LAST_ROW; ++row) {
                 val numberOrderStart = getCellValue(row, 0);
-
                 isStart = !lastNumberOrderStart.equals(numberOrderStart);
                 if (isStart) {
                     addressesInReis.clear();
                     lastNumberOrderStart = numberOrderStart;
                     numberUnloadingCounter = 0;
-                    repeat = 2;
-                    tonnage = getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
-                } else {
-                    repeat = 1;
+                    tonnage = getCellValue(row, 10).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
                 }
-                for (int iRepeat = 0; iRepeat < repeat; ++iRepeat) {
-                    val address = fillV(isStart, row);
-                    if (addressesInReis.contains(address)) {
+                val address = fillV(row);
+                addressInReisTmp = AddressInReis.getAddressInReis(uniqReisAndAddress, numberOrderStart, address);
+                if (!isStart && addressesInReis.contains(address)) {
+                    if (!addressInReisTmp.getStartAddress().equals(address)) {
                         continue;
                     }
-                    addressesInReis.add(address);
-
-                    dataLine = ConvertedListDataV2.init()
-                            .setColumnAdata(numberOrderStart)
-                            .setColumnBdata(convertDateFormat(getDateFromFile(row), TEMPLATE_DATE_DOT))
-                            .setColumnCdata(getCellValue(row, 3))
-                            .setColumnDdata(getCellValue(row, 4))
-                            .setColumnEdata(null)
-                            .setColumnFdata(REFRIGERATOR)
-                            .setColumnGdata(EMPTY)
-                            .setColumnHdata(EMPTY)
-                            .setColumnIdata(null)
-                            .setColumnJdata(convertToIntegerOrNull(tonnage))
-                            .setColumnKdata(convertToIntegerOrNull(
-                                    getCellValue(row, 13).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
-                            ))
-                            .setColumnLdata(null)
-                            .setColumnMdata(null)
-                            .setColumnNdata(null)
-                            .setColumnOdata(null)
-                            .setColumnPdata(null)
-                            .setColumnQdata(null)
-                            .setColumnRdata(null)
-                            .setColumnSdata(fillS(isStart, row))
-                            .setColumnTdata(fillT(isStart, row))
-                            .setColumnUdata(fillU(isStart, row))
-                            .setColumnVdata(address)
-                            .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
-                            .setColumnXdata(isStart ? 0 : numberUnloadingCounter)
-                            .setColumnYdata(
-                                    isStart ? null : convertToDoubleOrNull(
-                                            getCellValue(row, 27).replaceAll(",", "."))
-                            )
-                            .setColumnZdata(
-                                    isStart ? null : convertToDoubleOrNull(
-                                            getCellValue(row, 28).replaceAll(",", "."))
-                            )
-                            .setColumnAaData(EMPTY)
-                            .setColumnAbData(EMPTY)
-                            .setColumnAcData(getCellValue(row, 31))
-                            .setColumnAdData(EMPTY)
-                            .setColumnAeData(getCellValue(row, 33))
-                            .setColumnAfData(null)
-                            .setColumnAgData(EMPTY)
-                            .setColumnAhData(EMPTY)
-                            .build();
-                    data.add(dataLine);
-                    ++numberUnloadingCounter;
-                    if (!isStart) {
-                        break;
-                    }
-                    isStart = false;
                 }
+                addressesInReis.add(address);
 
+                dataLine = ConvertedListDataV2.init()
+                        .setColumnAdata(numberOrderStart)
+                        .setColumnBdata(convertDateFormat(getDateFromFile(row), TEMPLATE_DATE_DOT))
+                        .setColumnCdata(getCellValue(row, 3))
+                        .setColumnDdata(getCellValue(row, 4))
+                        .setColumnEdata(null)
+                        .setColumnFdata(REFRIGERATOR)
+                        .setColumnGdata(EMPTY)
+                        .setColumnHdata(EMPTY)
+                        .setColumnIdata(null)
+                        .setColumnJdata(convertToIntegerOrNull(tonnage))
+                        .setColumnKdata(convertToIntegerOrNull(
+                                getCellValue(row, 11).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
+                        ))
+                        .setColumnLdata(null)
+                        .setColumnMdata(null)
+                        .setColumnNdata(null)
+                        .setColumnOdata(null)
+                        .setColumnPdata(null)
+                        .setColumnQdata(null)
+                        .setColumnRdata(null)
+                        .setColumnSdata(fillS(row))
+                        .setColumnTdata(fillT(row))
+                        .setColumnUdata(fillU(row))
+                        .setColumnVdata(address)
+                        .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
+                        .setColumnXdata(isStart ? 0 : numberUnloadingCounter)
+                        .setColumnYdata(
+                                isStart ? null : convertToDoubleOrNull(
+                                        getCellValue(row, 25).replaceAll(",", "."))
+                        )
+                        .setColumnZdata(
+                                isStart ? null : convertToDoubleOrNull(
+                                        getCellValue(row, 26).replaceAll(",", "."))
+                        )
+                        .setColumnAaData(AddressInReis.getNumbers(addressInReisTmp))
+                        .setColumnAbData(EMPTY)
+                        .setColumnAcData(getCellValue(row, 29))
+                        .setColumnAdData(EMPTY)
+                        .setColumnAeData(getCellValue(row, 31))
+                        .setColumnAfData(null)
+                        .setColumnAgData(EMPTY)
+                        .setColumnAhData(EMPTY)
+                        .build();
+                data.add(dataLine);
+                ++numberUnloadingCounter;
             }
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
@@ -157,6 +177,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 .build();
     }
 
+
     @Override
     public ExcelType getExcelType() {
         return CLIENT;
@@ -164,41 +185,41 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
 
     private String getDateFromFile(int row) {
         try {
-            return convertDateFormat(getCellValue(row, 1), TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT);
+            return convertDateFormat(getCellValue(row, 2), TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Date fillS(boolean isStart, int row) throws ParseException {
-        if (getCellValue(row, 21).equals(EMPTY)) {
-            warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, 21 + 1, "отсутствует дата"));
+    private Date fillS(int row) throws ParseException {
+        int colNumber = 19;
+        if (getCellValue(row, colNumber).equals(EMPTY)) {
+            warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, colNumber + 1, "отсутствует дата"));
             return null;
         }
-        return convertDateFormat(isStart ?
-                        getDateFromFile(row) + SPACE + TIME_5_00_STRING :
-                        convertDateFormat(getCellValue(row, 21), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT)
+        return convertDateFormat(
+                convertDateFormat(getCellValue(row, colNumber), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT)
                 , TEMPLATE_DATE_TIME_DOT
         );
     }
 
-    private Date fillT(boolean isStart, int row) throws ParseException {
-        if (getCellValue(row, 22).equals(EMPTY)) {
-            warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, 22 + 1, "отсутствует дата"));
+    private Date fillT(int row) throws ParseException {
+        int colNumber = 20;
+        if (getCellValue(row, colNumber).equals(EMPTY)) {
+            warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, colNumber + 1, "отсутствует дата"));
             return null;
         }
-        return convertDateFormat(isStart ?
-                        getDateFromFile(row) + SPACE + TIME_10_00_STRING :
-                        convertDateFormat(getCellValue(row, 22), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT)
+        return convertDateFormat(
+                convertDateFormat(getCellValue(row, colNumber), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT)
                 , TEMPLATE_DATE_TIME_DOT);
     }
 
-    private String fillU(boolean isStart, int row) {
-        return isStart ? STOCK_ART_FRUIT : clearDoubleSpace(getCellValue(row, 23));
+    private String fillU(int row) {
+        return clearDoubleSpace(getCellValue(row, 21));
     }
 
-    private String fillV(boolean isStart, int row) {
-        return isStart ? STOCK_ART_FRUIT_ADDRESS : clearDoubleSpace(getCellValue(row, 24));
+    private String fillV(int row) {
+        return clearDoubleSpace(getCellValue(row, 22));
     }
 
     private String clearDoubleSpace(String text) {
@@ -206,6 +227,48 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
             text = text.replace(TWO_SPACE, SPACE);
         }
         return text.trim();
+    }
+
+
+    @Getter
+    @Setter
+    @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
+    @ToString
+    private static class AddressInReis {
+        String taskNumber;
+        String address;
+        String startAddress;
+        List<String> numbers = new ArrayList<>();
+
+        public static AddressInReis getAddressInReis(Set<AddressInReis> addressInReises, String taskNumber, String address) {
+            val tmpAddressInReis = AddressInReis.init()
+                    .setTaskNumber(taskNumber)
+                    .setAddress(address)
+                    .build();
+            return addressInReises.stream()
+                    .filter(data -> data.equals(tmpAddressInReis))
+                    .findAny()
+                    .get();
+        }
+
+        public static String getNumbers(AddressInReis addressInReise) {
+            return addressInReise.getNumbers().stream()
+                    .filter(number -> !number.equals(EMPTY))
+                    .collect(Collectors.joining(", "));
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            AddressInReis that = (AddressInReis) o;
+            return Objects.equals(taskNumber, that.taskNumber) && Objects.equals(address, that.address);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(taskNumber, address);
+        }
     }
 
 }

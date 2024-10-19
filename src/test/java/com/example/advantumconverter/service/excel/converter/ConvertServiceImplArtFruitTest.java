@@ -34,11 +34,10 @@ public class ConvertServiceImplArtFruitTest {
     @Autowired
     private ConvertServiceImplArtFruit convertServiceImplArtFruit;
 
-    private void baseTest(String fileNameIn, String fileNameOut, ConvertService converter) throws IOException, ParseException {
+    private void baseTest(String fileNameIn, String fileNameOut, ConvertService converter, String expectedMessage) throws IOException, ParseException {
         var fileIn = read(fileNameIn);
         var actualResult = converter.getConvertedBookV2(fileIn);
-        var expectedResult = prepareExpectedBook(fileNameOut);
-//        actualResult.getBookV2().get(0).getExcelListContentV2().remove(0);
+        var expectedResult = prepareExpectedBook(fileNameOut, expectedMessage);
         assertThat(actualResult)
                 .usingRecursiveComparison()
                 .ignoringFields("bookName")
@@ -47,7 +46,7 @@ public class ConvertServiceImplArtFruitTest {
         int i = 0;
     }
 
-    private ConvertedBookV2 prepareExpectedBook(String fileNameOut) throws IOException, ParseException {
+    private ConvertedBookV2 prepareExpectedBook(String fileNameOut, String expectedMessage) throws IOException, ParseException {
         var book = read(fileNameOut);
         var sheet = book.getSheetAt(0);
         var lastRow = getLastRow(sheet);
@@ -76,8 +75,10 @@ public class ConvertServiceImplArtFruitTest {
                             .setColumnPdata(convertToIntegerOrNull(getCellValue(sheet, row, 15)))
                             .setColumnQdata(convertToIntegerOrNull(getCellValue(sheet, row, 16)))
                             .setColumnRdata(convertToIntegerOrNull(getCellValue(sheet, row, 17)))
-                            .setColumnSdata(convertDateFormat(getCellValue(sheet, row, 18), TEMPLATE_DATE_TIME_DOT))
-                            .setColumnTdata(convertDateFormat(getCellValue(sheet, row, 19), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnSdata(getCellValue(sheet, row, 18).equals(EMPTY) ? null :
+                                    convertDateFormat(getCellValue(sheet, row, 18), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnTdata(getCellValue(sheet, row, 19).equals(EMPTY) ? null :
+                                    convertDateFormat(getCellValue(sheet, row, 19), TEMPLATE_DATE_TIME_DOT))
                             .setColumnUdata(getCellValue(sheet, row, 20))
                             .setColumnVdata(getCellValue(sheet, row, 21))
                             .setColumnWdata(getCellValue(sheet, row, 22))
@@ -103,13 +104,18 @@ public class ConvertServiceImplArtFruitTest {
                                 .setHeadersV2(Header.headersOutputClient)
                                 .setExcelListContentV2(data)
                                 .build()))
-                .setMessage(DONE)
+                .setMessage(expectedMessage)
                 .build();
     }
 
     @Test
     public void testConvert() throws IOException, ParseException {
-        baseTest(EXCEL_ART_FRUIT_IN, EXCEL_ART_FRUIT_OUT, convertServiceImplArtFruit);
+        String expectedMessage = "Готово!\n" +
+                "- Строка: 132, столбец: 20, отсутствует дата\n" +
+                "- Строка: 132, столбец: 21, отсутствует дата\n" +
+                "- Строка: 133, столбец: 20, отсутствует дата\n" +
+                "- Строка: 133, столбец: 21, отсутствует дата";
+        baseTest(EXCEL_ART_FRUIT_IN, EXCEL_ART_FRUIT_OUT, convertServiceImplArtFruit, expectedMessage);
     }
 
 
@@ -151,7 +157,7 @@ public class ConvertServiceImplArtFruitTest {
     }
 
     private Double getNumericCellValue(XSSFCell xssfCell) {
-        if(getCellValue(xssfCell).equals(EMPTY)){
+        if (getCellValue(xssfCell).equals(EMPTY)) {
             return null;
         }
         return xssfCell.getNumericCellValue();
