@@ -85,10 +85,10 @@ public class MenuStart extends Menu {
     }
 
     private String getAdminMenuText(User user) {
-        val menu = new StringBuilder();
+        val menu = new StringBuilder(getSupportMenuText(user));
+        menu.append(NEW_LINE);
         menu.append("Меню Администратора:").append(NEW_LINE)
-                .append("- Проверить новых пользователей: ").append(NEW_LINE).append(prepareShield(COMMAND_SETTING_NEW_USER)).append(NEW_LINE)
-                .append("- Обновить справочники: ").append(prepareShield(COMMAND_RELOAD_DICTIONARY)).append(NEW_LINE);
+                .append("- Проверить новых пользователей: ").append(prepareShield(COMMAND_SETTING_NEW_USER)).append(NEW_LINE);
         return menu.toString();
     }
 
