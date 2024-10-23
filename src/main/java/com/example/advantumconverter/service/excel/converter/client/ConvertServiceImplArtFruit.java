@@ -149,13 +149,13 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                                 isStart ? null : convertToDoubleOrNull(
                                         getCellValue(row, 26).replaceAll(",", "."))
                         )
-                        .setColumnAaData(AddressInReis.getNumbers(addressInReisTmp))
+                        .setColumnAaData(EMPTY)
                         .setColumnAbData(EMPTY)
                         .setColumnAcData(getCellValue(row, 29))
                         .setColumnAdData(EMPTY)
                         .setColumnAeData(getCellValue(row, 31))
                         .setColumnAfData(null)
-                        .setColumnAgData(EMPTY)
+                        .setColumnAgData(AddressInReis.getNumbers(addressInReisTmp))
                         .setColumnAhData(EMPTY)
                         .build();
                 data.add(dataLine);
