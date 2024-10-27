@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <include file="db/changelog/schema-init.xml"/>
+    <include file="db/changelog/InsertCompany.sql"/>
+    <include file="db/changelog/lenta/InsertCar.sql"/>
+    <include file="db/changelog/lenta/InsertCarNumber.sql"/>
+    <include file="db/changelog/lenta/InsertLentaCar.sql"/>
+    <include file="db/changelog/lenta/InsertLentaDictionary.sql"/>
+    <include file="db/changelog/metro/InsertDcMetroAddressesDictionary.sql"/>
+    <include file="db/changelog/metro/InsertMetroAddressesDictionary.sql"/>
+    <include file="db/changelog/metro/InsertMetroTemperatureDictionary.sql"/>
+    <include file="db/changelog/metro/InsertMetroTimeDictionary.sql"/>
+    <include file="db/changelog/ozon/InsertOzonDictionary.sql"/>
+    <include file="db/changelog/ozon/InsertOzonLoadUnloadTimeTime.sql"/>
+    <include file="db/changelog/ozon/InsertOzonTonnageTime.sql"/>
+    <include file="/db/changelog/ozon/InsertOzonTransitTime1.sql"/>
+    <include file="/db/changelog/ozon/InsertOzonTransitTime2.sql"/>
+    <include file="/db/changelog/ozon/InsertOzonTransitTime3.sql"/>
+    <include file="/db/changelog/ozon/InsertOzonTransitTime4.sql"/>
+    <include file="/db/changelog/ozon/InsertOzonTransitTime5.sql"/>
+    <include file="/db/changelog/InsertUser.sql"/>
+</databaseChangeLog>

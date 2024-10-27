@@ -1,4 +1,4 @@
-# 2) машины кофикса
+-- 2) машины кофикса
 -- #     ="select '"&СЖПРОБЕЛЫ(ТЕКСТ(A1;"ЧЧ:ММ"))&"'"&", 77777, yyyyyyyyy union all"
 -- drop table car;
 -- select car_name from car;
@@ -7,7 +7,7 @@
 -- -18=-20 и -16
 -- дефолт= 2 и 6
 -- truncate car;
-# select count(*) from car;
+-- # select count(*) from car;
 insert into car(car_name, pallet, tonnage, temperature_min, temperature_max)
 select 'РЕФРИЖЕРАТОРНЫЕ 5 ТОННЫЕ T: +5 ГИДРОБОРТ 14 П\М', 77777, 5000, 2, 6  union all
 select 'РЕФРИЖЕРАТОРНЫЕ 5 ТОННЫЕ T: -18 14 П\М', 77777, 5000, -20, -16  union all

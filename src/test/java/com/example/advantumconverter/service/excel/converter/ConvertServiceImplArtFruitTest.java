@@ -1,5 +1,7 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.config.DatabaseTestConfig;
+import com.example.advantumconverter.config.DatabaseTestConfiguration;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
@@ -11,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
@@ -28,7 +31,8 @@ import static org.example.tgcommons.utils.DateConverterUtils.*;
 import static org.example.tgcommons.utils.NumberConverter.convertToIntegerOrNull;
 import static utils.ExcelReader.read;
 
-@SpringBootTest
+@SpringBootTest(classes = {DatabaseTestConfig.class})
+@EnableConfigurationProperties
 public class ConvertServiceImplArtFruitTest {
 
     @Autowired

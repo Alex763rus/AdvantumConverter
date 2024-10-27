@@ -96,6 +96,17 @@
 			<artifactId>diff-match-patch</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
+			<version>1.20.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>4.24.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
