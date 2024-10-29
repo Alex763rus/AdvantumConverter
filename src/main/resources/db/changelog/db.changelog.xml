@@ -22,4 +22,5 @@
     <include file="/db/changelog/ozon/InsertOzonTransitTime4.sql"/>
     <include file="/db/changelog/ozon/InsertOzonTransitTime5.sql"/>
     <include file="/db/changelog/InsertUser.sql"/>
+    <include file="/db/changelog/InsertUser2.sql"/>
 </databaseChangeLog>

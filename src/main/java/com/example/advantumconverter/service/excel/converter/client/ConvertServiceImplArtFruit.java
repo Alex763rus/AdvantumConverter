@@ -103,7 +103,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     addressesInReis.clear();
                     lastNumberOrderStart = numberOrderStart;
                     numberUnloadingCounter = 0;
-                    tonnage = getCellValue(row, 10).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
+                    tonnage = getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
                 }
                 val address = fillV(row);
                 addressInReisTmp = AddressInReis.getAddressInReis(uniqReisAndAddress, numberOrderStart, address);
@@ -126,7 +126,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnIdata(null)
                         .setColumnJdata(convertToIntegerOrNull(tonnage))
                         .setColumnKdata(convertToIntegerOrNull(
-                                getCellValue(row, 11).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
+                                getCellValue(row, 13).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
                         ))
                         .setColumnLdata(null)
                         .setColumnMdata(null)
@@ -143,20 +143,26 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnXdata(isStart ? 0 : numberUnloadingCounter)
                         .setColumnYdata(
                                 isStart ? null : convertToDoubleOrNull(
-                                        getCellValue(row, 25).replaceAll(",", "."))
+                                        getCellValue(row, 29).replaceAll(",", "."))
                         )
                         .setColumnZdata(
                                 isStart ? null : convertToDoubleOrNull(
-                                        getCellValue(row, 26).replaceAll(",", "."))
+                                        getCellValue(row, 30).replaceAll(",", "."))
                         )
                         .setColumnAaData(EMPTY)
                         .setColumnAbData(EMPTY)
-                        .setColumnAcData(getCellValue(row, 29))
+                        .setColumnAcData(getCellValue(row, 33))
                         .setColumnAdData(EMPTY)
-                        .setColumnAeData(getCellValue(row, 31))
+                        .setColumnAeData(getCellValue(row, 35))
                         .setColumnAfData(null)
-                        .setColumnAgData(AddressInReis.getNumbers(addressInReisTmp))
+                        .setColumnAgData(EMPTY)
                         .setColumnAhData(EMPTY)
+                        .setColumnAiData(getCellValue(row, 5))
+                        .setColumnAjData(getCellValue(row, 6))
+                        .setColumnAkData(getCellValue(row, 24))
+                        .setColumnAlData(getCellValue(row, 25))
+                        .setColumnAmData(getCellValue(row, 36))
+                        .setColumnAnData(AddressInReis.getNumbers(addressInReisTmp))
                         .build();
                 data.add(dataLine);
                 ++numberUnloadingCounter;
@@ -167,7 +173,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         return ConvertedBookV2.init()
                 .setBookV2(List.of(
                         ConvertedListV2.init()
-                                .setHeadersV2(Header.headersOutputClient)
+                                .setHeadersV2(Header.headersOutputClientV2)
                                 .setExcelListName(EXPORT)
                                 .setExcelListContentV2(data)
                                 .build()
@@ -192,7 +198,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     }
 
     private Date fillS(int row) throws ParseException {
-        int colNumber = 19;
+        int colNumber = 21;
         if (getCellValue(row, colNumber).equals(EMPTY)) {
             warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, colNumber + 1, "отсутствует дата"));
             return null;
@@ -204,7 +210,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     }
 
     private Date fillT(int row) throws ParseException {
-        int colNumber = 20;
+        int colNumber = 22;
         if (getCellValue(row, colNumber).equals(EMPTY)) {
             warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, colNumber + 1, "отсутствует дата"));
             return null;
@@ -215,11 +221,11 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     }
 
     private String fillU(int row) {
-        return clearDoubleSpace(getCellValue(row, 21));
+        return clearDoubleSpace(getCellValue(row, 23));
     }
 
     private String fillV(int row) {
-        return clearDoubleSpace(getCellValue(row, 22));
+        return clearDoubleSpace(getCellValue(row, 26));
     }
 
     private String clearDoubleSpace(String text) {

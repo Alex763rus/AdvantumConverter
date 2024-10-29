@@ -97,6 +97,12 @@ public class ConvertServiceImplArtFruitTest {
                             .setColumnAfData(convertToIntegerOrNull(getCellValue(sheet, row, 31)))
                             .setColumnAgData(getCellValue(sheet, row, 32))
                             .setColumnAhData(getCellValue(sheet, row, 33))
+                            .setColumnAiData(getCellValue(sheet, row, 34))
+                            .setColumnAjData(getCellValue(sheet, row, 35))
+                            .setColumnAkData(getCellValue(sheet, row, 36))
+                            .setColumnAlData(getCellValue(sheet, row, 37))
+                            .setColumnAmData(getCellValue(sheet, row, 38))
+                            .setColumnAnData(getCellValue(sheet, row, 39))
                             .build();
             data.add(dataLine);
         }
@@ -105,7 +111,7 @@ public class ConvertServiceImplArtFruitTest {
                 .setBookV2(List.of(
                         ConvertedListV2.init()
                                 .setExcelListName(EXPORT)
-                                .setHeadersV2(Header.headersOutputClient)
+                                .setHeadersV2(Header.headersOutputClientV2)
                                 .setExcelListContentV2(data)
                                 .build()))
                 .setMessage(expectedMessage)
@@ -114,12 +120,7 @@ public class ConvertServiceImplArtFruitTest {
 
     @Test
     public void testConvert() throws IOException, ParseException {
-        String expectedMessage = "Готово!\n" +
-                "- Строка: 132, столбец: 20, отсутствует дата\n" +
-                "- Строка: 132, столбец: 21, отсутствует дата\n" +
-                "- Строка: 133, столбец: 20, отсутствует дата\n" +
-                "- Строка: 133, столбец: 21, отсутствует дата";
-        baseTest(EXCEL_ART_FRUIT_IN, EXCEL_ART_FRUIT_OUT, convertServiceImplArtFruit, expectedMessage);
+        baseTest(EXCEL_ART_FRUIT_IN, EXCEL_ART_FRUIT_OUT, convertServiceImplArtFruit, DONE);
     }
 
 

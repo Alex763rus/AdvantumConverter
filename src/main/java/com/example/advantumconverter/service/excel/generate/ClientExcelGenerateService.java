@@ -183,6 +183,12 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
                 createCell(row, 31, dataV2.get(y).getColumnAfData());
                 createCell(row, 32, dataV2.get(y).getColumnAgData());
                 createCell(row, 33, dataV2.get(y).getColumnAhData());
+                createCell(row, 34, dataV2.get(y).getColumnAiData());
+                createCell(row, 35, dataV2.get(y).getColumnAjData());
+                createCell(row, 36, dataV2.get(y).getColumnAkData());
+                createCell(row, 37, dataV2.get(y).getColumnAlData());
+                createCell(row, 38, dataV2.get(y).getColumnAmData());
+                createCell(row, 39, dataV2.get(y).getColumnAnData());
             }
             val tmpFile = Files.createTempFile(convertedBook.getBookName(), ".xlsx").toFile();
             workbook.write(new FileOutputStream(tmpFile));
