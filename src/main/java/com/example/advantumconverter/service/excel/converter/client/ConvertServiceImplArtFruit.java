@@ -95,6 +95,9 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 }
             }
 
+            isStart = true;
+            lastNumberOrderStart = EMPTY;
+
             AddressInReis addressInReisTmp = null;
             for (; row <= LAST_ROW; ++row) {
                 val numberOrderStart = getCellValue(row, 0);
@@ -121,9 +124,9 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnDdata(getCellValue(row, 4))
                         .setColumnEdata(null)
                         .setColumnFdata(REFRIGERATOR)
-                        .setColumnGdata(EMPTY)
+                        .setColumnGdata(getCellValue(row, 9))
                         .setColumnHdata(EMPTY)
-                        .setColumnIdata(null)
+                        .setColumnIdata(getIntegerValue(row, 11))
                         .setColumnJdata(convertToIntegerOrNull(tonnage))
                         .setColumnKdata(convertToIntegerOrNull(
                                 getCellValue(row, 13).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
@@ -134,7 +137,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnOdata(null)
                         .setColumnPdata(null)
                         .setColumnQdata(null)
-                        .setColumnRdata(null)
+                        .setColumnRdata(getIntegerValue(row, 20))
                         .setColumnSdata(fillS(row))
                         .setColumnTdata(fillT(row))
                         .setColumnUdata(fillU(row))
@@ -149,14 +152,14 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                                 isStart ? null : convertToDoubleOrNull(
                                         getCellValue(row, 30).replaceAll(",", "."))
                         )
-                        .setColumnAaData(EMPTY)
-                        .setColumnAbData(EMPTY)
+                        .setColumnAaData(getCellValue(row, 31))
+                        .setColumnAbData(getCellValue(row, 32))
                         .setColumnAcData(getCellValue(row, 33))
                         .setColumnAdData(getCellValue(row, 34))
                         .setColumnAeData(getCellValue(row, 35))
                         .setColumnAfData(null)
                         .setColumnAgData(EMPTY)
-                        .setColumnAhData(EMPTY)
+                        .setColumnAhData(getCellValue(row, 39))
                         .setColumnAiData(getCellValue(row, 5))
                         .setColumnAjData(getCellValue(row, 6))
                         .setColumnAkData(getCellValue(row, 24))

@@ -17,19 +17,20 @@ public final class Constant {
         public static final String REFRIGERATOR = "Рефрижератор";
         public static final String BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО \"Буш-Автопром\"";
         public static final String SBER_BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО Буш-Автопром";
-        public static String SHEET_RESULT_NAME = "ИМПОРТ";
-        public static String LOAD_THE_GOODS = "Погрузка";
-        public static String DC_NOGINSK = "DC Noginsk";
-        public static String RC_NOGINSK = "РЦ НОГИНСК";
-        public static String UNLOAD_THE_GOODS = "Разгрузка";
-        public static String COMPANY_OOO_LENTA = "ООО ''ЛЕНТА''";
-        public static String COMPANY_OOO_LENTA_HIRING = COMPANY_OOO_LENTA + " найм";
-        public static String COMPANY_OZON_FRESH = "OZON FRESH";
-        public static String COMPANY_METRO = "Метро Групп Логистик";
-        public static String COMPANY_DEAL_AUTO_TRANS = "ООО ДиалАвтоТранс";
-        public static String COMPANY_DEAL_AUTO_TRANS_INN = "6324744734";
-        public static String COMPANY_DEAL_AUTO_TRANS_INCORRECT = "ООО \"Диалавтотранс\"";
-        public static String LEFT_FOR_A_FLIGHT = "Уехал";
+        public static final String SBER_SQUIRREL_ORGANIZATION_NAME = "ООО \"Белка Драйв\"";
+        public static final String SHEET_RESULT_NAME = "ИМПОРТ";
+        public static final String LOAD_THE_GOODS = "Погрузка";
+        public static final String DC_NOGINSK = "DC Noginsk";
+        public static final String RC_NOGINSK = "РЦ НОГИНСК";
+        public static final String UNLOAD_THE_GOODS = "Разгрузка";
+        public static final String COMPANY_OOO_LENTA = "ООО ''ЛЕНТА''";
+        public static final String COMPANY_OOO_LENTA_HIRING = COMPANY_OOO_LENTA + " найм";
+        public static final String COMPANY_OZON_FRESH = "OZON FRESH";
+        public static final String COMPANY_METRO = "Метро Групп Логистик";
+        public static final String COMPANY_DEAL_AUTO_TRANS = "ООО ДиалАвтоТранс";
+        public static final String COMPANY_DEAL_AUTO_TRANS_INN = "6324744734";
+        public static final String COMPANY_DEAL_AUTO_TRANS_INCORRECT = "ООО \"Диалавтотранс\"";
+        public static final String LEFT_FOR_A_FLIGHT = "Уехал";
 
     }
 
@@ -116,6 +117,10 @@ public final class Constant {
         public static final String CAR_NOT_FOUND = "Машина не найдена в настройках: ";
 
         public static final String CONVERT_PROCESSING_ERROR = "Ошибка обработки файла: ";
+
+        public static final String SBER_ADDRESS_NOT_FOUND = "Ошибка обработки файла: заказчик не найден";
+
+        public static final String TEMPERATURE_NOT_VALID = "Oшибка данных в столбце Температурный режим, строка: ";
 
         public static final String DICTIONARY_ERROR = "Ошибка при обращении к справочнику: ";
 

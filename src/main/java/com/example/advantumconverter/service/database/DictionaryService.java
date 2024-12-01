@@ -11,6 +11,8 @@ import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
 import com.example.advantumconverter.model.jpa.lenta.LentaDictionaryRepository;
 import com.example.advantumconverter.model.jpa.metro.*;
 import com.example.advantumconverter.model.jpa.ozon.*;
+import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
+import com.example.advantumconverter.model.jpa.sber.SberAddressDictionaryRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -64,6 +66,9 @@ public class DictionaryService {
     @Autowired
     private MetroDcAddressesDictionaryRepository metroDcAddressesDictionaryRepository;
 
+    @Autowired
+    private SberAddressDictionaryRepository sberAddressDictionaryRepository;
+
 
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
@@ -78,6 +83,7 @@ public class DictionaryService {
     private Set<MetroTemperatureDictionary> metroTemperatureDictionaries;
     private Set<MetroTimeDictionary> metroTimeDictionaries;
     private Set<MetroDcAddressesDictionary> metroDcAddressesDictionaries;
+    private Set<SberAddressDictionary> sberAddressDictionaries;
 
     @PostConstruct
     public void init() {
@@ -124,6 +130,10 @@ public class DictionaryService {
         metroDcAddressesDictionaries = new HashSet<>();
         metroDcAddressesDictionaryRepository.findAll()
                 .forEach(metroDcAddressesDictionaries::add);
+
+        sberAddressDictionaries = new HashSet<>();
+        sberAddressDictionaryRepository.findAll()
+                .forEach(sberAddressDictionaries::add);
 
         metroTemperatureDictionaries = new HashSet<>();
         metroTemperatureDictionaryRepository.findAll()
@@ -231,6 +241,13 @@ public class DictionaryService {
     public String getMetroTimeStart(Long timeId, Set<String> codes) {
         val dictionary = getMetroTimeDictionary(timeId, codes);
         return dictionary == null ? null : dictionary.getTimeStart();
+    }
+
+    public String getSberCity(String address) {
+        val dictionary = sberAddressDictionaries.stream()
+                .filter(sberAddressDictionary -> sberAddressDictionary.getAddress().equals(address))
+                .findFirst().orElse(null);
+        return dictionary == null ? null : dictionary.getCity();
     }
 
     public String getMetroTimeEnd(Long timeId, Set<String> codes) {

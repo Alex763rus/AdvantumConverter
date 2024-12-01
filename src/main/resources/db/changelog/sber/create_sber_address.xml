@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="create_schema_iabs_acc_product">
+        <sql>
+            create table if not exists sber_address
+            (
+                sber_address_id          bigint auto_increment primary key,
+                city            varchar(255) null,
+                address         varchar(255) null
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
