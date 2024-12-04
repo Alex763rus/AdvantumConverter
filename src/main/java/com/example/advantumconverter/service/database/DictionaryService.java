@@ -243,11 +243,11 @@ public class DictionaryService {
         return dictionary == null ? null : dictionary.getTimeStart();
     }
 
-    public String getSberCity(String address) {
-        val dictionary = sberAddressDictionaries.stream()
-                .filter(sberAddressDictionary -> sberAddressDictionary.getAddress().equals(address))
+    public SberAddressDictionary getSberCity(String address) {
+        return sberAddressDictionaries.stream()
+                .filter(sberAddressDictionary -> sberAddressDictionary.getAddress()
+                        .equals(address))
                 .findFirst().orElse(null);
-        return dictionary == null ? null : dictionary.getCity();
     }
 
     public String getMetroTimeEnd(Long timeId, Set<String> codes) {

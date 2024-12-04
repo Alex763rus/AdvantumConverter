@@ -22,6 +22,9 @@ public class SberAddressDictionary {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "city_and_region")
+    private String cityAndRegion;
+
     @Column(name = "address")
     private String address;
 

@@ -5,6 +5,7 @@ import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.SberAddressNotFoundException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
+import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
@@ -54,9 +55,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     }
 
     private String addressFromFile = EMPTY;
-    ;
-    private String cityFromDictionary = EMPTY;
-    ;
+    private SberAddressDictionary cityFromDictionary = null;
 
     @Override
     public ConvertedBook getConvertedBook(XSSFWorkbook book) {
@@ -77,7 +76,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             LAST_ROW = getLastRow(START_ROW, 1);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
 
-            addressFromFile = getCellValue(0, 0);
+            addressFromFile = getCellValue(0, 0).trim();
             cityFromDictionary = dictionaryService.getSberCity(addressFromFile);
             if (cityFromDictionary == null) {
                 throw new SberAddressNotFoundException();
@@ -99,7 +98,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                     dataLine = new ArrayList<String>();
                     dataLine.add(reisNumber);
                     dataLine.add(convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT));
-                    dataLine.add(cityFromDictionary);
+                    dataLine.add(cityFromDictionary.getCity().trim());
                     dataLine.add(organization);
                     dataLine.add(EMPTY);
                     dataLine.add(REFRIGERATOR);
@@ -161,9 +160,10 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
     private String prepareTemperature(int row) {
         return getCellValue(row, 15)
-                .replace("(", "")
-                .replace(")", "")
-                .replace("+", "");
+                .replace(SPACE, EMPTY)
+                .replace("(", EMPTY)
+                .replace(")", EMPTY)
+                .replace("+", EMPTY);
     }
 
     private String generateId() {
@@ -221,7 +221,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     }
 
     private String fillU(boolean isStart, int row) {
-        return isStart ? cityFromDictionary : getCellValue(row, 5)
+        return isStart ? cityFromDictionary.getCityAndRegion().trim() : getCellValue(row, 5)
                 .replace(TWO_SPACE, SPACE)
                 .trim();
     }

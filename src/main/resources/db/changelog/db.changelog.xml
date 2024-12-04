@@ -26,4 +26,7 @@
     <include file="/db/changelog/sber/create_sber_address.xml"/>
     <include file="/db/changelog/sber/InsertSberAddress.sql"/>
     <include file="/db/changelog/lenta/InsertCar_1.sql"/>
+    <include file="/db/changelog/sber/AlterSberAddress.sql"/>
+    <include file="/db/changelog/sber/updateSberAddress.xml"/>
+    <include file="/db/changelog/sber/updateSberAddress1.xml"/>
 </databaseChangeLog>

@@ -1,0 +1,26 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="update_sber_address1">
+        <sql>
+            update sber_address set city = 'Санкт-петербург', city_and_region = 'Санкт-петербург', address = 'Российская Федерация, г. Санкт-Петербург, внутригородское муниципальное образование города федерального значения Санкт-Петербурга поселок «Шушары», Московское шоссе, дом 26, строение 1' where sber_address_id = 1;
+            update sber_address set city = 'Москва', city_and_region = 'Москва Холмогоры', address = 'Российская Федерация, Московская обл., г.о. Пушкинский, тер. Автодорога М8 Холмогоры, км 48-й, д. 1.' where sber_address_id = 2;
+            update sber_address set city = 'Москва', city_and_region = 'Москва Новоорловская', address = 'г. Москва, ул. Новоорловская д. 3/1' where sber_address_id = 3;
+            update sber_address set city = 'Москва', city_and_region = 'Москва Ярославское', address = 'Российская Федерация, Московская обл., г.о. Пушкинский, г. Пушкино, ш. Ярославское, д. 222.' where sber_address_id = 4;
+            update sber_address set city = 'Нижний Новгород', city_and_region = 'Нижний Новгород', address = 'Российская Федерация, Нижегородская область, муниципальный округ Богородский, село Доскино, переулок Магистральный, здание 5Б' where sber_address_id = 5;
+            update sber_address set city = 'Новосибирск, Красноярск ', city_and_region = 'Новосибирск', address = 'Российская Федерация, Новосибирская область, Новосибирский муниципальный район, сельское поселение Толмачевский сельсовет, платформа 3307 км, дом 30, корпус В1' where sber_address_id = 6;
+            update sber_address set city = 'Новосибирск, Красноярск ', city_and_region = 'Красноярск', address = 'Красноярск - г. Красноярск, ул. Сплавучасток д.2' where sber_address_id = 7;
+            update sber_address set city = 'Екатеринбург', city_and_region = 'Екатеринбург', address = 'Свердловская область, г. Екатеринбург, ул. Дублер Сибирского тракта, дом 38/2.' where sber_address_id = 8;
+            update sber_address set city = 'Уфа', city_and_region = 'Уфа', address = 'Республика Башкортостан, г. Уфа, бульвар Первостроителей д. 2/1' where sber_address_id = 9;
+            update sber_address set city = 'Самара', city_and_region = 'Самара', address = 'Российская Федерация, 443070, г. Самара, ул. Дзержинского д. 46В' where sber_address_id = 10;
+            update sber_address set city = 'Воронеж', city_and_region = 'Воронеж Брусилова', address = 'г. Воронеж, ул. Брусилова 4Б' where sber_address_id = 11;
+            update sber_address set city = 'Воронеж', city_and_region = 'Воронеж Солнечный', address = 'Воронежская область, р-н Рамонский, п Солнечный, ул Московское шоссе, д. 135' where sber_address_id = 12;
+            update sber_address set city = 'Воронеж', city_and_region = 'Воронеж Торпедо', address = 'г. Воронеж, ул. Торпедо д. 45В' where sber_address_id = 13;
+            update sber_address set city = 'Волгоград', city_and_region = 'Волгоград', address = 'Волгоградская область, Городищенский муниципальный район, Городищенское городское поселение р.п. Городище проезд Московский з/у 1' where sber_address_id = 14;
+            update sber_address set city = 'Краснодар, Ростов-на-Дону', city_and_region = 'Ростов на Дону', address = 'г. Ростов на Дону, ул. Пескова д. 1 Ж' where sber_address_id = 15;
+            update sber_address set city = 'Краснодар, Ростов-на-Дону', city_and_region = 'Краснодар', address = 'Российская Федерация, Краснодарский край, г. Краснодар, Карасунский внутриго-родской округ, ул. им. Демуса М.Н., 64, 66, 68' where sber_address_id = 16;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

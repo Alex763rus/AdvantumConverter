@@ -1,0 +1,1 @@
+alter table sber_address add column city_and_region varchar(255);
