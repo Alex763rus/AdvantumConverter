@@ -83,11 +83,13 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             }
             for (; row <= LAST_ROW; ++row) {
                 val dateFromFile = getDateFromFile(row);
+                var dateFromFileForSt = dateFromFile;
                 val dateString = convertDateFormat(dateFromFile, "ddMMyy");
                 val numberUnloading = getIntegerValue(row, 8);
                 isStart = numberUnloading == 1;
-
                 if (isStart) {
+                    dateFromFileForSt = DateUtils.isSameDay(convertDateFormat(fillT(true, row, dateFromFile), TEMPLATE_DATE_TIME_DOT), dateFromFile) ?
+                            dateFromFile : DateUtils.addDays(dateFromFile, -1);
                     reisNumber = generateId() + UNDERSCORE + dateString;
                     carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
                     fio = prepareFio(getCellValue(row, 4));
@@ -114,8 +116,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
-                    dataLine.add(fillS(isStart, row, dateFromFile));
-                    dataLine.add(fillT(isStart, row, dateFromFile));
+                    dataLine.add(fillS(isStart, row, isStart ? dateFromFileForSt : dateFromFile));
+                    dataLine.add(fillT(isStart, row, isStart ? dateFromFileForSt : dateFromFile));
                     dataLine.add(fillU(isStart, row));
                     dataLine.add(fillV(isStart, row));
                     dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
@@ -201,9 +203,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         //для погрузки лдя времени первого столбца точки. убытие 6 часов. Обытие Прибытие минус 2 от прибытия.
         //разгрузки:
         if (isStart) {
-            val dateT = convertDateFormat(fillT(isStart, row, dateFromFile), TEMPLATE_DATE_TIME_DOT);
-            val result = DateUtils.addHours(dateT, -2);
-            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
+            val time = getCellValue(row, 0);
+            return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
         } else {
             val time = getCellValue(row, 14).split(MINUS)[0];
             return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
@@ -212,8 +213,9 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
     private String fillT(boolean isStart, int row, Date dateFromFile) throws ParseException {
         if (isStart) {
-            val time = getCellValue(row, 0);
-            return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
+            val dateT = convertDateFormat(fillS(isStart, row, dateFromFile), TEMPLATE_DATE_TIME_DOT);
+            val result = DateUtils.addHours(dateT, 2);
+            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
         } else {
             val time = getCellValue(row, 14).split(MINUS)[1];
             return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;

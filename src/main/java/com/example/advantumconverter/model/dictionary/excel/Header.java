@@ -182,6 +182,7 @@ public class Header {
             , "Город доставки"
             , "Телефон водителя"
             , "Номер заказа"
+            , "комментарий рейс"
     );
 
     public static List<String> headersOutputBooker = List.of(

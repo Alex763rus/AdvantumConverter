@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="update_sber_address1">
+        <sql>
+            update sber_address set city = 'Самара', city_and_region = 'Самара Дзержинского', address = 'Российская Федерация, 443070, г. Самара, ул. Дзержинского д. 46В' where sber_address_id = 10;
+            insert into sber_address(city, city_and_region, address)
+            select 'Самара', 'Самара Смышляевка', '443548, пгт. Смышляевка, ул.Механиков, зд.11, стр.1.'
+        </sql>
+    </changeSet>
+</databaseChangeLog>

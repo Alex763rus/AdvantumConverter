@@ -95,9 +95,24 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 }
             }
 
+            Map<String, List<String>> ordersInReis = new HashMap<>();
+            for (int rowTmp = row; rowTmp <= LAST_ROW; ++rowTmp) {
+                //заполнения поля комментарий рейс:
+                val numberOrderStart = getCellValue(rowTmp, 0);
+                var orderInReis = getCellValue(rowTmp, 1);
+                var savedOrderInReis = ordersInReis.get(numberOrderStart);
+                if (savedOrderInReis == null) {
+                    List<String> orders = new ArrayList<>();
+                    orders.add(orderInReis);
+                    ordersInReis.put(numberOrderStart, orders);
+                } else {
+                    savedOrderInReis.add(orderInReis);
+                }
+            }
+
             isStart = true;
             lastNumberOrderStart = EMPTY;
-
+            String reisInOrder = EMPTY;
             AddressInReis addressInReisTmp = null;
             for (; row <= LAST_ROW; ++row) {
                 val numberOrderStart = getCellValue(row, 0);
@@ -107,6 +122,9 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     lastNumberOrderStart = numberOrderStart;
                     numberUnloadingCounter = 0;
                     tonnage = getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
+                    reisInOrder = ordersInReis.getOrDefault(numberOrderStart, new ArrayList<>()).stream()
+                            .filter(e->!e.equals(EMPTY))
+                            .collect(Collectors.joining(", "));
                 }
                 val address = fillV(row);
                 addressInReisTmp = AddressInReis.getAddressInReis(uniqReisAndAddress, numberOrderStart, address);
@@ -166,6 +184,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnAlData(getCellValue(row, 25))
                         .setColumnAmData(getCellValue(row, 36))
                         .setColumnAnData(AddressInReis.getNumbers(addressInReisTmp))
+                        .setColumnAoData(reisInOrder)
                         .build();
                 data.add(dataLine);
                 ++numberUnloadingCounter;

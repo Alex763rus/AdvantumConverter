@@ -53,5 +53,6 @@ public class ConvertedListDataV2 {
     private String columnAlData;
     private String columnAmData;
     private String columnAnData;
+    private String columnAoData;
 
 }
