@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="update_sber_address1">
+        <sql>
+            update sber_address set city = 'Волгоград', city_and_region = 'Волгоград', address = 'Российская Федерация, Волгоградская обл., 403001, Городищенский р-н, рп Городище, проезд Московский, уч 1' where sber_address_id = 14;
+            update sber_address set city = 'Краснодар, Ростов-на-Дону', city_and_region = 'Ростов на Дону', address = 'Российская Федерация, Ростовская обл., 344091, г. Ростов-на-Дону, ул Пескова, зд 1ж' where sber_address_id = 15;
+            update sber_address set city = 'Краснодар, Ростов-на-Дону', city_and_region = 'Краснодар', address = 'Российская Федерация, Краснодарский край, 350080, г. Краснодар, ул им. Демуса М.Н., 64, 66, 68' where sber_address_id = 16;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

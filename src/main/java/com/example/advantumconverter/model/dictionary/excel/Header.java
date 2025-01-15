@@ -99,6 +99,8 @@ public class Header {
                     "(Тип поля: строка)"
             , "ID водителя в ВИС\n" +
                     "(Тип поля: строка)"
+            , "Внешний ID водителя\n" +
+                    "(Тип поля: строка)"
     );
 
     public static List<String> headersOutputClientV2 = List.of(

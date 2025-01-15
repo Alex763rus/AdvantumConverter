@@ -132,6 +132,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
                     dataLine.add(EMPTY);
+                    dataLine.add(fio);
 
                     data.add(dataLine);
                     if (!isStart) {

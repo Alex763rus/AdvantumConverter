@@ -91,6 +91,7 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
                     createCellInt(row, y, 31);
                     createCellString(row, y, 32);
                     createCellString(row, y, 33);
+                    createCellString(row, y, 34);
                 }
             }
             val tmpFile = Files.createTempFile(convertedBook.getBookName(), ".xlsx").toFile();
@@ -103,7 +104,8 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
     }
 
     private void createCellString(Row row, int y, int x) {
-        row.createCell(x).setCellValue(data.get(y).get(x));
+        var value = data.get(y).size() > x ? data.get(y).get(x) : EMPTY;
+        row.createCell(x).setCellValue(value);
     }
 
     private void createCellDate(Row row, int y, int x, String dateFormat, CellStyle cellStyle) throws ParseException {
