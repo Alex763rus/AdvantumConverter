@@ -7,6 +7,9 @@ import com.example.advantumconverter.exception.TemperatureNodValidException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.SneakyThrows;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SBER;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
@@ -41,8 +45,10 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     private final static String EXPECTED_TIME_FORMULA = "CHOOSE(1+(B2>=12)+(B2>=23)+(B2>=34)+(B2>=45)+(B2>=56)+(B2>=67)+(B2>=78)+(B2>=89),\"4:00\",\"5:00\",\"6:00\",\"7:00\",\"8:00\",\"9:00\",\"10:00\",\"11:00\")";
     private final static Map<String, String> TK_NAME_NUMBER_MAP = Map.of(
             SBER_BUSH_AUTOPROM_ORGANIZATION_NAME, "1",
+            SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_2, "1",
             SBER_SQUIRREL_ORGANIZATION_NAME, "2"
     );
+    private List<String> warnings = new ArrayList<>();
 
     @Override
     public String getConverterName() {
@@ -58,21 +64,20 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     private SberAddressDictionary cityFromDictionary = null;
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
-        val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutputClient);
+    public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
+        warnings = new ArrayList<>();
+        val data = new ArrayList<ConvertedListDataV2>();
+        ConvertedListDataV2 dataLine = null;
+
         int row = START_ROW;
-        ArrayList<String> dataLine = new ArrayList();
         boolean isStart = true;
         String reisNumber = EMPTY;
         String fio = EMPTY;
         String carNumber = EMPTY;
         String organization = EMPTY;
+
         try {
             sheet = book.getSheetAt(0);
-//            if (!getCellValue(START_ROW, 0).equals(EXPECTED_TIME_FORMULA)) {
-//                throw new ConvertProcessingException("В столбце A изменилась формула. В ячейке A1 ожидается формула:" + EXPECTED_TIME_FORMULA);
-//            }
             LAST_ROW = getLastRow(START_ROW, 1);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
 
@@ -97,43 +102,50 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 }
 
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-                    dataLine = new ArrayList<String>();
-                    dataLine.add(reisNumber);
-                    dataLine.add(convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT));
-                    dataLine.add(cityFromDictionary.getCity().trim());
-                    dataLine.add(organization);
-                    dataLine.add(EMPTY);
-                    dataLine.add(REFRIGERATOR);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add("5000");
-                    dataLine.add("12");
-                    dataLine.add(fillL(row));
-                    dataLine.add(fillM(row));
-                    dataLine.add("2");
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(fillS(isStart, row, isStart ? dateFromFileForSt : dateFromFile));
-                    dataLine.add(fillT(isStart, row, isStart ? dateFromFileForSt : dateFromFile));
-                    dataLine.add(fillU(isStart, row));
-                    dataLine.add(fillV(isStart, row));
-                    dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
-                    dataLine.add(String.valueOf(isStart ? 0 : numberUnloading));
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(TK_NAME_NUMBER_MAP.getOrDefault(organization, EMPTY));
-                    dataLine.add(EMPTY);
-                    dataLine.add(carNumber);
-                    dataLine.add(EMPTY);
-                    dataLine.add(fio);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(fio);
-
+                    dataLine = ConvertedListDataV2.init()
+                            .setColumnAdata(reisNumber)
+                            .setColumnBdata(dateFromFile)
+                            .setColumnCdata(cityFromDictionary.getCity().trim())
+                            .setColumnDdata(organization)
+                            .setColumnEdata(null)
+                            .setColumnFdata(REFRIGERATOR)
+                            .setColumnGdata(EMPTY)
+                            .setColumnHdata(EMPTY)
+                            .setColumnIdata(null)
+                            .setColumnJdata(5000)
+                            .setColumnKdata(12)
+                            .setColumnLdata(Integer.parseInt(fillL(row)))
+                            .setColumnMdata(Integer.parseInt(fillM(row)))
+                            .setColumnNdata(2)
+                            .setColumnOdata(null)
+                            .setColumnPdata(null)
+                            .setColumnQdata(null)
+                            .setColumnRdata(null)
+                            .setColumnSdata(convertDateFormat(fillS(isStart, row, isStart ? dateFromFileForSt : dateFromFile), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnTdata(convertDateFormat(fillT(isStart, row, isStart ? dateFromFileForSt : dateFromFile), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnUdata(fillU(isStart, row))
+                            .setColumnVdata(fillV(isStart, row))
+                            .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
+                            .setColumnXdata(isStart ? 0 : numberUnloading)
+                            .setColumnYdata(null)
+                            .setColumnZdata(null)
+                            .setColumnAaData(TK_NAME_NUMBER_MAP.getOrDefault(organization, EMPTY))
+                            .setColumnAbData(EMPTY)
+                            .setColumnAcData(carNumber)
+                            .setColumnAdData(EMPTY)
+                            .setColumnAeData(fio)
+                            .setColumnAfData(null)
+                            .setColumnAgData(EMPTY)
+                            .setColumnAhData(EMPTY)
+                            .setColumnAiData(EMPTY)
+                            .setColumnAjData(EMPTY)
+                            .setColumnAkData(EMPTY)
+                            .setColumnAlData(EMPTY)
+                            .setColumnAmData(EMPTY)
+                            .setColumnAnData(EMPTY)
+                            .setColumnAoData(EMPTY)
+                            .setColumnApData(fio)
+                            .build();
                     data.add(dataLine);
                     if (!isStart) {
                         break;
@@ -147,7 +159,18 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
+
+        return ConvertedBookV2.init()
+                .setBookV2(List.of(
+                        ConvertedListV2.init()
+                                .setHeadersV2(Header.headersOutputClientV2)
+                                .setExcelListName(EXPORT)
+                                .setExcelListContentV2(data)
+                                .build()
+                ))
+                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining("")))
+                .setBookName(getConverterName() + UNDERSCORE)
+                .build();
     }
 
     private String prepareFio(String value) {

@@ -17,6 +17,7 @@ public final class Constant {
         public static final String REFRIGERATOR = "Рефрижератор";
         public static final String BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО \"Буш-Автопром\"";
         public static final String SBER_BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО Буш-Автопром";
+        public static final String SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_2 = "ООО \"Буш-Автопром";
         public static final String SBER_SQUIRREL_ORGANIZATION_NAME = "ООО \"Белка Драйв\"";
         public static final String SHEET_RESULT_NAME = "ИМПОРТ";
         public static final String LOAD_THE_GOODS = "Погрузка";

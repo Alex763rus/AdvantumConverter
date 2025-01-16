@@ -185,6 +185,8 @@ public class Header {
             , "Телефон водителя"
             , "Номер заказа"
             , "комментарий рейс"
+            , "Внешний ID водителя\n" +
+                    "(Тип поля: строка)"
     );
 
     public static List<String> headersOutputBooker = List.of(
