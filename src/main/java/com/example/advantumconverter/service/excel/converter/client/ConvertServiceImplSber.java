@@ -6,7 +6,6 @@ import com.example.advantumconverter.exception.SberAddressNotFoundException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
-import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
@@ -44,7 +43,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     private final static String YAROSLAVSKOE_HIGHWAY = "Ярославское шоссе 222";
     private final static String EXPECTED_TIME_FORMULA = "CHOOSE(1+(B2>=12)+(B2>=23)+(B2>=34)+(B2>=45)+(B2>=56)+(B2>=67)+(B2>=78)+(B2>=89),\"4:00\",\"5:00\",\"6:00\",\"7:00\",\"8:00\",\"9:00\",\"10:00\",\"11:00\")";
     private final static Map<String, String> TK_NAME_NUMBER_MAP = Map.of(
-            SBER_BUSH_AUTOPROM_ORGANIZATION_NAME, "1",
+            BUSH_AUTOPROM_ORGANIZATION_NAME, "1",
+            SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_1, "1",
             SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_2, "1",
             SBER_SQUIRREL_ORGANIZATION_NAME, "2"
     );
@@ -177,7 +177,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         if (value == null) {
             return EMPTY;
         }
-        return value.split(" ВУ ")[0];
+        return value.replace(" ", SPACE).split(" ВУ ")[0];
     }
 
     private String deleteSpace(String value) {
