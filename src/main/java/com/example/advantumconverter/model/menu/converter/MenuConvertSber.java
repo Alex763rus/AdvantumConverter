@@ -31,6 +31,7 @@ public class MenuConvertSber extends MenuConverterBase {
         return switch (stateService.getState(user)) {
             case FREE -> freeLogic(user, update, CONVERT_FILE_SBER, FILE_NAME_SBER);
             case CONVERT_FILE_SBER -> convertFileLogic(user, update, convertServiceImplSber);
+            case CONVERTER_WAIT_UNLOAD_IN_CRM -> unloadInCrmLogic(user, update, convertServiceImplSber);
             default -> errorMessageDefault(update);
         };
     }

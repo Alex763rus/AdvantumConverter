@@ -38,3 +38,4 @@ build/
 .vscode/
 /WhiteListUsers.json
 /SenderSettings.json
+/logs/app.log

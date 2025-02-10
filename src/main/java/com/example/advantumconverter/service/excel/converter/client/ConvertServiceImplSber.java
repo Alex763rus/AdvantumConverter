@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.SberAddressNotFoundException;
@@ -38,6 +39,7 @@ import static org.example.tgcommons.utils.DateConverterUtils.*;
 public class ConvertServiceImplSber extends ConvertServiceBase implements ConvertService {
 
     private final int START_ROW = 2;
+    private final CrmConfigProperties crmConfigProperties;
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
     private final static String YAROSLAVSKOE_HIGHWAY = "Ярославское шоссе 222";
@@ -49,6 +51,11 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             SBER_SQUIRREL_ORGANIZATION_NAME, "2"
     );
     private List<String> warnings = new ArrayList<>();
+
+    public ConvertServiceImplSber(CrmConfigProperties crmConfigProperties) {
+        super();
+        this.crmConfigProperties = crmConfigProperties;
+    }
 
     @Override
     public String getConverterName() {
@@ -73,6 +80,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         boolean isStart = true;
         String reisNumber = EMPTY;
         String fio = EMPTY;
+        String fullFio = EMPTY;
         String carNumber = EMPTY;
         String organization = EMPTY;
 
@@ -145,6 +153,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnAnData(EMPTY)
                             .setColumnAoData(EMPTY)
                             .setColumnApData(fio)
+                            .setTechFullFio(fio)
                             .build();
                     data.add(dataLine);
                     if (!isStart) {
@@ -233,6 +242,11 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             val time = getCellValue(row, 14).split(MINUS)[0];
             return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
         }
+    }
+
+    @Override
+    public CrmConfigProperties.CrmCreds getCrmCreds() {
+        return crmConfigProperties.getSber();
     }
 
     private String fillT(boolean isStart, int row, Date dateFromFile) throws ParseException {

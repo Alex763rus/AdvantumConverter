@@ -66,14 +66,17 @@ public class MenuService {
         val answer = new ArrayList<PartialBotApiMethod>();
         if (update.hasCallbackQuery()) {
             val message = update.getCallbackQuery().getMessage();
-            val menuName = update.getCallbackQuery().getMessage().getReplyMarkup().getKeyboard().stream()
-                    .filter(e -> e.get(0).getCallbackData().equals(update.getCallbackQuery().getData()))
-                    .findFirst().get().get(0).getText();
-            answer.add(EditMessageTextWrap.init()
-                    .setChatIdLong(message.getChatId())
-                    .setMessageId(message.getMessageId())
-                    .setText("Выбрано меню: " + menuName)
-                    .build().createMessage());
+            if (message.getText() != null) {
+                val menuName = update.getCallbackQuery().getMessage().getReplyMarkup().getKeyboard().stream()
+                        .filter(e -> e.get(0).getCallbackData().equals(update.getCallbackQuery().getData()))
+                        .findFirst().get().get(0).getText();
+                answer.add(EditMessageTextWrap.init()
+                        .setChatIdLong(message.getChatId())
+                        .setMessageId(message.getMessageId())
+                        .setText("Выбрано меню: " + menuName)
+                        .build().createMessage());
+            }
+
         }
         answer.addAll(menuActivity.menuRun(user, update));
         if (stateService.getState(user) == FREE && !menuActivity.getMenuComand().equals(menuStart.getMenuComand())) {
@@ -95,13 +98,13 @@ public class MenuService {
         return List.of(new BotCommand(menu.getMenuComand(), menu.getDescription()));
     }
 
-    private String getChatId(Update update) {
-        if (update.hasMessage()) {
-            return String.valueOf(update.getMessage().getChatId());
-        }
-        if (update.hasCallbackQuery()) {
-            return String.valueOf(update.getCallbackQuery().getMessage().getChatId());
-        }
-        return null;
-    }
+//    private String getChatId(Update update) {
+//        if (update.hasMessage()) {
+//            return String.valueOf(update.getMessage().getChatId());
+//        }
+//        if (update.hasCallbackQuery()) {
+//            return String.valueOf(update.getCallbackQuery().getMessage().getChatId());
+//        }
+//        return null;
+//    }
 }

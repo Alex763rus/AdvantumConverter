@@ -1,0 +1,96 @@
+{
+  "bodyTonnageInKg": 5000.0,
+  "numberOfPallets": 12,
+  "externalId": "22987_031224",
+  "customer": {
+    "externalId": "24645624",
+    "name": "OKAY"
+  },
+  "carrier": {
+    "externalId": "0",
+    "name": "ООО \"Белка Драйв\""
+  },
+  "costInRubles": 0,
+  "comment": "2",
+  "temperatureMin": 2,
+  "temperatureMax": 4,
+  "tech": false,
+  "vehicle": {
+    "externalId": "К858ВС57",
+    "gosNumber": "К858ВС57"
+  },
+  "driver": {
+    "externalId": "Заглушкин Заглушка Заглушкович",
+    "lastName": "Заглушкин",
+    "firstName": "Заглушка",
+    "middleName": "Заглушкович"
+  },
+  "points": [
+    {
+      "point": {
+        "externalId": "Воронеж Брусилова",
+        "name": "Воронеж Брусилова",
+        "address": "г. Воронеж, ул. Брусилова 4Б"
+      },
+      "startTime": "2025-01-21T11:25:01.635Z",
+      "finishTime": "2025-01-21T11:28:01.635Z",
+      "operation": "LOAD",
+      "sequenceNumber": 0
+    },
+    {
+      "point": {
+        "externalId": "ОРЛ Рижский пер 5",
+        "name": "ОРЛ Рижский пер 5",
+        "address": "ОРЛ Рижский пер 5"
+      },
+      "startTime": "2025-01-21T11:25:01.635Z",
+      "finishTime": "2025-01-21T11:28:01.635Z",
+      "operation": "UNLOAD",
+      "sequenceNumber": 1
+    },
+    {
+      "point": {
+        "externalId": "ОРЛ Престижная 39",
+        "name": "ОРЛ Престижная 39",
+        "address": "ОРЛ Престижная 39"
+      },
+      "startTime": "2025-01-21T11:25:01.635Z",
+      "finishTime": "2025-01-21T11:28:01.635Z",
+      "operation": "UNLOAD",
+      "sequenceNumber": 2
+    },
+    {
+      "point": {
+        "externalId": "ОРЛ Октябрьская 27",
+        "name": "ОРЛ Октябрьская 27",
+        "address": "ОРЛ Октябрьская 27"
+      },
+      "startTime": "2025-01-21T11:25:01.635Z",
+      "finishTime": "2025-01-21T11:28:01.635Z",
+      "operation": "UNLOAD",
+      "sequenceNumber": 3
+    },
+    {
+      "point": {
+        "externalId": "ОРЛ Поликарпова пл 20",
+        "name": "ОРЛ Поликарпова пл 20",
+        "address": "ОРЛ Поликарпова пл 20"
+      },
+      "startTime": "2025-01-21T11:25:01.635Z",
+      "finishTime": "2025-01-21T11:28:01.635Z",
+      "operation": "UNLOAD",
+      "sequenceNumber": 4
+    },
+    {
+      "point": {
+        "externalId": "ОРЛ Ломоносова 6",
+        "name": "ОРЛ Ломоносова 6",
+        "address": "ОРЛ Ломоносова 6"
+      },
+      "startTime": "2025-01-21T11:25:01.635Z",
+      "finishTime": "2025-01-21T11:28:01.635Z",
+      "operation": "UNLOAD",
+      "sequenceNumber": 5
+    }
+  ]
+}

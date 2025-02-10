@@ -1,5 +1,6 @@
 package com.example.advantumconverter.config;
 
+import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.Company;
@@ -23,8 +24,6 @@ import java.util.Map;
 import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.constant.Constant.Company.*;
 import static com.example.advantumconverter.enums.UserRole.*;
-import static org.example.tgcommons.constant.Constant.FileOperation.USER_DIR;
-import static org.example.tgcommons.constant.Constant.TextConstants.SHIELD;
 
 @Configuration
 @Data
@@ -81,6 +80,9 @@ public class BotConfig {
     private ConvertServiceImplArtFruit convertServiceImplArtFruit;
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private CrmConfigProperties crmConfigProperties;
 
     @Bean
     public CompanySetting companySetting() {

@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface MenuActivity {
 
-    public String getMenuComand();
+    String getMenuComand();
 
-    public String getDescription();
+    String getDescription();
 
-    public List<PartialBotApiMethod> menuRun(User user, Update update);
+    List<PartialBotApiMethod> menuRun(User user, Update update);
 
 }

@@ -56,4 +56,7 @@ public class ConvertedListDataV2 {
     private String columnAoData;
     private String columnApData;
 
+    //==Технические поля, не участвующие в формировании файла: =============================
+    private String techFullFio;
+
 }

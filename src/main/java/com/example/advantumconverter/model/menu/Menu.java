@@ -6,9 +6,11 @@ import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.service.database.UserService;
 import com.example.advantumconverter.service.excel.FileUploadService;
 import com.example.advantumconverter.service.menu.StateService;
+import com.example.advantumconverter.service.rest.out.crm.CrmHelper;
 import com.example.advantumconverter.service.support.SupportService;
 import jakarta.persistence.MappedSuperclass;
 import org.example.tgcommons.model.button.ButtonsDescription;
+import org.example.tgcommons.model.wrapper.DeleteMessageWrap;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -39,6 +41,9 @@ public abstract class Menu implements MenuActivity {
     @Autowired
     protected SupportService supportService;
 
+    @Autowired
+    protected CrmHelper crmHelper;
+
     private static final String DEFAULT_TEXT_ERROR = "Ошибка! Команда не найдена";
 
     protected List<PartialBotApiMethod> errorMessageDefault(Update update) {
@@ -61,6 +66,14 @@ public abstract class Menu implements MenuActivity {
 
     protected List<PartialBotApiMethod> createMessageList(User user, String message) {
         return List.of(this.createMessage(user, message));
+    }
+
+    protected PartialBotApiMethod createDeleteMessage(Long chatId, Integer messageId) {
+        return DeleteMessageWrap.init()
+                .setChatIdLong(chatId)
+                .setMessageId(messageId)
+                .build()
+                .createMessage();
     }
 
     protected List<PartialBotApiMethod> createMessageList(User user, String message, ButtonsDescription buttonsDescription) {

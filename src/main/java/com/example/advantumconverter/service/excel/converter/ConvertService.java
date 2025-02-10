@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
@@ -43,4 +44,11 @@ public interface ConvertService {
      * @return тип возвращаемого эксель файла из перечисления ExcelType
      */
     ExcelType getExcelType();
+
+    /**
+     * @return логин пароль для получения токена в CRM
+     */
+    default CrmConfigProperties.CrmCreds getCrmCreds(){
+        return null;
+    }
 }

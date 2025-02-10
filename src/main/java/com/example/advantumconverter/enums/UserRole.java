@@ -3,13 +3,12 @@ package com.example.advantumconverter.enums;
 public enum UserRole {
 
     NEED_SETTING("Требуется настройка"),
-
     BLOCKED("Заблокирован"),
-
     EMPLOYEE("Сотрудник"),
     MAIN_EMPLOYEE("Главный сотрудник"),
     SUPPORT("Поддержка"),
-    ADMIN("Администратор");
+    ADMIN("Администратор"),
+    EMPLOYEE_API("Сотрудник апи");
 
     private String title;
 
