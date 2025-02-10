@@ -4,7 +4,9 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
-import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -17,17 +19,18 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
-import static com.example.advantumconverter.constant.Constant.Heap.MINUS;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
+
 @Component
 public class ConvertServiceImplLenta extends ConvertServiceBase implements ConvertService {
     private int START_ROW;
@@ -54,72 +57,103 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
     private Date stockIn = null; //из файла, ожидаемая дата прибытия, дата въезда на погрузку
     private Date stockOut = null;           //дата выезда с погрузки
+    private List<String> warnings = new ArrayList<>();
 
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
-        val data = new ArrayList<List<String>>();
-        data.add(Header.headersOutputClient);
-        sheet = book.getSheetAt(0);
-        START_ROW = getStartRow(START_ROW_TEXT);
+    public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
+        warnings = new ArrayList<>();
+        val data = new ArrayList<ConvertedListDataV2>();
+        ConvertedListDataV2 dataLine = null;
 
-        int row = START_ROW;
-        int counterCopy = 1;
-        ArrayList<String> dataLine = new ArrayList();
+        int row = 0;
+        boolean isStart = true;
+        String reisNumber = EMPTY;
+        String fio = EMPTY;
+        String fullFio = EMPTY;
+        String carNumber = EMPTY;
+        String organization = EMPTY;
+
+
+        //======================
+
 
         try {
+            sheet = book.getSheetAt(0);
+            START_ROW = getStartRow(START_ROW_TEXT);
+            row = START_ROW;
+            int counterCopy = 1;
 
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
-                val isStart = isStart(row);
+                isStart = isStart(row);
                 if (isStart) {
                     stockIn = getExpectedTimeIncome(row);
                     stockOut = DateUtils.addHours(stockIn, 3);
                     counterCopy = 1;
                 }
-                dataLine = new ArrayList<>();
-                dataLine.add(getCellValue(row, 1));
-                dataLine.add(getCurrentDate(TEMPLATE_DATE_DOT));
-                dataLine.add(fillC(row));
-                dataLine.add(fillD(row));
-                dataLine.add(EMPTY);
-                dataLine.add(REFRIGERATOR);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(fillJ(row));
-                dataLine.add("1");
-                dataLine.add(fillL(row));
-                dataLine.add(fillM(row));
-                dataLine.add("2");
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(fillS(row, isStart));
-                dataLine.add(fillT(row, isStart));
-                dataLine.add(String.valueOf(getCode(row)));
-                dataLine.add(fillU(row));
-                dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
-                dataLine.add(String.valueOf(counterCopy));
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(getCarNumber(row));
-                dataLine.add(EMPTY);
-                dataLine.add(fillAE(row));
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-                dataLine.add(EMPTY);
-
-                ++counterCopy;
+                dataLine = ConvertedListDataV2.init()
+                        .setColumnAdata(getCellValue(row, 1))
+                        .setColumnBdata(new Date())
+                        .setColumnCdata(fillC(row))
+                        .setColumnDdata(fillD(row))
+                        .setColumnEdata(null)
+                        .setColumnFdata(REFRIGERATOR)
+                        .setColumnGdata(EMPTY)
+                        .setColumnHdata(EMPTY)
+                        .setColumnIdata(null)
+                        .setColumnJdata(Integer.parseInt(fillJ(row)))
+                        .setColumnKdata(1)
+                        .setColumnLdata(Integer.parseInt(fillL(row)))
+                        .setColumnMdata(Integer.parseInt(fillM(row)))
+                        .setColumnNdata(2)
+                        .setColumnOdata(null)
+                        .setColumnPdata(null)
+                        .setColumnQdata(null)
+                        .setColumnRdata(null)
+                        .setColumnSdata(convertDateFormat(fillS(row, isStart), TEMPLATE_DATE_TIME_DOT))
+                        .setColumnTdata(convertDateFormat(fillT(row, isStart), TEMPLATE_DATE_TIME_DOT))
+                        .setColumnUdata(String.valueOf(getCode(row)))
+                        .setColumnVdata(fillU(row))
+                        .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
+                        .setColumnXdata(counterCopy)
+                        .setColumnYdata(null)
+                        .setColumnZdata(null)
+                        .setColumnAaData(EMPTY)
+                        .setColumnAbData(EMPTY)
+                        .setColumnAcData(getCarNumber(row))
+                        .setColumnAdData(EMPTY)
+                        .setColumnAeData(fillAE(row))
+                        .setColumnAfData(null)
+                        .setColumnAgData(EMPTY)
+                        .setColumnAhData(EMPTY)
+                        .setColumnAiData(EMPTY)
+                        .setColumnAjData(EMPTY)
+                        .setColumnAkData(EMPTY)
+                        .setColumnAlData(EMPTY)
+                        .setColumnAmData(EMPTY)
+                        .setColumnAnData(EMPTY)
+                        .setColumnAoData(EMPTY)
+                        .setColumnApData(fio)
+                        .setTechFullFio(fio)
+                        .build();
                 data.add(dataLine);
+                ++counterCopy;
             }
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
+        return ConvertedBookV2.init()
+                .setBookV2(List.of(
+                        ConvertedListV2.init()
+                                .setHeadersV2(Header.headersOutputClientV2)
+                                .setExcelListName(EXPORT)
+                                .setExcelListContentV2(data)
+                                .build()
+                ))
+                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining(EMPTY)))
+                .setBookName(getConverterName() + UNDERSCORE)
+                .build();
     }
 
     private String fillS(int row, boolean isStart) throws ParseException {
