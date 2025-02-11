@@ -1,5 +1,6 @@
 package com.example.advantumconverter.config;
 
+import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -28,23 +30,20 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class WebClientConfig {
 
-    //  @Value("${ru.vtb.application.os-acc-generator.host}") //TODO
-    private String baseOsAccGeneratorHost = "https://atms-test.advantum.ru";
-
-    //  @Value("${ru.vtb.application.os-acc-generator.timeout}") //TODO
-    private Integer timeout = 5000;
+    @Autowired
+    private CrmConfigProperties crmConfigProperties;
 
     @Bean
     public WebClient crmWebClient() {
         return WebClient.builder()
-                .baseUrl(baseOsAccGeneratorHost)
+                .baseUrl(crmConfigProperties.getHost())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .clientConnector(new ReactorClientHttpConnector(createHttpClient(getSslContextTrustAll())))
                 .build();
     }
 
     @Bean
-    public ObjectMapper objectMapper(){
+    public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -55,11 +54,11 @@ public class WebClientConfig {
 
     private HttpClient createHttpClient(SslContext sslContext) {
         return HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, crmConfigProperties.getConnectTimeoutMillis())
                 .secure(t -> t.sslContext(sslContext))
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(timeout, TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(timeout, TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(crmConfigProperties.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(crmConfigProperties.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS));
                 });
     }
 

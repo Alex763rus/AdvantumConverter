@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -299,4 +300,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         }
     }
 
+    @Override
+    public CrmConfigProperties.CrmCreds getCrmCreds() {
+        return crmConfigProperties.getArtfruit();
+    }
 }

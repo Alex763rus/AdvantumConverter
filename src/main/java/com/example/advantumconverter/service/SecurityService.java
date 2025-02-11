@@ -21,7 +21,7 @@ import static com.example.advantumconverter.enums.UserRole.*;
 @NoArgsConstructor
 public class SecurityService {
 
-    private final static Set<UserRole> grantsApiUser = Set.of(EMPLOYEE_API, SUPPORT, ADMIN);
+    private final static Set<UserRole> grantsApiUser = Set.of(EMPLOYEE_API, ADMIN);
 
     @Autowired
     private Map<UserRole, List<String>> roleAccess;

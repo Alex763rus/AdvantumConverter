@@ -12,6 +12,7 @@ import com.example.advantumconverter.service.excel.generate.ClientExcelGenerateS
 import com.example.advantumconverter.service.excel.generate.ExcelGenerateService;
 import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper;
 import jakarta.persistence.MappedSuperclass;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.example.tgcommons.model.button.Button;
 import org.example.tgcommons.model.button.ButtonsDescription;
@@ -19,12 +20,12 @@ import org.example.tgcommons.model.wrapper.SendDocumentWrap;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.util.*;
 
 import static com.example.advantumconverter.enums.FileType.USER_IN;
 import static com.example.advantumconverter.enums.State.CONVERTER_WAIT_UNLOAD_IN_CRM;
@@ -32,6 +33,7 @@ import static com.example.advantumconverter.enums.State.FREE;
 import static org.example.tgcommons.utils.ButtonUtils.createVerticalColumnMenu;
 
 @MappedSuperclass
+@Log4j2
 public abstract class MenuConverterBase extends Menu {
 
     @Autowired
@@ -58,10 +60,11 @@ public abstract class MenuConverterBase extends Menu {
                     var convertedBook = convertService.getConvertedBook(book);
                     var convertedBookV2 = convertService.getConvertedBookV2(book);
                     val excelService = excelGenerateServiceMap.get(convertService.getExcelType().getExcelType());
-                    val document = convertedBook != null
-                            ? excelService.createXlsx(convertedBook)
-                            : excelService.createXlsxV2(convertedBookV2);
-                    val message = convertedBook != null ? convertedBook.getMessage() : convertedBookV2.getMessage();
+                    var isV2 = convertedBook == null;
+                    val document = isV2
+                            ? excelService.createXlsxV2(convertedBookV2)
+                            : excelService.createXlsx(convertedBook);
+                    val message = isV2 ? convertedBookV2.getMessage() : convertedBook.getMessage();
 
                     var answer = SendDocumentWrap.init()
                             .setChatIdLong(update.getMessage().getChatId())
@@ -69,8 +72,8 @@ public abstract class MenuConverterBase extends Menu {
                             .setDocument(document)
                             .build();
 
-                    if (SecurityService.grantApiUser(user)) { //todo проверить доступ
-                        ArrayList<PartialBotApiMethod> answers = new ArrayList<>();
+                    if (SecurityService.grantApiUser(user)
+                            && isV2/* только для api v2*/) {
                         convertedBooks.put(user, convertedBook);
                         convertedBooksV2.put(user, convertedBookV2);
 
@@ -154,7 +157,24 @@ public abstract class MenuConverterBase extends Menu {
         val answer = new ArrayList<PartialBotApiMethod>();
         answer.add(createDeleteMessage(user.getChatId(), update.getCallbackQuery().getMessage().getMessageId()));
         answer.add(createMessage(user, "Выбрано меню: загрузить в CRM"));
-        answer.add(createMessage(user, crmGatewayResponseDto.getMessage()));
+        if (Objects.requireNonNullElse(crmGatewayResponseDto.getReisError(), new ArrayList<>()).isEmpty()) {
+            answer.add(createMessage(user, crmGatewayResponseDto.getMessage()));
+        } else {
+            try {
+                val tmpFile = Files.createTempFile("log", ".txt").toFile();
+                try (FileWriter writer = new FileWriter(tmpFile)) {
+                    writer.write(crmGatewayResponseDto.getMessage());
+                    System.out.println("Запись завершена.");
+                }
+                answer.add(SendDocumentWrap.init()
+                        .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
+                        .setCaption("Ошибка во время загрузки рейсов. Детализация во вложении")
+                        .setDocument(new InputFile(tmpFile))
+                        .build().createMessage());
+            } catch (Exception ex) {
+                log.error("не смогли приложить лог: " + crmGatewayResponseDto.getMessage());
+            }
+        }
         return answer;
     }
 }

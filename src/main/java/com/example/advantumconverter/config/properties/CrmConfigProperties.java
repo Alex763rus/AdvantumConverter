@@ -9,8 +9,13 @@ import org.springframework.stereotype.Component;
 @Data
 public class CrmConfigProperties {
 
+    private String host;
+    private Integer connectTimeoutMillis;
+
+    private CrmCreds artfruit;
     private CrmCreds sber;
     private CrmCreds ozon;
+    private CrmCreds lenta;
 
     @Data
     public static class CrmCreds {

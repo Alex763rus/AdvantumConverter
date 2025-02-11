@@ -31,6 +31,7 @@ public class MenuConvertArtFruit extends MenuConverterBase {
         return switch (stateService.getState(user)) {
             case FREE -> freeLogic(user, update, CONVERT_FILE_ART_FRUIT, FILE_NAME_ART_FRUIT);
             case CONVERT_FILE_ART_FRUIT -> convertFileLogic(user, update, convertServiceImplArtFruit);
+            case CONVERTER_WAIT_UNLOAD_IN_CRM -> unloadInCrmLogic(user, update, convertServiceImplArtFruit);
             default -> errorMessageDefault(update);
         };
     }

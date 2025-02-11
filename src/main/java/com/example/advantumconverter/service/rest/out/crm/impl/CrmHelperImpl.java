@@ -72,6 +72,9 @@ public class CrmHelperImpl implements CrmHelper {
         } else {
             messsage.append("Ошибка, не все рейсы загружены успешно!").append(NEW_LINE)
                     .append("Успешно загружены: ").append(reisSuccess.size()).append(NEW_LINE)
+                    .append("ExternalId: ").append(reisSuccess.stream()
+                            .map(CrmGatewayReisResponseDto::getExternalId)
+                            .collect(Collectors.joining(", "))).append(NEW_LINE)
                     .append("Ошибка во время загрузки: ").append(reisError.size()).append(NEW_LINE)
                     .append("Детализация ошибок: ").append(NEW_LINE);
             reisError.forEach(reis -> messsage.append(reis.getExternalId()).append(" : ").append(reis.getMessage()).append(NEW_LINE));

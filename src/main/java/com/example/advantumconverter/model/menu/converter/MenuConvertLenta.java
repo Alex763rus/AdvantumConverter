@@ -28,13 +28,12 @@ public class MenuConvertLenta extends MenuConverterBase {
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        switch (stateService.getState(user)) {
-            case FREE:
-                return freeLogic(user, update, CONVERT_FILE_LENTA, FILE_NAME_LENTA);
-            case CONVERT_FILE_LENTA:
-                return convertFileLogic(user, update, convertServiceImplLenta);
-        }
-        return errorMessageDefault(update);
+        return switch (stateService.getState(user)) {
+            case FREE -> freeLogic(user, update, CONVERT_FILE_LENTA, FILE_NAME_LENTA);
+            case CONVERT_FILE_LENTA -> convertFileLogic(user, update, convertServiceImplLenta);
+            case CONVERTER_WAIT_UNLOAD_IN_CRM -> unloadInCrmLogic(user, update, convertServiceImplLenta);
+            default -> errorMessageDefault(update);
+        };
     }
 
     @Override
