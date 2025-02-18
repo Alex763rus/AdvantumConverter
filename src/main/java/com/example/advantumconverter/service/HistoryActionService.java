@@ -23,6 +23,8 @@ import static com.example.advantumconverter.enums.HistoryActionType.USER_ACTION;
 @Service
 public class HistoryActionService {
 
+    private static final int MAX_MESSAGE_LENGTH = 999;
+
     @Autowired
     private HistoryActionRepository historyActionRepository;
 
@@ -37,10 +39,10 @@ public class HistoryActionService {
                 if (message.getText().contains("Главное")) {
                     return;
                 }
-                historyAction.setMessageText(message.getText());
+                historyAction.setMessageText(message.getText().substring(0, MAX_MESSAGE_LENGTH));
             }
             if (message.hasDocument()) {
-                historyAction.setMessageText(message.getCaption());
+                historyAction.setMessageText(message.getCaption().substring(0, MAX_MESSAGE_LENGTH));
                 historyAction.setFileName(update.getMessage().getText());
             }
         }
@@ -69,7 +71,7 @@ public class HistoryActionService {
             if (answer.getText().contains("Главное")) {
                 return;
             }
-            historyAction.setMessageText(answer.getText());
+            historyAction.setMessageText(answer.getText().substring(0, MAX_MESSAGE_LENGTH));
             historyAction.setChatIdTo(Long.parseLong(answer.getChatId()));
         }
         if (partialBotApiMethod instanceof EditMessageText) {
@@ -77,12 +79,12 @@ public class HistoryActionService {
             if (answer.getText().contains("Главное")) {
                 return;
             }
-            historyAction.setMessageText(answer.getText());
+            historyAction.setMessageText(answer.getText().substring(0, MAX_MESSAGE_LENGTH));
             historyAction.setChatIdTo(Long.parseLong(answer.getChatId()));
         }
         if (partialBotApiMethod instanceof SendDocument) {
             val answer = (SendDocument) partialBotApiMethod;
-            historyAction.setMessageText(answer.getCaption());
+            historyAction.setMessageText(answer.getCaption().substring(0, MAX_MESSAGE_LENGTH));
             historyAction.setChatIdTo(Long.parseLong(answer.getChatId()));
             if (answer.getDocument() != null) {
                 historyAction.setFileName(answer.getDocument().getAttachName());
