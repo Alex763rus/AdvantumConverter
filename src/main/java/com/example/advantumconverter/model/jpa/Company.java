@@ -1,6 +1,5 @@
 package com.example.advantumconverter.model.jpa;
 
-import com.example.advantumconverter.service.excel.converter.ConvertService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

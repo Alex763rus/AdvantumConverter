@@ -1,6 +1,6 @@
 package com.example.advantumconverter.exception;
 
-import static com.example.advantumconverter.constant.Constant.Exception.CAR_NOT_FOUND;
+import static com.example.advantumconverter.constant.Constant.Exceptions.CAR_NOT_FOUND;
 
 public class CarNotFoundException extends RuntimeException {
 

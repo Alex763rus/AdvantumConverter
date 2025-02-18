@@ -3,10 +3,10 @@ package com.example.advantumconverter.service;
 import com.example.advantumconverter.config.BotConfig;
 import com.example.advantumconverter.service.menu.MenuService;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -20,15 +20,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Component
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
 
-    @Autowired
-    private BotConfig botConfig;
+    private final BotConfig botConfig;
 
-    @Autowired
-    private MenuService menuService;
+    private final MenuService menuService;
+
+    private static final int MESSAGE_LEN_LIMIT = 4000;
 
     @PostConstruct
     public void init() {
@@ -74,7 +75,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private int MESSAGE_LEN_LIMIT = 4000;
 
     private List<SendMessage> splitAnswerOnToLongText(SendMessage answer) {
         if (answer.getText() == null || answer.getText().length() < MESSAGE_LEN_LIMIT) {
@@ -85,9 +85,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         val tokens = new ArrayList<String>();
 
         int start = 0;
-        int step = MESSAGE_LEN_LIMIT;
-        int finish = step;
-        for (; start < text.length(); ) {
+        int finish;
+        while (start < text.length()) {
             finish = text.lastIndexOf(",", start + MESSAGE_LEN_LIMIT);
             if (start == finish) {
                 finish = start + MESSAGE_LEN_LIMIT;

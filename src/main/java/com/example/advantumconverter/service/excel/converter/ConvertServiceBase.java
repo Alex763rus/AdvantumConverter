@@ -4,7 +4,6 @@ import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.database.DictionaryService;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +32,9 @@ public class ConvertServiceBase {
     protected DictionaryService dictionaryService;
 
     protected XSSFSheet sheet;
-
     protected int LAST_COLUMN_NUMBER;
     protected int LAST_ROW;
+    private static final int MAX_ROW = 10000;
 
     protected XSSFSheet getExcelList(XSSFWorkbook book, String listName) {
         return Optional.ofNullable(book.getSheet(listName))
@@ -58,36 +56,6 @@ public class ConvertServiceBase {
         return formatter.formatCellValue(xssfCell);
     }
 
-    protected String getCellWindowValue(XSSFSheet sheet, int row, int col) {
-        if (sheet.getRow(row) == null) {
-            return EMPTY;
-        }
-        if (sheet.getRow(row).getCell(col) == null) {
-            return EMPTY;
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
-    }
-
-    protected List<List<String>> getDataFromSheet(XSSFWorkbook book, String sheetName, final int colStart, final int countColumns) {
-        val data = new ArrayList<List<String>>();
-        val windowSheet = book.getSheet(sheetName);
-        val colEnd = colStart + countColumns;
-        for (int row = 0; ; row++) {
-            val cellValue = getCellWindowValue(windowSheet, row, 0);
-            val nextValue = getCellWindowValue(windowSheet, row + 1, 0);
-            if (cellValue.equals(EMPTY) && nextValue.equals(EMPTY)) {
-                --row;
-                break;
-            }
-            val line = new ArrayList<String>();
-            for (int column = colStart; column < colEnd; ++column) {
-                line.add(getCellWindowValue(windowSheet, row, column));
-            }
-            data.add(line);
-        }
-        return data;
-    }
-
     protected Date getCellDate(int row, int col) {
         if (sheet.getRow(row) == null) {
             return null;
@@ -100,17 +68,11 @@ public class ConvertServiceBase {
 
     protected int getLastRow(int startRow) {
         int i = startRow;
-        for (; ; i++) {
-            if (getCellValue(i, 0).equals(EMPTY)) {
-                if (getCellValue(i + 1, 0).equals(EMPTY)) {
-                    break;
-                }
-            }
+        while (!(EMPTY.equals(getCellValue(i, 0)) && EMPTY.equals(getCellValue(i + 1, 0)))) {
+            i = i + 1;
         }
         return i - 1;
     }
-
-    private final int MAX_ROW = 10000;
 
     protected int getStartRow(String startRowText) {
         for (int i = 0; i < MAX_ROW; i++) {
@@ -171,15 +133,4 @@ public class ConvertServiceBase {
                 .build();
     }
 
-
-    //    private String getValueOrDefault(int row, int slippage, int col) {
-//        row = row + slippage;
-//        if (row < START_ROW || row > LAST_ROW) {
-//            return EMPTY;
-//        }
-//        if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
-//            return EMPTY;
-//        }
-//        return getCellValue(sheet.getRow(row).getCell(col));
-//    }
 }

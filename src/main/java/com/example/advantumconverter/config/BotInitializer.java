@@ -1,6 +1,7 @@
 package com.example.advantumconverter.config;
 
 import com.example.advantumconverter.service.TelegramBot;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +16,17 @@ import static com.example.advantumconverter.constant.Constant.APP_NAME;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class BotInitializer {
 
-    @Autowired
-    private TelegramBot telegramBot;
+    private final TelegramBot telegramBot;
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {
         val telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
             telegramBotsApi.registerBot(telegramBot);
-            System.out.println("APPNAME: " + APP_NAME);
+            log.info("APPNAME: " + APP_NAME);
         } catch (TelegramApiException e) {
             log.error("Error occurred: " + e.getMessage());
         }

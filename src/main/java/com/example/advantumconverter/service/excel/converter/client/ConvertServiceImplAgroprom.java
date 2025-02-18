@@ -17,7 +17,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_AGROPROM;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
+import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_AGROPROM;
 import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
@@ -28,7 +28,7 @@ import static org.example.tgcommons.utils.DateConverterUtils.*;
 @Component
 public class ConvertServiceImplAgroprom extends ConvertServiceBase implements ConvertService {
 
-    private final int START_ROW = 1;
+    private static final int START_ROW = 1;
 
     @Override
     public String getConverterName() {
@@ -41,18 +41,19 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     }
 
     @Override
+    @Deprecated
     public ConvertedBook getConvertedBook(XSSFWorkbook book) {
         val data = new ArrayList<List<String>>();
         data.add(Header.headersOutputClient);
         int row = START_ROW;
-        ArrayList<String> dataLine = new ArrayList();
+        var dataLine = new ArrayList<String>();
         try {
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-                    dataLine = new ArrayList<String>();
+                    dataLine = new ArrayList<>();
                     dataLine.add(getCellValue(row, 0));
                     dataLine.add(convertDateFormat(getCellValue(row, 9), TEMPLATE_DATE_SLASH, TEMPLATE_DATE_DOT));
                     dataLine.add("Х5 ТЦ Новая Рига");
@@ -105,7 +106,7 @@ public class ConvertServiceImplAgroprom extends ConvertServiceBase implements Co
     private String fillS(boolean isStart, int row) throws ParseException {
         if (isStart) {
             val timeK = convertDateFormat(getCellValue(row, 10), TEMPLATE_TIME, TEMPLATE_TIME_SECOND);
-            val dateResult = getCellValue(row, 9) + SPACE + (isStart ? timeK : "TODO");
+            val dateResult = getCellValue(row, 9) + SPACE + (timeK);
             return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_SLASH, TEMPLATE_DATE_TIME_DOT);
         } else {
             val dateText = fillT(isStart, row);

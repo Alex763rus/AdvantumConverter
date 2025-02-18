@@ -1,15 +1,12 @@
 package com.example.advantumconverter.gen.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import com.fasterxml.jackson.annotation.JsonValue;
 
-
-import com.example.advantumconverter.gen.model.ShipmentRequestPointTransportDocumentPositionDto;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.OffsetDateTime;
+import java.util.Objects;
 
 
 

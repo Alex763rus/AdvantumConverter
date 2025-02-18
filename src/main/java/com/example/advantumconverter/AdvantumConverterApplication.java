@@ -1,6 +1,5 @@
 package com.example.advantumconverter;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
@@ -11,7 +10,7 @@ public class AdvantumConverterApplication {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(AdvantumConverterApplication.class)
-                .web(WebApplicationType.NONE) // .REACTIVE, .SERVLET
+                .web(WebApplicationType.NONE)
                 .run(args);
     }
 

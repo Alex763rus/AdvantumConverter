@@ -3,6 +3,7 @@ package com.example.advantumconverter.model.menu;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.User;
 import com.vdurmont.emoji.EmojiParser;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.example.tgcommons.model.wrapper.SendMessageWrap;
@@ -20,6 +21,7 @@ import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component(COMMAND_START)
 @Slf4j
+@AllArgsConstructor
 public class MenuStart extends Menu {
 
     @Override
@@ -27,12 +29,11 @@ public class MenuStart extends Menu {
         return COMMAND_START;
     }
 
-    @Autowired
-    private CompanySetting companySetting;
+    private final CompanySetting companySetting;
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        String messageText = EMPTY;
+        String messageText;
         switch (user.getUserRole()) {
             case NEED_SETTING -> {
                 log.warn("ожидает обработки новый пользователь ChatId:" + update.getMessage().getChatId());
@@ -43,6 +44,7 @@ public class MenuStart extends Menu {
             case MAIN_EMPLOYEE -> messageText = getMainEmployeeMenuText(user);
             case SUPPORT -> messageText = getSupportMenuText(user);
             case ADMIN -> messageText = getAdminMenuText(user);
+            default -> messageText = EMPTY;
         }
         return createMessageList(user, EmojiParser.parseToUnicode(messageText));
     }

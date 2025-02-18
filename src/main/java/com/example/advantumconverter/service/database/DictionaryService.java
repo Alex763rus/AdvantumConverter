@@ -14,9 +14,9 @@ import com.example.advantumconverter.model.jpa.ozon.*;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionaryRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -30,45 +30,22 @@ import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class DictionaryService {
 
-    @Autowired
-    private CarRepository carRepository;
-
-    @Autowired
-    private LentaDictionaryRepository lentaDictionaryRepository;
-
-    @Autowired
-    private CarNumberRepository carNumberRepository;
-
-    @Autowired
-    private LentaCarRepository lentaCarRepository;
-
-    @Autowired
-    private OzonDictionaryRepository ozonDictionaryRepository;
-
-    @Autowired
-    private OzonTransitTimeRepository ozonTransitTimeRepository;
-    @Autowired
-    private OzonLoadUnloadTimeRepository ozonLoadUnloadTimeRepository;
-    @Autowired
-    private OzonTonnageTimeRepository ozonTonnageTimeRepository;
-
-    @Autowired
-    private MetroTimeDictionaryRepository metroTimeDictionaryRepository;
-
-    @Autowired
-    private MetroTemperatureDictionaryRepository metroTemperatureDictionaryRepository;
-
-    @Autowired
-    private MetroAddressesDictionaryRepository metroAddressesDictionaryRepository;
-
-    @Autowired
-    private MetroDcAddressesDictionaryRepository metroDcAddressesDictionaryRepository;
-
-    @Autowired
-    private SberAddressDictionaryRepository sberAddressDictionaryRepository;
-
+    private final CarRepository carRepository;
+    private final LentaDictionaryRepository lentaDictionaryRepository;
+    private final CarNumberRepository carNumberRepository;
+    private final LentaCarRepository lentaCarRepository;
+    private final OzonDictionaryRepository ozonDictionaryRepository;
+    private final OzonTransitTimeRepository ozonTransitTimeRepository;
+    private final OzonLoadUnloadTimeRepository ozonLoadUnloadTimeRepository;
+    private final OzonTonnageTimeRepository ozonTonnageTimeRepository;
+    private final MetroTimeDictionaryRepository metroTimeDictionaryRepository;
+    private final MetroTemperatureDictionaryRepository metroTemperatureDictionaryRepository;
+    private final MetroAddressesDictionaryRepository metroAddressesDictionaryRepository;
+    private final MetroDcAddressesDictionaryRepository metroDcAddressesDictionaryRepository;
+    private final SberAddressDictionaryRepository sberAddressDictionaryRepository;
 
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
@@ -155,7 +132,7 @@ public class DictionaryService {
     }
 
     public CarNumber getCarNumberOrElse(final String carNumberName, final CarNumber carNumber) {
-        return carNumbers.stream().filter(e -> e.getCarNumber().equals(carNumberName))
+        return carNumbers.stream().filter(e -> e.getNumber().equals(carNumberName))
                 .findFirst().orElse(carNumber);
     }
 

@@ -14,7 +14,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -30,15 +29,12 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class WebClientConfig {
 
-    @Autowired
-    private CrmConfigProperties crmConfigProperties;
-
     @Bean
-    public WebClient crmWebClient() {
+    public WebClient crmWebClient(CrmConfigProperties crmConfigProperties) {
         return WebClient.builder()
                 .baseUrl(crmConfigProperties.getHost())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .clientConnector(new ReactorClientHttpConnector(createHttpClient(getSslContextTrustAll())))
+                .clientConnector(new ReactorClientHttpConnector(createHttpClient(getSslContextTrustAll(), crmConfigProperties)))
                 .build();
     }
 
@@ -52,7 +48,8 @@ public class WebClientConfig {
         return mapper;
     }
 
-    private HttpClient createHttpClient(SslContext sslContext) {
+    private HttpClient createHttpClient(SslContext sslContext,
+                                        CrmConfigProperties crmConfigProperties) {
         return HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, crmConfigProperties.getConnectTimeoutMillis())
                 .secure(t -> t.sslContext(sslContext))

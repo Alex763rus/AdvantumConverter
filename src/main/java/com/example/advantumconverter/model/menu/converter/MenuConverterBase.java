@@ -12,6 +12,7 @@ import com.example.advantumconverter.service.excel.generate.ClientExcelGenerateS
 import com.example.advantumconverter.service.excel.generate.ExcelGenerateService;
 import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.example.tgcommons.model.button.Button;
@@ -46,66 +47,67 @@ public abstract class MenuConverterBase extends Menu {
     private Map<User, ConvertedBookV2> convertedBooksV2 = new HashMap<>();
 
     protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {
-        if (update.hasMessage()) {
-            if (update.getMessage().hasDocument()) {
-                try {
-                    val field = update.getMessage().getDocument();
-                    if (!field.getFileName().contains(".xlsx")
-                            && !field.getFileName().contains(".xlsm")) {
-                        return errorMessage(update, "Ошибка. Неизвестный формат файла. \nОтправьте документ формата .xlsx");
-                    }
-                    val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
-                    update.getMessage().setText(fileFullPath);
-                    val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
-                    var convertedBook = convertService.getConvertedBook(book);
-                    var convertedBookV2 = convertService.getConvertedBookV2(book);
-                    val excelService = excelGenerateServiceMap.get(convertService.getExcelType().getExcelType());
-                    var isV2 = convertedBook == null;
-                    val document = isV2
-                            ? excelService.createXlsxV2(convertedBookV2)
-                            : excelService.createXlsx(convertedBook);
-                    val message = isV2 ? convertedBookV2.getMessage() : convertedBook.getMessage();
+        if (!update.hasMessage()) {
+            return errorMessageDefault(update);
+        }
+        var updateMessage = update.getMessage();
+        if (!updateMessage.hasDocument()) {
+            return errorMessage(update, "Ошибка. Сообщение не содержит документ.\nОтправьте документ");
+        }
+        try {
+            val field = updateMessage.getDocument();
+            if (!field.getFileName().contains(".xlsx")
+                    && !field.getFileName().contains(".xlsm")) {
+                return errorMessage(update, "Ошибка. Неизвестный формат файла. \nОтправьте документ формата .xlsx");
+            }
+            val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
+            updateMessage.setText(fileFullPath);
+            val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
+            var convertedBook = convertService.getConvertedBook(book);
+            var convertedBookV2 = convertService.getConvertedBookV2(book);
+            val excelService = excelGenerateServiceMap.get(convertService.getExcelType().getExcelType());
+            var isV2 = convertedBook == null;
+            val document = isV2
+                    ? excelService.createXlsxV2(convertedBookV2)
+                    : excelService.createXlsx(convertedBook);
+            val message = isV2 ? convertedBookV2.getMessage() : convertedBook.getMessage();
 
-                    var answer = SendDocumentWrap.init()
-                            .setChatIdLong(update.getMessage().getChatId())
-                            .setCaption(message)
-                            .setDocument(document)
-                            .build();
+            var answer = SendDocumentWrap.init()
+                    .setChatIdLong(updateMessage.getChatId())
+                    .setCaption(message)
+                    .setDocument(document)
+                    .build();
 
-                    if (SecurityService.grantApiUser(user)
-                            && isV2/* только для api v2*/) {
-                        convertedBooks.put(user, convertedBook);
-                        convertedBooksV2.put(user, convertedBookV2);
+            if (SecurityService.grantApiUser(user)
+                    && isV2/* только для api v2*/) {
+                convertedBooks.put(user, convertedBook);
+                convertedBooksV2.put(user, convertedBookV2);
 
-                        stateService.setState(user, FREE);
-                        val buttons = new ArrayList<Button>();
-                        buttons.add(Button.init().setKey(CONVERTER_WAIT_UNLOAD_IN_CRM.name()).setValue("Загрузить в CRM").build());
-                        buttons.add(Button.init().setKey(FREE.name()).setValue("Главное меню").build());
-                        val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
+                stateService.setState(user, FREE);
+                val buttons = new ArrayList<Button>();
+                buttons.add(Button.init().setKey(CONVERTER_WAIT_UNLOAD_IN_CRM.name()).setValue("Загрузить в CRM").build());
+                buttons.add(Button.init().setKey(FREE.name()).setValue("Главное меню").build());
+                val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
 
-                        stateService.setState(user, CONVERTER_WAIT_UNLOAD_IN_CRM);
+                stateService.setState(user, CONVERTER_WAIT_UNLOAD_IN_CRM);
 
-                        return List.of(
-                                answer.createMessage(),
-                                SendMessageWrap.init()
-                                        .setChatIdLong(update.getMessage().getChatId())
-                                        .setText("Выберите действие:")
-                                        .setInlineKeyboardMarkup(createVerticalColumnMenu(buttonsDescription))
-                                        .build().createMessage()
-                        );
-                    } else {
-                        stateService.setState(user, FREE);
-                    }
-                    return answer.createMessageList();
-                } catch (Exception ex) {
-                    try {
-                        return supportService.processNewTask(user, update, convertService, update.getMessage().getText(), ex);
-                    } catch (Exception e) {
-                        //todo
-                    }
-                }
+                return List.of(
+                        answer.createMessage(),
+                        SendMessageWrap.init()
+                                .setChatIdLong(updateMessage.getChatId())
+                                .setText("Выберите действие:")
+                                .setInlineKeyboardMarkup(createVerticalColumnMenu(buttonsDescription))
+                                .build().createMessage()
+                );
             } else {
-                return errorMessage(update, "Ошибка. Сообщение не содержит документ.\nОтправьте документ");
+                stateService.setState(user, FREE);
+            }
+            return answer.createMessageList();
+        } catch (Exception ex) {
+            try {
+                return supportService.processNewTask(user, update, convertService, updateMessage.getText(), ex);
+            } catch (Exception e) {
+                //todo
             }
         }
         return errorMessageDefault(update);
@@ -164,7 +166,7 @@ public abstract class MenuConverterBase extends Menu {
                 val tmpFile = Files.createTempFile("log", ".txt").toFile();
                 try (FileWriter writer = new FileWriter(tmpFile)) {
                     writer.write(crmGatewayResponseDto.getMessage());
-                    System.out.println("Запись завершена.");
+                    log.info("Запись завершена");
                 }
                 answer.add(SendDocumentWrap.init()
                         .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
