@@ -22,8 +22,18 @@ import static com.example.advantumconverter.gen.model.RoutePointDto.OperationEnu
 import static com.example.advantumconverter.gen.model.RoutePointDto.OperationEnum.UNLOAD;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
+import static org.springdoc.core.utils.Constants.DOT;
 
 public class BookToCrmReisMapper {
+
+    private static final String NUMBER_ZERO = "0";
+    private static final String OKAY = "OKAY";
+    private static final String DEFAULT_EXTERNAL_ID = "24645624";
+    private static final String SLASH_AND_DOT = "\\.";
+
+    private BookToCrmReisMapper() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static List<RouteWithDictionaryDto> map(ConvertedBook convertedBook) {
         throw new NotImplementedException("не реализован конвертер v1");
@@ -39,15 +49,7 @@ public class BookToCrmReisMapper {
             for (ConvertedListDataV2 point : points) {
                 pointsDto.add(
                         RoutePointDto.init()
-                                .setPoint(
-                                        ExternalPointDto.init()
-                                                .setExternalId(point.getColumnUdata())
-                                                .setName(point.getColumnUdata())
-                                                .setAddress(point.getColumnVdata())
-                                                .setLat(toBigDecimal(point.getColumnYdata()))
-                                                .setLon(toBigDecimal(point.getColumnZdata()))
-                                                .build()
-                                )
+                                .setPoint(preparePoint(point))
                                 .setStartTime(convert(point.getColumnSdata()))
                                 .setFinishTime(convert(point.getColumnTdata()))
                                 .setOperation(LOAD_THE_GOODS.equals(point.getColumnWdata()) ? LOAD : UNLOAD)
@@ -57,21 +59,15 @@ public class BookToCrmReisMapper {
             }
             var mainPoint = points.get(0);
             var fioSplit = mainPoint.getColumnAeData()
-                    .replace(SPACE, ".")
-                    .split("\\.");
+                    .replace(SPACE, DOT)
+                    .split(SLASH_AND_DOT);
             var route = RouteWithDictionaryDto.init()
                     .setBodyTonnageInKg(toFloat(mainPoint.getColumnJdata()))
                     .setBodyVolumeInCubicMeters(toFloat(mainPoint.getColumnIdata()))
                     .setNumberOfPallets(mainPoint.getColumnKdata())
                     .setExternalId(reisNumber)
-                    .setCustomer(ExternalOrganizationDto.init()
-                            .setExternalId("24645624")
-                            .setName("OKAY")
-                            .build())
-                    .setCarrier(ExternalOrganizationDto.init()
-                            .setName(mainPoint.getColumnDdata())
-                            .setExternalId("0") //TODO справочник сделать новый
-                            .build())
+                    .setCustomer(prepareExternalOrganization(OKAY, DEFAULT_EXTERNAL_ID))
+                    .setCarrier(prepareExternalOrganization(mainPoint.getColumnDdata(), NUMBER_ZERO))
                     .setCostInRubles(BigDecimal.ZERO)
                     .setComment(mainPoint.getColumnAaData())
                     .setTemperatureMin(toBigDecimal(mainPoint.getColumnLdata()))
@@ -85,27 +81,38 @@ public class BookToCrmReisMapper {
                             .setFirstName(fioSplit[1])
                             .setMiddleName(fioSplit[2])
                             .build())
-                    .setVehicle(ExternalVehicleDto.init()
-                            .setExternalId(mainPoint.getColumnAcData())
-                            .setGosNumber(mainPoint.getColumnAcData())
-//                            .setBodyVolumeInCubicMeters(0f) НЕ ЗАПОЛНЯТЬ
-//                            .setTonnageFactInKg(20f) НЕ ЗАПОЛНЯТЬ
-//                            .setNumberOfPallet(0) НЕ ЗАПОЛНЯТЬ
-                            .build())
-                    .setTrailer(mainPoint.getColumnAdData().equals(EMPTY) ? null :
-                            ExternalVehicleDto.init()
-                                    .setExternalId(mainPoint.getColumnAdData())
-                                    .setGosNumber(mainPoint.getColumnAdData())
-//                            .setBodyVolumeInCubicMeters(0f) НЕ ЗАПОЛНЯТЬ
-//                            .setTonnageFactInKg(20f) НЕ ЗАПОЛНЯТЬ
-//                            .setNumberOfPallet(0) НЕ ЗАПОЛНЯТЬ
-                                    .build())
+                    .setVehicle(prepareExternalVehicle(mainPoint.getColumnAcData()))
+                    .setTrailer(prepareExternalVehicle(mainPoint.getColumnAdData()))
                     .setPoints(pointsDto)
                     .build();
-
             result.add(route);
         });
         return result;
+    }
+
+    private static ExternalPointDto preparePoint(ConvertedListDataV2 point) {
+        return ExternalPointDto.init()
+                .setExternalId(point.getColumnUdata())
+                .setName(point.getColumnUdata())
+                .setAddress(point.getColumnVdata())
+                .setLat(toBigDecimal(point.getColumnYdata()))
+                .setLon(toBigDecimal(point.getColumnZdata()))
+                .build();
+    }
+
+    private static ExternalOrganizationDto prepareExternalOrganization(String name, String setExternalId) {
+        return ExternalOrganizationDto.init()
+                .setName(name)
+                .setExternalId(setExternalId)
+                .build();
+    }
+
+    private static ExternalVehicleDto prepareExternalVehicle(String data) {
+        return EMPTY.equals(data) ? null :
+                ExternalVehicleDto.init()
+                        .setExternalId(data)
+                        .setGosNumber(data)
+                        .build();
     }
 
     private static LocalDateTime convert(Date date) {
@@ -116,23 +123,14 @@ public class BookToCrmReisMapper {
     }
 
     private static BigDecimal toBigDecimal(Integer value) {
-        if (value == null) {
-            return null;
-        }
-        return new BigDecimal(value);
+        return value == null ? null : BigDecimal.valueOf(value);
     }
 
     private static BigDecimal toBigDecimal(Double value) {
-        if (value == null) {
-            return null;
-        }
-        return new BigDecimal(value);
+        return value == null ? null : BigDecimal.valueOf(value);
     }
 
     private static Float toFloat(Integer value) {
-        if (value == null) {
-            return null;
-        }
-        return Float.valueOf(value);
+        return value == null ? null : Float.valueOf(value);
     }
 }

@@ -50,16 +50,10 @@ public class BookerExcelGenerateService implements ExcelGenerateService {
         }
     }
 
+    @Override
     public InputFile createXlsx(ConvertedBook convertedBook) {
         val workbook = new XSSFWorkbook();
-        val styleDateDot = getStyle(workbook, TEMPLATE_DATE_DOT);
-        val styleDateTimeDot = getStyle(workbook, TEMPLATE_DATE_TIME_DOT);
         styleInt = getStyle(workbook, "0");
-        //================================================================
-
-//        int y = 0;
-//        int x = 0;
-        //================================================================
         try {
             for (ConvertedList book : convertedBook.getBook()) {
                 val sheet = workbook.createSheet(book.getExcelListName());
@@ -99,10 +93,4 @@ public class BookerExcelGenerateService implements ExcelGenerateService {
         row.createCell(x).setCellValue(data.get(y).get(x));
     }
 
-    private void createCellDate(List<List<String>> data, Row row, int y, int x, String dateFormat, CellStyle cellStyle) throws ParseException {
-        val cell1 = row.createCell(x);
-        cell1.setCellValue(convertDateFormat(data.get(y).get(x), dateFormat));
-        cell1.setCellStyle(cellStyle);
-
-    }
 }

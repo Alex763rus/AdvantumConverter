@@ -279,18 +279,18 @@ public class URL   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    URL URL = (URL) o;
-    return Objects.equals(this.authority, URL.authority) &&
-        Objects.equals(this.content, URL.content) &&
-        Objects.equals(this.defaultPort, URL.defaultPort) &&
-        Objects.equals(this.file, URL.file) &&
-        Objects.equals(this.host, URL.host) &&
-        Objects.equals(this.path, URL.path) &&
-        Objects.equals(this.port, URL.port) &&
-        Objects.equals(this.protocol, URL.protocol) &&
-        Objects.equals(this.query, URL.query) &&
-        Objects.equals(this.ref, URL.ref) &&
-        Objects.equals(this.userInfo, URL.userInfo);
+    URL url = (URL) o;
+    return Objects.equals(this.authority, url.authority) &&
+        Objects.equals(this.content, url.content) &&
+        Objects.equals(this.defaultPort, url.defaultPort) &&
+        Objects.equals(this.file, url.file) &&
+        Objects.equals(this.host, url.host) &&
+        Objects.equals(this.path, url.path) &&
+        Objects.equals(this.port, url.port) &&
+        Objects.equals(this.protocol, url.protocol) &&
+        Objects.equals(this.query, url.query) &&
+        Objects.equals(this.ref, url.ref) &&
+        Objects.equals(this.userInfo, url.userInfo);
   }
 
   @Override

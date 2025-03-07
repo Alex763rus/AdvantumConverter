@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_ART_FRUIT;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
-import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LINE_CONVERT_ERROR;
+import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_ART_FRUIT;
 import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
@@ -55,9 +55,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         Set<AddressInReis> uniqReisAndAddress = new HashSet<>();
         ConvertedListDataV2 dataLine = null;
         boolean isStart = true;
-        int lastNumberUnloading = -1;
         int numberUnloadingCounter = 0;
-        int repeat = 0;
         String tonnage = EMPTY;
 
         String lastNumberOrderStart = EMPTY;

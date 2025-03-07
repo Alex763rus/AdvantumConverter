@@ -417,24 +417,24 @@ public class URI   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    URI URI = (URI) o;
-    return Objects.equals(this.absolute, URI.absolute) &&
-        Objects.equals(this.authority, URI.authority) &&
-        Objects.equals(this.fragment, URI.fragment) &&
-        Objects.equals(this.host, URI.host) &&
-        Objects.equals(this.opaque, URI.opaque) &&
-        Objects.equals(this.path, URI.path) &&
-        Objects.equals(this.port, URI.port) &&
-        Objects.equals(this.query, URI.query) &&
-        Objects.equals(this.rawAuthority, URI.rawAuthority) &&
-        Objects.equals(this.rawFragment, URI.rawFragment) &&
-        Objects.equals(this.rawPath, URI.rawPath) &&
-        Objects.equals(this.rawQuery, URI.rawQuery) &&
-        Objects.equals(this.rawSchemeSpecificPart, URI.rawSchemeSpecificPart) &&
-        Objects.equals(this.rawUserInfo, URI.rawUserInfo) &&
-        Objects.equals(this.scheme, URI.scheme) &&
-        Objects.equals(this.schemeSpecificPart, URI.schemeSpecificPart) &&
-        Objects.equals(this.userInfo, URI.userInfo);
+    URI uri = (URI) o;
+    return Objects.equals(this.absolute, uri.absolute) &&
+        Objects.equals(this.authority, uri.authority) &&
+        Objects.equals(this.fragment, uri.fragment) &&
+        Objects.equals(this.host, uri.host) &&
+        Objects.equals(this.opaque, uri.opaque) &&
+        Objects.equals(this.path, uri.path) &&
+        Objects.equals(this.port, uri.port) &&
+        Objects.equals(this.query, uri.query) &&
+        Objects.equals(this.rawAuthority, uri.rawAuthority) &&
+        Objects.equals(this.rawFragment, uri.rawFragment) &&
+        Objects.equals(this.rawPath, uri.rawPath) &&
+        Objects.equals(this.rawQuery, uri.rawQuery) &&
+        Objects.equals(this.rawSchemeSpecificPart, uri.rawSchemeSpecificPart) &&
+        Objects.equals(this.rawUserInfo, uri.rawUserInfo) &&
+        Objects.equals(this.scheme, uri.scheme) &&
+        Objects.equals(this.schemeSpecificPart, uri.schemeSpecificPart) &&
+        Objects.equals(this.userInfo, uri.userInfo);
   }
 
   @Override

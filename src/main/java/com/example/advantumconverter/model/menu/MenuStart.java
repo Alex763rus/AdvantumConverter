@@ -4,9 +4,9 @@ import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.Company;
 import com.example.advantumconverter.model.jpa.User;
 import com.vdurmont.emoji.EmojiParser;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,6 +20,7 @@ import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component(COMMAND_START)
 @Slf4j
+@AllArgsConstructor
 public class MenuStart extends Menu {
 
     @Override
@@ -27,12 +28,11 @@ public class MenuStart extends Menu {
         return COMMAND_START;
     }
 
-    @Autowired
-    private CompanySetting companySetting;
+    private final CompanySetting companySetting;
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        String messageText = EMPTY;
+        String messageText;
         switch (user.getUserRole()) {
             case NEED_SETTING -> {
                 log.warn("ожидает обработки новый пользователь ChatId:" + update.getMessage().getChatId());
@@ -44,6 +44,7 @@ public class MenuStart extends Menu {
             case SUPPORT -> messageText = getSupportMenuText(user);
             case ADMIN -> messageText = getAdminMenuText(user);
             case EMPLOYEE_API -> messageText = getSupportMenuText(user);
+            default -> messageText = EMPTY;
         }
         return createMessageList(user, EmojiParser.parseToUnicode(messageText));
     }

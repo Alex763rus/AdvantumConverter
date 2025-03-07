@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.example.advantumconverter.constant.Constant.BookerListName.BOOKER_METRO;
-import static com.example.advantumconverter.constant.Constant.Exception.EXCEL_LIST_CONVERT_ERROR;
+import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LIST_CONVERT_ERROR;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 

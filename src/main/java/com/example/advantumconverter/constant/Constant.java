@@ -111,7 +111,7 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class Exception {
+    public static final class Exceptions {
         public static final String CAR_NOT_FOUND = "Машина не найдена в настройках: ";
 
         public static final String CONVERT_PROCESSING_ERROR = "Ошибка обработки файла: ";

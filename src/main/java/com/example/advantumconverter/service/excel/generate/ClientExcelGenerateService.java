@@ -37,6 +37,7 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
     private CellStyle styleDouble;
 
     @Override
+    @Deprecated
     public InputFile createXlsx(ConvertedBook convertedBook) {
         val book = convertedBook.getBook().get(0);
         this.data = book.getExcelListContent();

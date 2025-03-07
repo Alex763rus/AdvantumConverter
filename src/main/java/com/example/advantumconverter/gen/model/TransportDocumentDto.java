@@ -1,15 +1,12 @@
 package com.example.advantumconverter.gen.model;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import com.fasterxml.jackson.annotation.JsonValue;
 
-
-import com.example.advantumconverter.gen.model.TransportDocumentPositionDto;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.OffsetDateTime;
+import java.util.Objects;
 
 
 
@@ -294,7 +291,7 @@ public class TransportDocumentDto   {
 
   public TransportDocumentDto addPositionsItem(TransportDocumentPositionDto positionsItem) {
     if (this.positions == null) {
-      this.positions = new ArrayList<TransportDocumentPositionDto>();
+      this.positions = new ArrayList<>();
     }
     this.positions.add(positionsItem);
     return this;

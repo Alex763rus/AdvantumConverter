@@ -1,6 +1,5 @@
 package com.example.advantumconverter.model.jpa;
 
-import com.example.advantumconverter.constant.Constant;
 import com.example.advantumconverter.enums.UserRole;
 import org.springframework.data.repository.CrudRepository;
 

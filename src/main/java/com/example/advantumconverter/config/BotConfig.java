@@ -1,6 +1,5 @@
 package com.example.advantumconverter.config;
 
-import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.Company;
@@ -8,15 +7,14 @@ import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.booker.ConvertServiceImplBooker;
 import com.example.advantumconverter.service.excel.converter.client.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.EnumMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,44 +47,25 @@ public class BotConfig {
     @Value("${service.file_storage.uri}")
     String fileStorageUri;
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     @Value("${input.file.path}")
     String inputFilePath;
 
-    @Autowired
-    private ConvertServiceImplBogorodsk convertServiceImplBogorodsk;
-    @Autowired
-    private ConvertServiceImplCofix convertServiceImplCofix;
-    @Autowired
-    private ConvertServiceImplLenta convertServiceImplLenta;
-    @Autowired
-    private ConvertServiceImplSamokat convertServiceImplSamokat;
-    @Autowired
-    private ConvertServiceImplDominos convertServiceImplDominos;
-    @Autowired
-    private ConvertServiceImplAgroprom convertServiceImplAgroprom;
-    @Autowired
-    private ConvertServiceImplAgropromDetail convertServiceImplAgropromDetail;
-    @Autowired
-    private ConvertServiceImplOzon convertServiceImplOzon;
-    @Autowired
-    private ConvertServiceImplMetro convertServiceImplMetro;
-    @Autowired
-    private ConvertServiceImplBooker convertServiceImplBooker;
-    @Autowired
-    private ConvertServiceImplSber convertServiceImplSber;
-    @Autowired
-    private ConvertServiceImplArtFruit convertServiceImplArtFruit;
-    @Autowired
-    private CompanyRepository companyRepository;
-
-    @Autowired
-    private CrmConfigProperties crmConfigProperties;
-
     @Bean
-    public CompanySetting companySetting() {
+    public CompanySetting companySetting(
+            ConvertServiceImplBogorodsk convertServiceImplBogorodsk,
+            ConvertServiceImplCofix convertServiceImplCofix,
+            ConvertServiceImplLenta convertServiceImplLenta,
+            ConvertServiceImplSamokat convertServiceImplSamokat,
+            ConvertServiceImplDominos convertServiceImplDominos,
+            ConvertServiceImplAgroprom convertServiceImplAgroprom,
+            ConvertServiceImplAgropromDetail convertServiceImplAgropromDetail,
+            ConvertServiceImplOzon convertServiceImplOzon,
+            ConvertServiceImplMetro convertServiceImplMetro,
+            ConvertServiceImplBooker convertServiceImplBooker,
+            ConvertServiceImplSber convertServiceImplSber,
+            ConvertServiceImplArtFruit convertServiceImplArtFruit,
+            CompanyRepository companyRepository
+    ) {
         val companySetting = new CompanySetting();
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
         val lentaConverter = List.of(convertServiceImplLenta);
@@ -164,7 +143,7 @@ public class BotConfig {
     }
 
     @Bean
-    public Map<Company, List<String>> companyAccessList() {
+    public Map<Company, List<String>> companyAccessList(CompanyRepository companyRepository) {
         // Настройка доступов по компаниям:
         val commandAccessList = new HashMap<Company, List<String>>();
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM)
