@@ -66,6 +66,7 @@ public class UserService {
         user.setLastName(chat.getLastName());
         user.setUserName(chat.getUserName());
         user.setUserRole(NEED_SETTING);
+        user.setUserRoletext(NEED_SETTING.name());
         user.setCompany(companyRepository.getCompaniesByCompanyName(COMPANY_NOT_FOUND));
 
         user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));

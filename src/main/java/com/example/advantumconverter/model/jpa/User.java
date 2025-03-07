@@ -1,6 +1,5 @@
 package com.example.advantumconverter.model.jpa;
 
-import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import com.example.advantumconverter.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,6 +8,8 @@ import lombok.ToString;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+
+import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 
 
 @Getter
@@ -31,6 +32,10 @@ public class User {
 
     @Column(name = "user_role")
     private UserRole userRole;
+
+    @Column(name = "user_role_text")
+    private String userRoletext;
+
     @Column(name = "registered_at")
     private Timestamp registeredAt;
 

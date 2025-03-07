@@ -7,12 +7,10 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public final class Constant {
 
-    public static String APP_NAME = "advantumconverter";
-
-    public static final String CYRILLIC_TO_LATIN = "Russian-Latin/BGN";
+    public static final String APP_NAME = "advantumconverter";
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class Converter {
+    public static final class Converter {
 
         public static final String REFRIGERATOR = "Рефрижератор";
         public static final String BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО \"Буш-Автопром\"";
@@ -24,20 +22,19 @@ public final class Constant {
         public static final String DC_NOGINSK = "DC Noginsk";
         public static final String RC_NOGINSK = "РЦ НОГИНСК";
         public static final String UNLOAD_THE_GOODS = "Разгрузка";
-        public static final String COMPANY_OOO_LENTA = "ООО ''ЛЕНТА''";
-        public static final String COMPANY_OOO_LENTA_HIRING = COMPANY_OOO_LENTA + " найм";
+        public static final String COMPANY_OOO_LENTA_HIRING = "ООО ''ЛЕНТА'' найм";
         public static final String COMPANY_OZON_FRESH = "OZON FRESH";
         public static final String COMPANY_METRO = "Метро Групп Логистик";
         public static final String COMPANY_DEAL_AUTO_TRANS = "ООО ДиалАвтоТранс";
         public static final String COMPANY_DEAL_AUTO_TRANS_INN = "6324744734";
         public static final String COMPANY_DEAL_AUTO_TRANS_INCORRECT = "ООО \"Диалавтотранс\"";
         public static final String LEFT_FOR_A_FLIGHT = "Уехал";
-
+        public static final String CONVERT_FILE_DESCRIPTION_TEMPLATE = "Сконвертировать файл %s";
     }
 
     //TODO вынести в библиотеку:
     @NoArgsConstructor(access = PRIVATE)
-    public final class Heap {
+    public static final class Heap {
         public static final String MINUS = "-";
         public static final String TWO_SPACE = "  ";
         public static final String UNDERSCORE = "_";
@@ -47,7 +44,7 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class FileOutputName {
+    public static final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
@@ -63,7 +60,7 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class Company {
+    public static final class Company {
         public static final String COMPANY_NOT_FOUND = "Компания отсутствует";
         public static final String COMPANY_ADVANTUM = "Адвантум";
         public static final String COMPANY_NAME_LENTA = "Лента";
@@ -75,13 +72,13 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class ExcelType {
+    public static final class ExcelType {
         public static final String CLIENT = "Client";
         public static final String BOOKER = "Booker";
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class BookerListName {
+    public static final class BookerListName {
         public static final String BOOKER_X5 = "X5";
         public static final String BOOKER_OZON = "Ozon";
         public static final String BOOKER_ASHAN = "Ashan";
@@ -90,7 +87,7 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class Command {
+    public static final class Command {
         public static final String COMMAND_DEFAULT = "/default";
         public static final String COMMAND_START = "/start";
         public static final String COMMAND_FAQ = "/faq";

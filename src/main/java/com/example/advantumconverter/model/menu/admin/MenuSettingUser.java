@@ -59,6 +59,7 @@ public class MenuSettingUser extends Menu {
         val userRefresh = userTmp.get(user);
         val userRole = UserRole.valueOf(update.getCallbackQuery().getData());
         userRefresh.setUserRole(userRole);
+        userRefresh.setUserRoletext(userRole.name());
         userRepository.save(userRefresh);
         userService.refreshUser(userRefresh);
         stateService.setState(user, FREE);
@@ -90,6 +91,7 @@ public class MenuSettingUser extends Menu {
         buttons.add(Button.init().setKey(EMPLOYEE.name()).setValue(EMPLOYEE.getTitle()).build());
         buttons.add(Button.init().setKey(MAIN_EMPLOYEE.name()).setValue(MAIN_EMPLOYEE.getTitle()).build());
         buttons.add(Button.init().setKey(SUPPORT.name()).setValue(SUPPORT.getTitle()).build());
+        buttons.add(Button.init().setKey(EMPLOYEE_API.name()).setValue(EMPLOYEE_API.getTitle()).build());
         val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         return createMessageList(user, "Укажите роль:", buttonsDescription);
     }

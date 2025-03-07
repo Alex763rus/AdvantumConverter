@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.enums.Emoji.WARNING;
 import static com.example.advantumconverter.enums.SupportTaskState.NEW;
-import static com.example.advantumconverter.enums.UserRole.SUPPORT;
+import static com.example.advantumconverter.enums.UserRole.*;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.utils.StringUtils.prepareShield;
 import static org.example.tgcommons.utils.StringUtils.prepareTaskId;
@@ -51,7 +51,7 @@ public class SupportService {
 
     public List<PartialBotApiMethod> processNewTask(User user, Update update, ConvertService convertService
             , String fullFileName, Exception ex) throws ParseException {
-        if (user.getUserRole() == SUPPORT) {
+        if (user.getUserRole() == SUPPORT || user.getUserRole() == ADMIN || user.getUserRole() == EMPLOYEE_API) {
             return SendMessageWrap.init().setChatIdLong(user.getChatId())
                     .setText(prepareShield(ex.getMessage()))
                     .build().createMessageList();

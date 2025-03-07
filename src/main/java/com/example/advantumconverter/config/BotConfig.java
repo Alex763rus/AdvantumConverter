@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,20 +113,53 @@ public class BotConfig {
 
     @Bean
     public Map<UserRole, List<String>> roleAccess() {
+        var defaultCommands = List.of(COMMAND_DEFAULT, COMMAND_START);
+
+        var allConverters = new ArrayList<String>(defaultCommands);
+        allConverters.add(COMMAND_FAQ);
+        allConverters.add(COMMAND_CONVERT_BOGORODSK);
+        allConverters.add(COMMAND_CONVERT_COFIX);
+        allConverters.add(COMMAND_CONVERT_LENTA);
+        allConverters.add(COMMAND_CONVERT_SAMOKAT);
+        allConverters.add(COMMAND_CONVERT_DOMINOS);
+        allConverters.add(COMMAND_CONVERT_AGROPROM);
+        allConverters.add(COMMAND_CONVERT_AGROPROM_DETAIL);
+        allConverters.add(COMMAND_CONVERT_OZON);
+        allConverters.add(COMMAND_CONVERT_METRO);
+        allConverters.add(COMMAND_CONVERT_BOOKER);
+        allConverters.add(COMMAND_CONVERT_SBER);
+        allConverters.add(COMMAND_CONVERT_ART_FRUIT);
+
+        var employeeCommands = new ArrayList<>(allConverters);
+
+        var mainEmployeeCommands = new ArrayList<String>(allConverters);
+        mainEmployeeCommands.add(COMMAND_HISTORIC_ACTION);
+
+        var supportCommands = new ArrayList<String>(mainEmployeeCommands);
+        supportCommands.add(COMMAND_SHOW_OPEN_TASK);
+        supportCommands.add(COMMAND_SHOW_MY_TASK);
+        supportCommands.add(COMMAND_RELOAD_DICTIONARY);
+
+        var adminCommands = new ArrayList<String>(mainEmployeeCommands);
+        adminCommands.add(COMMAND_SETTING_NEW_USER);
+        adminCommands.add(COMMAND_RELOAD_DICTIONARY);
+        adminCommands.add(COMMAND_HISTORIC_ACTION);
+
+        var employeeApiCoomands = new ArrayList<String>(mainEmployeeCommands);
+        employeeApiCoomands.add(COMMAND_SHOW_OPEN_TASK);
+        employeeApiCoomands.add(COMMAND_SHOW_MY_TASK);
+        employeeApiCoomands.add(COMMAND_RELOAD_DICTIONARY);
+
         // Настройка команд по ролям:
         val roleAccess = new HashMap<UserRole, List<String>>();
-        roleAccess.put(NEED_SETTING, List.of(COMMAND_DEFAULT, COMMAND_START));
-        roleAccess.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
-        roleAccess.put(EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER, COMMAND_CONVERT_SBER, COMMAND_CONVERT_ART_FRUIT));
-        roleAccess.put(MAIN_EMPLOYEE, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_HISTORIC_ACTION, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER, COMMAND_CONVERT_SBER, COMMAND_CONVERT_ART_FRUIT));
-        roleAccess.put(SUPPORT, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
-                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER, COMMAND_CONVERT_SBER, COMMAND_CONVERT_ART_FRUIT));
-        roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY,
-                //для удобства админу доступны права на конвертер:
-                COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
-                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER, COMMAND_CONVERT_SBER, COMMAND_CONVERT_ART_FRUIT));
-        roleAccess.put(EMPLOYEE_API, List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_LENTA, COMMAND_CONVERT_SAMOKAT,
-                COMMAND_CONVERT_DOMINOS, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_HISTORIC_ACTION, COMMAND_RELOAD_DICTIONARY, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL, COMMAND_CONVERT_OZON, COMMAND_CONVERT_METRO, COMMAND_CONVERT_BOOKER, COMMAND_CONVERT_SBER, COMMAND_CONVERT_ART_FRUIT));
+        roleAccess.put(NEED_SETTING, defaultCommands);
+        roleAccess.put(BLOCKED, defaultCommands);
+        roleAccess.put(EMPLOYEE, employeeCommands);
+        roleAccess.put(MAIN_EMPLOYEE, mainEmployeeCommands);
+        roleAccess.put(SUPPORT, supportCommands);
+        roleAccess.put(ADMIN, adminCommands);
+        roleAccess.put(EMPLOYEE_API, employeeApiCoomands);
+
         return roleAccess;
     }
 

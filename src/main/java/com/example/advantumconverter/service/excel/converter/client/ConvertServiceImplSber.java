@@ -19,10 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SBER;
@@ -69,6 +66,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
     private String addressFromFile = EMPTY;
     private SberAddressDictionary cityFromDictionary = null;
+    private Map<String, Integer> uniqReisNumbers;
 
     @Override
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
@@ -83,6 +81,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         String fullFio = EMPTY;
         String carNumber = EMPTY;
         String organization = EMPTY;
+        uniqReisNumbers = new HashMap<>();
 
         try {
             sheet = book.getSheetAt(0);
@@ -101,12 +100,12 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 val numberUnloading = getIntegerValue(row, 8);
                 isStart = numberUnloading == 1;
                 if (isStart) {
+                    carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
                     dateFromFileForSt = DateUtils.isSameDay(convertDateFormat(fillT(true, row, dateFromFile), TEMPLATE_DATE_TIME_DOT), dateFromFile) ?
                             dateFromFile : DateUtils.addDays(dateFromFile, -1);
-                    reisNumber = generateId() + UNDERSCORE + dateString;
-                    carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
                     fio = prepareFio(getCellValue(row, 4));
                     organization = deleteSpace(getCellValue(row, 10));
+                    reisNumber = prepareReisNumber(carNumber, dateString);
                 }
 
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
@@ -182,6 +181,13 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 .build();
     }
 
+    private String prepareReisNumber(String carNumber, String dateString) {
+        var reisNumberTmp = carNumber.toUpperCase() + UNDERSCORE + dateString;
+        var reisCount = uniqReisNumbers.getOrDefault(reisNumberTmp, 0) + 1;
+        uniqReisNumbers.put(reisNumberTmp, reisCount);
+        return reisNumberTmp + UNDERSCORE + reisCount;
+    }
+
     private String prepareFio(String value) {
         if (value == null) {
             return EMPTY;
@@ -201,9 +207,9 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 .replace("+", EMPTY);
     }
 
-    private String generateId() {
-        return String.valueOf((int) (11111 + Math.random() * (99999 - 11111 + 1)));
-    }
+//    private String generateId() {
+//        return String.valueOf((int) (11111 + Math.random() * (99999 - 11111 + 1)));
+//    }
 
     private String fillL(int row) {
         var temperature = prepareTemperature(row).split(",");

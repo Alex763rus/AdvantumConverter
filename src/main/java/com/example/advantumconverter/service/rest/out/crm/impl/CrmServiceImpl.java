@@ -29,7 +29,8 @@ public class CrmServiceImpl implements CrmService {
     @Override
     public void routeAndDictionary(String accessToken, RouteWithDictionaryDto request) {
         try {
-            log.info("Старт: отправка документа: " + objectMapper.writeValueAsString(request));
+            log.info(String.format("Старт: отправка документа, externalId= %s, тело: %s",
+                    request.getExternalId(), objectMapper.writeValueAsString(request)));
         } catch (JsonProcessingException e) {
             log.error("Ошибка. Не удалось преобразовать объект в json: " + e.getMessage());
             log.info("Старт: отправка документа: " + request.toString());

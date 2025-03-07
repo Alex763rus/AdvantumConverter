@@ -85,21 +85,27 @@ public class CrmHelperImpl implements CrmHelper {
     private CrmGatewayReisResponseDto sendReis(RouteWithDictionaryDto document,
                                                CrmConfigProperties.CrmCreds crmCreds,
                                                String accessToken) {
+        log.info("Старт: обработка рейса externalId: " + document.getExternalId());
         var sendDocumentResult = sendDocument(accessToken, document);
         //непонятная ошибка, попробуем еще раз:
         if (!sendDocumentResult.isSuccess() && sendDocumentResult.getCode() == null) {
+            log.info("Ошибка: непонятная ошибка, попробуем еще раз. externalId: " + document.getExternalId());
             sendDocumentResult = sendDocument(accessToken, document);
         }
         if (sendDocumentResult.isSuccess() ||
                 (sendDocumentResult.getCode() != null && sendDocumentResult.getCode() != 401)) {
+            log.info("Успех: рейс успешно загружен. externalId: " + document.getExternalId());
             return sendDocumentResult;
         }
         //значит 401 ошибка, нужно обновить токен:
+        log.info("Ошибка во время загрузки рейса 401, необходимо обновить токен. externalId: " + document.getExternalId());
         var refreshTokenResult = crmAuthenticationHelper.refreshAndGetAccessToken(crmCreds);
         if (refreshTokenResult.isSuccess()) {
             //токен обновлен, пробуем отправку
+            log.info("Токен обновлен, пробуем отправку. externalId: " + document.getExternalId());
             return sendDocument(accessToken, document);
         }
+        log.error("Ошибка: не удалось обновить токен. Обработка рейса невозможна. externalId: " + document.getExternalId());
         return CrmGatewayReisResponseDto.ofError(document.getExternalId(),
                 refreshTokenResult.getCode(), "Ошибка при обновлении токена:" + refreshTokenResult.getMessage());
     }

@@ -26,8 +26,10 @@ public class CrmAuthenticationHelperImpl implements CrmAuthenticationHelper {
     public CrmAuthenticationResponseDto getOrCreateAccessToken(CrmConfigProperties.CrmCreds crmCreds) {
         var token = tokens.get(crmCreds);
         if (token != null) {
+            log.info("Успех: Токен найден среди существующих");
             return token;
         }
+        log.info("Токен не найден среди существующих, будет попытка завести новый");
         tokens.remove(crmCreds);
         return createAndSaveNewToken(crmCreds);
     }
@@ -36,6 +38,7 @@ public class CrmAuthenticationHelperImpl implements CrmAuthenticationHelper {
         var token = tokens.get(crmCreds);
         //токена не было, надо создать:
         if (token == null) {
+            log.info(String.format("Обновление токена. Токена не было, пробуем создать. token: %s", token));
             return createAndSaveNewToken(crmCreds);
         }
         var refresh1 = refreshToken(token.getRefreshToken());
@@ -47,6 +50,7 @@ public class CrmAuthenticationHelperImpl implements CrmAuthenticationHelper {
         }
         //Токен обновить не получилось, получили 400 ошибку. Пробуем заново авторизоваться:
         if(refresh1.getCode() == 400){
+            log.info(String.format("Обновление токена. Токен обновить не получилось получили 400 ошибку, пробуем создать еще раз. token: %s", token));
             var newToken = createNewToken(crmCreds);
             if(newToken.isSuccess()) {
                 tokens.put(crmCreds, newToken);
@@ -60,6 +64,7 @@ public class CrmAuthenticationHelperImpl implements CrmAuthenticationHelper {
     private CrmAuthenticationResponseDto createAndSaveNewToken(CrmConfigProperties.CrmCreds crmCreds){
         var crmAuthentication = createNewToken(crmCreds);
         if(crmAuthentication.isSuccess()){
+            log.info("Успех: токен получен");
             tokens.put(crmCreds, crmAuthentication);
         }
         return crmAuthentication;

@@ -28,13 +28,11 @@ public class MenuConvertAgroprom extends MenuConverterBase {
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        switch (stateService.getState(user)) {
-            case FREE:
-                return freeLogic(user, update, CONVERT_FILE_AGROPROM, FILE_NAME_AGROPROM);
-            case CONVERT_FILE_AGROPROM:
-                return convertFileLogic(user, update, convertServiceImplAgroprom);
-        }
-        return errorMessageDefault(update);
+        return switch (stateService.getState(user)) {
+            case FREE -> freeLogic(user, update, CONVERT_FILE_AGROPROM, FILE_NAME_AGROPROM);
+            case CONVERT_FILE_AGROPROM -> convertFileLogic(user, update, convertServiceImplAgroprom);
+            default -> errorMessageDefault(update);
+        };
     }
 
     @Override

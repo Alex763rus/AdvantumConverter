@@ -55,6 +55,8 @@ public abstract class MenuConverterBase extends Menu {
                         return errorMessage(update, "Ошибка. Неизвестный формат файла. \nОтправьте документ формата .xlsx");
                     }
                     val fileFullPath = fileUploadService.getFileName(USER_IN, field.getFileName());
+                    log.info(String.format("Приложен файл: %s, пользователь: %s, конвертер: %s",
+                            fileFullPath, user.getChatId(), convertService.getConverterName()));
                     update.getMessage().setText(fileFullPath);
                     val book = fileUploadService.uploadXlsx(fileFullPath, field.getFileId());
                     var convertedBook = convertService.getConvertedBook(book);
@@ -72,14 +74,18 @@ public abstract class MenuConverterBase extends Menu {
                             .setDocument(document)
                             .build();
 
+                    log.info(String.format("Файл успешно обработан: %s, пользователь: %s, конвертер: %s",
+                            fileFullPath, user.getChatId(), convertService.getConverterName()));
                     if (SecurityService.grantApiUser(user)
-                            && isV2/* только для api v2*/) {
+                            && isV2/* только для api v2*/
+                            && convertService.getCrmCreds() != null /* креды заполнены */
+                    ) {
                         convertedBooks.put(user, convertedBook);
                         convertedBooksV2.put(user, convertedBookV2);
 
                         stateService.setState(user, FREE);
                         val buttons = new ArrayList<Button>();
-                        buttons.add(Button.init().setKey(CONVERTER_WAIT_UNLOAD_IN_CRM.name()).setValue("Загрузить в CRM").build());
+                        buttons.add(Button.init().setKey(CONVERTER_WAIT_UNLOAD_IN_CRM.name()).setValue("Загрузить в АТМС").build());
                         buttons.add(Button.init().setKey(FREE.name()).setValue("Главное меню").build());
                         val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
 
@@ -99,9 +105,12 @@ public abstract class MenuConverterBase extends Menu {
                     return answer.createMessageList();
                 } catch (Exception ex) {
                     try {
+                        log.error(String.format("Во время обработки файла пользователь: %s, конвертер: %s возникла ошибка: %s",
+                                user.getChatId(), convertService.getConverterName(), ex.getMessage()));
                         return supportService.processNewTask(user, update, convertService, update.getMessage().getText(), ex);
                     } catch (Exception e) {
-                        //todo
+                        log.error(String.format("Во время задачи на обработку ошибки возникла другая ошибка пользователь: %s, конвертер: %s возникла ошибка: %s",
+                                user.getChatId(), convertService.getConverterName(), ex.getMessage()));
                     }
                 }
             } else {
@@ -112,6 +121,7 @@ public abstract class MenuConverterBase extends Menu {
     }
 
     protected List<PartialBotApiMethod> freeLogic(User user, Update update, State state, String fileName) {
+        //TODO NPE: update.getMessage()
         if (!update.getMessage().getText().equals(getMenuComand())) {
             return errorMessageDefault(update);
         }
@@ -147,6 +157,12 @@ public abstract class MenuConverterBase extends Menu {
     protected List<PartialBotApiMethod> unloadInCrm(User user, Update update, CrmConfigProperties.CrmCreds crmCreds) {
         val convertedBookV1 = convertedBooks.get(user);
         val convertedBookV2 = convertedBooksV2.get(user);
+
+        var bookName = Objects.isNull(convertedBookV1) ?
+                Objects.isNull(convertedBookV2) ? "имя файла неизвестно" : convertedBookV2.getBookName() :
+                convertedBookV1.getBookName();
+
+        log.info(String.format("Пользователь в CRM загружает файл: %s, пользователь: %s", bookName, user.getChatId()));
         val crmGatewayResponseDto = convertedBookV1 != null
                 ? crmHelper.sendDocument(BookToCrmReisMapper.map(convertedBookV1), crmCreds)
                 : crmHelper.sendDocument(BookToCrmReisMapper.map(convertedBookV2), crmCreds);
@@ -156,21 +172,22 @@ public abstract class MenuConverterBase extends Menu {
         convertedBooksV2.remove(user);
         val answer = new ArrayList<PartialBotApiMethod>();
         answer.add(createDeleteMessage(user.getChatId(), update.getCallbackQuery().getMessage().getMessageId()));
-        answer.add(createMessage(user, "Выбрано меню: загрузить в CRM"));
+        answer.add(createMessage(user, "Выбрано меню: загрузить в АТМС"));
         if (Objects.requireNonNullElse(crmGatewayResponseDto.getReisError(), new ArrayList<>()).isEmpty()) {
             answer.add(createMessage(user, crmGatewayResponseDto.getMessage()));
         } else {
             try {
+                log.info("Начало формирования лога с ошибками обработки файла, пользователь: " + user.getChatId());
                 val tmpFile = Files.createTempFile("log", ".txt").toFile();
                 try (FileWriter writer = new FileWriter(tmpFile)) {
                     writer.write(crmGatewayResponseDto.getMessage());
-                    System.out.println("Запись завершена.");
                 }
                 answer.add(SendDocumentWrap.init()
                         .setChatIdLong(update.getCallbackQuery().getMessage().getChatId())
                         .setCaption("Ошибка во время загрузки рейсов. Детализация во вложении")
                         .setDocument(new InputFile(tmpFile))
                         .build().createMessage());
+                log.info("Файл с ошибками обработки файла успешно сформирован и отправлен, пользователь: " + user.getChatId());
             } catch (Exception ex) {
                 log.error("не смогли приложить лог: " + crmGatewayResponseDto.getMessage());
             }
