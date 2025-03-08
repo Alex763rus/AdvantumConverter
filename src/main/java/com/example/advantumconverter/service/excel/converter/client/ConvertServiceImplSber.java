@@ -245,6 +245,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         val timeIsNotStart = getCellValue(row, 14).split(MINUS)[0];
         var dateStart = convertDateFormat(convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + timeIsStart, TEMPLATE_DATE_TIME_DOT);
         var dateNotStart = convertDateFormat(convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + timeIsNotStart, TEMPLATE_DATE_TIME_DOT);
+        return isStart ? dateStart : dateNotStart;
+        /*
         if (isStart) {
             if (dateNotStart.before(dateStart)) {
                 return DateUtils.addDays(dateStart, -1);
@@ -252,6 +254,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             return dateStart;
         }
         return dateNotStart;
+         */
     }
 
     @Override
@@ -261,8 +264,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
     private String fillT(boolean isStart, int row, Date dateFromFile) throws ParseException {
         if (isStart) {
-            val dateT = fillS(isStart, row, dateFromFile);
-            val result = DateUtils.addHours(dateT, 2);
+            val dateS = fillS(isStart, row, dateFromFile);
+            val result = DateUtils.addHours(dateS, 2);
             return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
         } else {
             val time = getCellValue(row, 14).split(MINUS)[1];
