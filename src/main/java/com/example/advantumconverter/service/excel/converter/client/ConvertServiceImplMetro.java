@@ -4,7 +4,9 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.DictionaryException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
-import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import jakarta.annotation.PostConstruct;
@@ -20,12 +22,13 @@ import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_METRO;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
+import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_METRO;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplMetro extends ConvertServiceBase implements ConvertService {
@@ -65,17 +68,21 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
         translitNumberCar.put("Х", "X");
     }
 
+    private List<String> warnings = new ArrayList<>();
+
     @Override
-    public ConvertedBook getConvertedBook(XSSFWorkbook book) {
-        val data = new ArrayList<List<String>>();
+    public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
+        warnings = new ArrayList<>();
+        val data = new ArrayList<ConvertedListDataV2>();
+        ConvertedListDataV2 dataLine = null;
+
+
         processedRows = new HashSet<>();
         val currentFlights = new ArrayList<Flight>();
         Flight flight = null;
         boolean isStart = true;
-        data.add(Header.headersOutputClient);
         sheet = book.getSheetAt(0);
         int row = START_ROW;
-        ArrayList<String> dataLine = new ArrayList();
         try {
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
@@ -88,46 +95,51 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                 isStart = true;
                 for (int iFlight = 0; iFlight < currentFlights.size(); iFlight++) {
                     flight = currentFlights.get(iFlight);
-
-                    dataLine = new ArrayList<>();
-
-                    dataLine.add(fillA(flight.getExcelRow()));
-                    dataLine.add(convertDateFormat(getCellValue(flight.getExcelRow(), 0), "dd/MM/yy", TEMPLATE_DATE_DOT));
-                    dataLine.add(COMPANY_METRO);
-                    dataLine.add(getCellValue(flight.getExcelRow(), 16));
-                    dataLine.add(EMPTY);
-                    dataLine.add(REFRIGERATOR);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add("1000");
-                    //10:
-                    dataLine.add("1");
-                    dataLine.add(fillL(flight.getExcelRow()));
-                    dataLine.add(fillM(flight.getExcelRow()));
-                    dataLine.add("2");
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(fillS(isStart, flight.getExcelRow()));
-                    dataLine.add(fillT(isStart, flight.getExcelRow()));
-                    //20:
-                    dataLine.add(fillU(isStart, flight.getExcelRow()));
-                    dataLine.add(fillV(isStart, flight.getExcelRow()));
-                    dataLine.add(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS);
-                    dataLine.add(isStart ? "1" : String.valueOf(iFlight + 1));
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(translateCarNumber(getCellValue(flight.getExcelRow(), 12)));
-                    dataLine.add(translateCarNumber(getCellValue(flight.getExcelRow(), 13)));
-                    //30:
-                    dataLine.add(fillAE(flight.getExcelRow()));
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
-                    dataLine.add(EMPTY);
+                    dataLine = ConvertedListDataV2.init()
+                            .setColumnAdata(fillA(flight.getExcelRow()))
+                            .setColumnBdata(convertDateFormat(getCellValue(flight.getExcelRow(), 0), "dd/MM/yy"))
+                            .setColumnCdata(COMPANY_METRO)
+                            .setColumnDdata(getCellValue(flight.getExcelRow(), 16))
+                            .setColumnEdata(null)
+                            .setColumnFdata(REFRIGERATOR)
+                            .setColumnGdata(EMPTY)
+                            .setColumnHdata(EMPTY)
+                            .setColumnIdata(null)
+                            .setColumnJdata(1000)
+                            .setColumnKdata(1)
+                            .setColumnLdata(fillL(flight.getExcelRow()))
+                            .setColumnMdata(fillM(flight.getExcelRow()))
+                            .setColumnNdata(2)
+                            .setColumnOdata(null)
+                            .setColumnPdata(null)
+                            .setColumnQdata(null)
+                            .setColumnRdata(null)
+                            .setColumnSdata(fillS(isStart, flight.getExcelRow()))
+                            .setColumnTdata(fillT(isStart, flight.getExcelRow()))
+                            .setColumnUdata(fillU(isStart, flight.getExcelRow()))
+                            .setColumnVdata(fillV(isStart, flight.getExcelRow()))
+                            .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
+                            .setColumnXdata(isStart ? 1 : (iFlight + 1))
+                            .setColumnYdata(null)
+                            .setColumnZdata(null)
+                            .setColumnAaData(EMPTY)
+                            .setColumnAbData(EMPTY)
+                            .setColumnAcData(translateCarNumber(getCellValue(flight.getExcelRow(), 12)))
+                            .setColumnAdData(translateCarNumber(getCellValue(flight.getExcelRow(), 13)))
+                            .setColumnAeData(fillAE(flight.getExcelRow()))
+                            .setColumnAfData(null)
+                            .setColumnAgData(EMPTY)
+                            .setColumnAhData(EMPTY)
+                            .setColumnAiData(EMPTY)
+                            .setColumnAjData(EMPTY)
+                            .setColumnAkData(EMPTY)
+                            .setColumnAlData(EMPTY)
+                            .setColumnAmData(EMPTY)
+                            .setColumnAnData(EMPTY)
+                            .setColumnAoData(EMPTY)
+                            .setColumnApData(EMPTY)
+                            .setTechFullFio(EMPTY)
+                            .build();
 
                     data.add(dataLine);
                     isStart = false;
@@ -135,12 +147,19 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                 currentFlights.clear();
             }
         } catch (Exception e) {
-            throw new ConvertProcessingException("не удалось обработать строку:" + row
-                    + " , после значения:" + dataLine
-                    + " , flight:" + flight
-                    + ". Ошибка:" + e);
+            throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return createDefaultBook(getConverterName() + UNDERSCORE, EXPORT, data, DONE);
+        return ConvertedBookV2.init()
+                .setBookV2(List.of(
+                        ConvertedListV2.init()
+                                .setHeadersV2(Header.headersOutputClientV2)
+                                .setExcelListName(EXPORT)
+                                .setExcelListContentV2(data)
+                                .build()
+                ))
+                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining("")))
+                .setBookName(getConverterName() + UNDERSCORE)
+                .build();
     }
 
 
@@ -189,14 +208,14 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
         return address;
     }
 
-    private String fillS(boolean isStart, final int row) throws ParseException {
+    private Date fillS(boolean isStart, final int row) throws ParseException {
 //        Приезд на погрузку:
 //        L - дата + R время
         if (isStart) {
             val dateL = convertDateFormat(getCellValue(row, 11), "dd/MM/yy", TEMPLATE_DATE_DOT);
             val timeR = getCellValue(row, 17);
             val dateResultString = dateL + SPACE + timeR;
-            return dateResultString;
+            return convertDateFormat(dateResultString, TEMPLATE_DATE_TIME_DOT);
         } else {
 //            Приезд на разгрузку:
 //            Дата - Y, время из справочника:Справочник_временных_окон_приемки
@@ -210,7 +229,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                         + magazineId + " [" + String.join(",", magazineCodes) + "]");
             }
             val dateResultString = dateY + SPACE + dictionary;
-            return dateResultString;
+            return convertDateFormat(dateResultString, TEMPLATE_DATE_TIME_DOT);
         }
     }
 
@@ -229,7 +248,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
     }
 
 
-    private String fillT(boolean isStart, final int row) throws ParseException {
+    private Date fillT(boolean isStart, final int row) throws ParseException {
         String dateResultString;
         if (isStart) {
             //убытие с погрузки:
@@ -252,9 +271,8 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
             dateResultString = dateY + SPACE + dictionary;
         }
         val dateResult = convertDateFormat(dateResultString, TEMPLATE_DATE_TIME_DOT);
-        val dateS = convertDateFormat(fillS(isStart, row), TEMPLATE_DATE_TIME_DOT);
-        val result = dateResult.before(dateS) ? DateUtils.addDays(dateResult, 1) : dateResult;
-        return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
+        val dateS = fillS(isStart, row);
+        return dateResult.before(dateS) ? DateUtils.addDays(dateResult, 1) : dateResult;
     }
 
     private Flight getNextFlight(final String key, final int row) {
@@ -320,30 +338,30 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
         return getCellValue(row, 27);
     }
 
-    private String fillL(int row) {
+    private Integer fillL(int row) {
         //Столбец AB и справочник ищем по коду, забираем B и C. Если пусто, не заполняем
         val excelTemperature = getExcelTemperature(row);
         if (excelTemperature.equals(EMPTY)) {
-            return EMPTY;
+            return null;
         }
         val temperature = dictionaryService.getMetroMinTemperature(excelTemperature);
         if (temperature == null) {
             throw new DictionaryException("Не найдена температура в справочнике температур Метро по запросу: " + excelTemperature);
         }
-        return String.valueOf(temperature);
+        return (int) (long) temperature;
     }
 
-    private String fillM(int row) {
+    private Integer fillM(int row) {
         //Столбец AB и справочник ищем по коду, забираем B и C. Если пусто, не заполняем
         val excelTemperature = getExcelTemperature(row);
         if (excelTemperature.equals(EMPTY)) {
-            return EMPTY;
+            return null;
         }
         val temperature = dictionaryService.getMetroMaxTemperature(excelTemperature);
         if (temperature == null) {
             throw new DictionaryException("Не найдена температура в справочнике температур Метро по запросу: " + excelTemperature);
         }
-        return String.valueOf(temperature);
+        return (int) (long) temperature;
     }
 
     private int calcTonnage(int row) {
