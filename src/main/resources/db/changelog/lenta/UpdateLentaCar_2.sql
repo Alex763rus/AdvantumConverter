@@ -1,0 +1,1 @@
+update lenta_car set tonnage = 7000 where car_number = 'P050PT198';

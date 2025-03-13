@@ -39,4 +39,6 @@
     <include file="/db/changelog/lenta/InsertCarNumber_3.sql"/>
     <include file="/db/changelog/schema/schema-ddl-user-role-name.xml"/>
     <include file="/db/changelog/users/update_user_1.xml"/>
+    <include file="/db/changelog/lenta/InsertCarNumber_4.sql"/>
+    <include file="/db/changelog/lenta/UpdateLentaCar_2.sql"/>
 </databaseChangeLog>
