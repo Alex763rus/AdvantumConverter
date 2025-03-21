@@ -41,4 +41,5 @@
     <include file="/db/changelog/users/update_user_1.xml"/>
     <include file="/db/changelog/lenta/InsertCarNumber_4.sql"/>
     <include file="/db/changelog/lenta/UpdateLentaCar_2.sql"/>
+    <include file="/db/changelog/lenta/UpdateLentaDictionary.sql"/>
 </databaseChangeLog>
