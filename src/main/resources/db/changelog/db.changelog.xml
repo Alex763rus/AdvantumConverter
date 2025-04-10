@@ -42,4 +42,5 @@
     <include file="/db/changelog/lenta/InsertCarNumber_4.sql"/>
     <include file="/db/changelog/lenta/UpdateLentaCar_2.sql"/>
     <include file="/db/changelog/lenta/UpdateLentaDictionary.sql"/>
+    <include file="/db/changelog/sber/InsertSberAddress1.sql"/>
 </databaseChangeLog>
