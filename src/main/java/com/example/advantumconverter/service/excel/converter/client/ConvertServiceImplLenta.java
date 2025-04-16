@@ -73,16 +73,12 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         String fullFio = EMPTY;
         String carNumber = EMPTY;
         String organization = EMPTY;
-
-
-        //======================
-
-
         try {
             sheet = book.getSheetAt(0);
             START_ROW = getStartRow(START_ROW_TEXT);
             row = START_ROW;
             int counterCopy = 1;
+            String columnC = EMPTY;
 
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
@@ -92,11 +88,12 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                     stockIn = getExpectedTimeIncome(row);
                     stockOut = DateUtils.addHours(stockIn, 3);
                     counterCopy = 1;
+                    columnC = fillC(row);
                 }
                 dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(getCellValue(row, 1))
                         .setColumnBdata(new Date())
-                        .setColumnCdata(fillC(row))
+                        .setColumnCdata(columnC)
                         .setColumnDdata(fillD(row))
                         .setColumnEdata(null)
                         .setColumnFdata(REFRIGERATOR)
