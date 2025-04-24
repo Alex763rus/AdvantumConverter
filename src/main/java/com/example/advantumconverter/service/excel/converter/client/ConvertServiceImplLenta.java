@@ -57,7 +57,6 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
 
     private Date stockIn = null; //из файла, ожидаемая дата прибытия, дата въезда на погрузку
-    private Date stockOut = null;           //дата выезда с погрузки
     private List<String> warnings = new ArrayList<>();
 
     @Override
@@ -68,11 +67,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
         int row = 0;
         boolean isStart = true;
-        String reisNumber = EMPTY;
         String fio = EMPTY;
-        String fullFio = EMPTY;
-        String carNumber = EMPTY;
-        String organization = EMPTY;
         try {
             sheet = book.getSheetAt(0);
             START_ROW = getStartRow(START_ROW_TEXT);
@@ -86,9 +81,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 isStart = isStart(row);
                 if (isStart) {
                     stockIn = getExpectedTimeIncome(row);
-                    stockOut = DateUtils.addHours(stockIn, 3);
                     counterCopy = 1;
-                    columnC = fillC(row);
+                    columnC = fillC(row + 1);
                 }
                 dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(getCellValue(row, 1))

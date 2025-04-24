@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,12 +66,14 @@ public class CrmHelperImpl implements CrmHelper {
         StringBuilder messsage = new StringBuilder();
         if (reisError.isEmpty()) {
             messsage.append("Все рейсы загружены успешно!").append(NEW_LINE)
+                    .append("Дата загрузки: ").append(LocalDateTime.now()).append(NEW_LINE)
                     .append("Количество: ").append(reisSuccess.size()).append(NEW_LINE)
                     .append("ExternalId: ").append(reisSuccess.stream()
                             .map(CrmGatewayReisResponseDto::getExternalId)
                             .collect(Collectors.joining(", ")));
         } else {
             messsage.append("Ошибка, не все рейсы загружены успешно!").append(NEW_LINE)
+                    .append("Дата загрузки: ").append(LocalDateTime.now()).append(NEW_LINE)
                     .append("Успешно загружены: ").append(reisSuccess.size()).append(NEW_LINE)
                     .append("ExternalId: ").append(reisSuccess.stream()
                             .map(CrmGatewayReisResponseDto::getExternalId)

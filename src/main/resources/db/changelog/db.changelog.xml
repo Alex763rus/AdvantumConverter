@@ -44,4 +44,12 @@
     <include file="/db/changelog/lenta/UpdateLentaDictionary.sql"/>
     <include file="/db/changelog/sber/InsertSberAddress1.sql"/>
     <include file="/db/changelog/lenta/InsertCar_2.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_msk_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_ekb_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_nsb_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_perm_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_rst_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_spb_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_tlt_1.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_msk_2.sql"/>
 </databaseChangeLog>
