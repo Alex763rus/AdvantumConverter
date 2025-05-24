@@ -82,7 +82,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 if (isStart) {
                     stockIn = getExpectedTimeIncome(row);
                     counterCopy = 1;
-                    columnC = fillC(row + 1);
+                    columnC = fillC(row);
                 }
                 dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(getCellValue(row, 1))
@@ -247,6 +247,10 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillC(int row) {
+        val tsCityBrief = dictionaryService.getTsCityBrief(getCarNumber(row));
+        if (tsCityBrief != null) {
+            return tsCityBrief;
+        }
         val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         return lentaDictionary == null ? "Нет региона" : "Лента (" + lentaDictionary.getRegion() + ")";

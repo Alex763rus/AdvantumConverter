@@ -5,10 +5,7 @@ import com.example.advantumconverter.model.jpa.Car;
 import com.example.advantumconverter.model.jpa.CarNumber;
 import com.example.advantumconverter.model.jpa.CarNumberRepository;
 import com.example.advantumconverter.model.jpa.CarRepository;
-import com.example.advantumconverter.model.jpa.lenta.LentaCar;
-import com.example.advantumconverter.model.jpa.lenta.LentaCarRepository;
-import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
-import com.example.advantumconverter.model.jpa.lenta.LentaDictionaryRepository;
+import com.example.advantumconverter.model.jpa.lenta.*;
 import com.example.advantumconverter.model.jpa.metro.*;
 import com.example.advantumconverter.model.jpa.ozon.*;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
@@ -46,6 +43,7 @@ public class DictionaryService {
     private final MetroAddressesDictionaryRepository metroAddressesDictionaryRepository;
     private final MetroDcAddressesDictionaryRepository metroDcAddressesDictionaryRepository;
     private final SberAddressDictionaryRepository sberAddressDictionaryRepository;
+    private final LentaTsCityRepository lentaTsCityRepository;
 
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
@@ -61,6 +59,7 @@ public class DictionaryService {
     private Set<MetroTimeDictionary> metroTimeDictionaries;
     private Set<MetroDcAddressesDictionary> metroDcAddressesDictionaries;
     private Set<SberAddressDictionary> sberAddressDictionaries;
+    private Set<LentaTsCity> lentaTsCitiesDictionaries;
 
     @PostConstruct
     public void init() {
@@ -119,6 +118,10 @@ public class DictionaryService {
         metroTimeDictionaries = new HashSet<>();
         metroTimeDictionaryRepository.findAll()
                 .forEach(metroTimeDictionaries::add);
+
+        lentaTsCitiesDictionaries = new HashSet<>();
+        lentaTsCityRepository.findAll()
+                .forEach(lentaTsCitiesDictionaries::add);
     }
 
     public Car getCar(final String carName) {
@@ -196,6 +199,13 @@ public class DictionaryService {
                 .findFirst().orElse(null);
     }
 
+    public String getTsCityBrief(String ts) {
+        var tsCityBrief = lentaTsCitiesDictionaries.stream()
+                .filter(key -> key.getTs().equals(ts))
+                .findFirst().orElse(null);
+        return tsCityBrief == null ? null : tsCityBrief.getCityBrief();
+    }
+
     public Long getMetroMinTemperature(String code) {
         val dictionary = getMetroTemperatureDictionary(code);
         return dictionary == null ? null : dictionary.getMinTemperature();
@@ -226,6 +236,7 @@ public class DictionaryService {
                         .equals(address))
                 .findFirst().orElse(null);
     }
+
 
     public String getMetroTimeEnd(Long timeId, Set<String> codes) {
         val dictionary = getMetroTimeDictionary(timeId, codes);

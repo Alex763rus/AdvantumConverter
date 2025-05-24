@@ -52,4 +52,7 @@
     <include file="/db/changelog/lenta/Updatelentadictionary_spb_1.sql"/>
     <include file="/db/changelog/lenta/Updatelentadictionary_tlt_1.sql"/>
     <include file="/db/changelog/lenta/Updatelentadictionary_msk_2.sql"/>
+    <include file="/db/changelog/lenta/Updatelentadictionary_mix_1.sql"/>
+    <include file="/db/changelog/lenta/CreateLentaTsCity.sql"/>
+    <include file="/db/changelog/lenta/InsertLentaTsCity.sql"/>
 </databaseChangeLog>
