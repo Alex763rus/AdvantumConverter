@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.example</groupId>
     <artifactId>advantumconverter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${git.commit.id.abbrev}</version>
     <name>advantumconverter</name>
     <description>advantumconverter</description>
     <properties>
@@ -152,6 +152,29 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <executable>true</executable>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>4.9.10</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <abbrevLength>7</abbrevLength>
+                    <skipPoms>false</skipPoms>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <gitDescribe>
+                        <skip>false</skip>
+                        <always>true</always> <!-- Использует хэш, даже если нет тегов -->
+                        <abbrev>7</abbrev>    <!-- Сокращает до 7 символов -->
+                        <dirty>-dirty</dirty> <!-- Добавляет суффикс, если есть изменения -->
+                    </gitDescribe>
                 </configuration>
             </plugin>
         </plugins>
