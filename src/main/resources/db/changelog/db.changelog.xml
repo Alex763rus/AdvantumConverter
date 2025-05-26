@@ -55,4 +55,5 @@
     <include file="/db/changelog/lenta/Updatelentadictionary_mix_1.sql"/>
     <include file="/db/changelog/lenta/CreateLentaTsCity.sql"/>
     <include file="/db/changelog/lenta/InsertLentaTsCity.sql"/>
+    <include file="/db/changelog/lenta/UpdateLentaTsCity_1.sql"/>
 </databaseChangeLog>

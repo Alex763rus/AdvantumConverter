@@ -206,8 +206,10 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
     private String fillD(int row) {
         val companyName = getCellValue(row, 8);
+        val carNumber = getCarNumber(row);
         if (companyName.toUpperCase().contains("ЛЕНТА")
-                && (dictionaryService.getCarNumberOrElse(getCarNumber(row), null) == null)) {
+                && dictionaryService.getTsCityBrief(carNumber) == null
+                && (dictionaryService.getCarNumberOrElse(carNumber, null) == null)) {
             return COMPANY_OOO_LENTA_HIRING;
         }
         return companyName;

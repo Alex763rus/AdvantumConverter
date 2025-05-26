@@ -26,7 +26,6 @@ import static org.springdoc.core.utils.Constants.DOT;
 
 public class BookToCrmReisMapper {
 
-    private static final String NUMBER_ZERO = "0";
     private static final String OKAY = "OKAY";
     private static final String DEFAULT_EXTERNAL_ID = "24645624";
     private static final String SLASH_AND_DOT = "\\.";
@@ -67,7 +66,7 @@ public class BookToCrmReisMapper {
                     .setNumberOfPallets(mainPoint.getColumnKdata())
                     .setExternalId(reisNumber)
                     .setCustomer(prepareExternalOrganization(OKAY, DEFAULT_EXTERNAL_ID))
-                    .setCarrier(prepareExternalOrganization(mainPoint.getColumnDdata(), NUMBER_ZERO))
+                    .setCarrier(prepareExternalOrganization(mainPoint.getColumnDdata(), mainPoint.getColumnDdata()))
                     .setCostInRubles(BigDecimal.ZERO)
                     .setComment(mainPoint.getColumnAaData())
                     .setTemperatureMin(toBigDecimal(mainPoint.getColumnLdata()))
