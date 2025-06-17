@@ -44,6 +44,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     public static final String ALLIANCE_LOGISTIC_1 = "ООО \"Альянс-Логистика\"";
     public static final String ALLIANCE_LOGISTIC_2 = "ООО «Альянс-Логистика»";
     public static final String IP_SIMONYAN = "ИП Симонян Тигран Арсенович";
+    public static final String OOO_EVOKA = "ООО \"ЭВОКА\"";
     private static final Map<String, String> TK_NAME_NUMBER_MAP = Map.of(
             BUSH_AUTOPROM_ORGANIZATION_NAME, "1",
             SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_1, "1",
@@ -51,7 +52,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             SBER_SQUIRREL_ORGANIZATION_NAME, "2",
             ALLIANCE_LOGISTIC_1, "3",
             ALLIANCE_LOGISTIC_2, "3",
-            IP_SIMONYAN, "4"
+            IP_SIMONYAN, "4",
+            OOO_EVOKA, "4"
     );
     private List<String> warnings = new ArrayList<>();
 
