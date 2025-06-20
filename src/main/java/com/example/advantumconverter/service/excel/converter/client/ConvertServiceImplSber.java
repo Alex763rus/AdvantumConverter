@@ -84,9 +84,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
         int row = START_ROW;
         boolean isStart = true;
-        String reisNumber = EMPTY;
         String fio = EMPTY;
-        String fullFio = EMPTY;
         String carNumber = EMPTY;
         String organization = EMPTY;
         uniqReisNumbers = new HashMap<>();
@@ -104,7 +102,6 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             for (; row <= LAST_ROW; ++row) {
                 val dateFromFile = getDateFromFile(row);
                 var dateFromFileForSt = dateFromFile;
-                val dateString = convertDateFormat(dateFromFile, "ddMMyy");
                 val numberUnloading = getIntegerValue(row, 8);
                 isStart = numberUnloading == 1;
                 if (isStart) {
@@ -113,12 +110,11 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             dateFromFile : DateUtils.addDays(dateFromFile, -1);
                     fio = prepareFio(getCellValue(row, 4));
                     organization = deleteSpace(getCellValue(row, 10));
-                    reisNumber = prepareReisNumber(carNumber, dateString);
                 }
 
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
                     dataLine = ConvertedListDataV2.init()
-                            .setColumnAdata(reisNumber)
+                            .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
                             .setColumnCdata(cityFromDictionary.getCity().trim())
                             .setColumnDdata(organization)
