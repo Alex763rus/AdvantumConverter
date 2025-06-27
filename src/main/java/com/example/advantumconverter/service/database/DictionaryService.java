@@ -10,6 +10,10 @@ import com.example.advantumconverter.model.jpa.metro.*;
 import com.example.advantumconverter.model.jpa.ozon.*;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionaryRepository;
+import com.example.advantumconverter.model.jpa.siel.SielCars;
+import com.example.advantumconverter.model.jpa.siel.SielCarsRepository;
+import com.example.advantumconverter.model.jpa.siel.SielPoints;
+import com.example.advantumconverter.model.jpa.siel.SielPointsRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +38,8 @@ public class DictionaryService {
     private final LentaDictionaryRepository lentaDictionaryRepository;
     private final CarNumberRepository carNumberRepository;
     private final LentaCarRepository lentaCarRepository;
+    private final SielPointsRepository sielPointsRepository;
+    private final SielCarsRepository sielCarsRepository;
     private final OzonDictionaryRepository ozonDictionaryRepository;
     private final OzonTransitTimeRepository ozonTransitTimeRepository;
     private final OzonLoadUnloadTimeRepository ozonLoadUnloadTimeRepository;
@@ -53,6 +59,8 @@ public class DictionaryService {
     private Set<OzonTransitTime> ozonTransitTimes;
     private Set<OzonLoadUnloadTime> ozonLoadUnloadTime;
     private Set<OzonTonnageTime> ozonTonnageTime;
+    private Set<SielPoints> sielPoints;
+    private Set<SielCars> sielCars;
 
     private Set<MetroAddressesDictionary> metroAddressesDictionaries;
     private Set<MetroTemperatureDictionary> metroTemperatureDictionaries;
@@ -82,6 +90,14 @@ public class DictionaryService {
         val lentaCarIter = lentaCarRepository.findAll();
         lentaCars = new HashSet<>();
         lentaCarIter.forEach(lentaCars::add);
+
+        val sielPointsIter = sielPointsRepository.findAll();
+        sielPoints = new HashSet<>();
+        sielPointsIter.forEach(sielPoints::add);
+
+        val sielCarsIter = sielCarsRepository.findAll();
+        sielCars = new HashSet<>();
+        sielCarsIter.forEach(sielCars::add);
 
         val ozonDictionaryIter = ozonDictionaryRepository.findAll();
         ozonDictionaries = new HashSet<>();
@@ -148,6 +164,20 @@ public class DictionaryService {
         return dictionary.stream()
                 .filter(e -> e.getLentaDictionaryKey() == lentaDictionaryKey)
                 .findFirst().orElse(null);
+    }
+
+    public SielPoints getSielPoint(final String pointName) {
+        return sielPoints.stream()
+                .filter(e -> e.getPointName().equals(pointName))
+                .findFirst().orElse(null);
+    }
+
+    public String getSielCarrierName(final String carNumber) {
+        return sielCars.stream()
+                .filter(e -> e.getCarNumber().equalsIgnoreCase(carNumber))
+                .findFirst()
+                .map(SielCars::getCarrierName)
+                .orElse("ООО СИЭЛЬ");
     }
 
     public OzonDictionary getBestDictionary(final String stockBrief, int hTime) {

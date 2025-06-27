@@ -14,6 +14,8 @@ public enum State {
 
     CONVERT_FILE_OZON,
 
+    CONVERT_FILE_SIEL,
+
     CONVERT_FILE_METRO,
 
     CONVERT_FILE_DOMINOS,

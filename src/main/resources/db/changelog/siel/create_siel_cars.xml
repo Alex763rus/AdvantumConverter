@@ -1,0 +1,15 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="create_siel_cars">
+        <sql>
+            create table if not exists siel_cars
+            (
+                car_number          varchar(255) primary key,
+                carrier_name        varchar(255) null
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -57,4 +57,9 @@
     <include file="/db/changelog/lenta/InsertLentaTsCity.sql"/>
     <include file="/db/changelog/lenta/UpdateLentaTsCity_1.sql"/>
     <include file="/db/changelog/lenta/InsertCar_3.sql"/>
+    <include file="/db/changelog/InsertCompany_2.sql"/>
+    <include file="/db/changelog/siel/create_siel_points.xml"/>
+    <include file="/db/changelog/siel/InsertSielPoints_1.sql"/>
+    <include file="/db/changelog/siel/create_siel_cars.xml"/>
+    <include file="/db/changelog/siel/InsertSielCars_1.sql"/>
 </databaseChangeLog>

@@ -48,6 +48,7 @@ public final class Constant {
         public static final String FILE_NAME_LENTA = "Лента";
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
+        public static final String FILE_NAME_SIEL = "Сиэль";
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
         public static final String FILE_NAME_SBER = "СберЛогистика";
@@ -69,6 +70,7 @@ public final class Constant {
         public static final String COMPANY_NAME_METRO = "Метро";
         public static final String COMPANY_NAME_SBER = "СберЛогистика";
         public static final String COMPANY_NAME_ART_FRUIT = "ArtFruit";
+        public static final String COMPANY_NAME_SIEL = "СИЭЛЬ";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -96,6 +98,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
+        public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
         public static final String COMMAND_CONVERT_METRO = "/convert_metro";
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";
         public static final String COMMAND_CONVERT_DOMINOS = "/convert_dominos";
