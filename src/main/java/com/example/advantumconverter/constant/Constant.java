@@ -13,6 +13,7 @@ public final class Constant {
     public static final class Converter {
 
         public static final String REFRIGERATOR = "Рефрижератор";
+        public static final String PROM_TOVAR = "Промтоварный";
         public static final String BUSH_AUTOPROM_ORGANIZATION_NAME = "ООО \"Буш-Автопром\"";
         public static final String SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_1 = "ООО Буш-Автопром";
         public static final String SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_2 = "ООО \"Буш-Автопром";

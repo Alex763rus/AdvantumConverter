@@ -30,6 +30,7 @@ import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
+import static org.springdoc.core.utils.Constants.DOT;
 
 @Component
 public class ConvertServiceImplSiel extends ConvertServiceBase implements ConvertService {
@@ -70,7 +71,6 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
         int row = START_ROW;
         boolean isStart = true;
         int numberUnloading = 0;
-
         try {
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW, 0);
@@ -81,32 +81,37 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
 
             String reisNumber = EMPTY;
             String carNumber = EMPTY;
-            val dateFromFile = convertDateFormat(getCellValue(row, 3), TEMPLATE_DATE_DOT);
+            val dateFromFile = convertDateFormat(getCellValue(row, 1), TEMPLATE_DATE_DOT);
             var dateFromFileString = convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT);
+            var dateFromFileNumberOnly = dateFromFileString.replace(DOT, EMPTY);
+            int reisCounter = 0;
+            String uniqReisCounter = EMPTY;
             for (; row <= LAST_ROW; ++row) {
-//В перевозчика из вкладки вечикалс в сводный по номеру машины.
-                isStart = !reisNumber.equals(getReisNumber(row));
-                reisNumber = getReisNumber(row);
+                var reisNumberFromFile = getReisNumber(row);
+                isStart = !reisNumber.equals(reisNumberFromFile);
+                reisNumber = reisNumberFromFile;
                 if (isStart) {
                     carNumber = getCarNumber(row);
                     numberUnloading = 0;
-                }
+                    ++reisCounter;
+                    uniqReisCounter = dateFromFileNumberOnly + reisCounter;
+                } //
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
                     dataLine = ConvertedListDataV2.init()
-                            .setColumnAdata(reisNumber)
+                            .setColumnAdata(uniqReisCounter)
                             .setColumnBdata(dateFromFile)
                             .setColumnCdata(COMPANY_NAME)
                             .setColumnDdata(dictionaryService.getSielCarrierName(carNumber))
                             .setColumnEdata(null)
-                            .setColumnFdata(REFRIGERATOR)
+                            .setColumnFdata(PROM_TOVAR)
                             .setColumnGdata(EMPTY)
                             .setColumnHdata(EMPTY)
                             .setColumnIdata(null)
-                            .setColumnJdata(5000)
-                            .setColumnKdata(12)
-                            .setColumnLdata(2)
-                            .setColumnMdata(4)
-                            .setColumnNdata(2)
+                            .setColumnJdata(1500)
+                            .setColumnKdata(350)
+                            .setColumnLdata(null)
+                            .setColumnMdata(null)
+                            .setColumnNdata(null)
                             .setColumnOdata(null)
                             .setColumnPdata(null)
                             .setColumnQdata(null)
@@ -123,7 +128,7 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
                             .setColumnAbData(EMPTY)
                             .setColumnAcData(carNumber)
                             .setColumnAdData(EMPTY)
-                            .setColumnAeData(getCellValue(row, 6))
+                            .setColumnAeData(getCellValue(row, 3))
                             .setColumnAfData(null)
                             .setColumnAgData(EMPTY)
                             .setColumnAhData(EMPTY)
@@ -172,11 +177,11 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
     }
 
     private String getReisNumber(int row) {
-        return getCellValue(row, 2);
+        return getCellValue(row, 0);
     }
 
     private String getCarNumber(int row) {
-        return getCellValue(row, 5).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
+        return getCellValue(row, 2).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
     }
 
     private Date fillS(boolean isStart, int row, String dateFromFileString) throws ParseException {
@@ -216,11 +221,11 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
     }
 
     private String getPointName(int row) {
-        return getCellValue(row, 8);
+        return getCellValue(row, 5);
     }
 
     private String getPointAddress(int row) {
-        return getCellValue(row, 9);
+        return getCellValue(row, 6);
     }
 
     private String fillU(boolean isStart, int row) {
