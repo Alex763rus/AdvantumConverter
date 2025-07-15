@@ -50,8 +50,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_1, "1",
             SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_2, "1",
             SBER_SQUIRREL_ORGANIZATION_NAME, "2",
-            ALLIANCE_LOGISTIC_1, "3",
-            ALLIANCE_LOGISTIC_2, "3",
+            ALLIANCE_LOGISTIC_1, "7706421853",
+            ALLIANCE_LOGISTIC_2, "7706421853",
             IP_SIMONYAN, "4",
             OOO_EVOKA, "4"
     );
