@@ -83,6 +83,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setAddress(address)
                         .setStartAddress(startAddress)
                         .setNumbers(numbersTmp)
+                        .setManager(getCellValue(rowTmp, 41))
+                        .setOrderNumber(getCellValue(rowTmp, 42))
                         .build();
                 var addressInReisTmpSearch = uniqReisAndAddress.stream()
                         .filter(e -> e.equals(addressInReisTmp))
@@ -182,7 +184,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnAkData(getCellValue(row, 24))
                         .setColumnAlData(getCellValue(row, 25))
                         .setColumnAmData(getCellValue(row, 36))
-                        .setColumnAnData(AddressInReis.getNumbers(addressInReisTmp))
+                        .setColumnAnData(fillAn(addressInReisTmp))
                         .setColumnAoData(reisInOrder)
                         .build();
                 data.add(dataLine);
@@ -212,6 +214,15 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
 
     private String getOrderNumber(int row) {
         return checkNull(row, 1);
+    }
+
+    private String fillAn(AddressInReis addressInReisTmp) {
+        var numbers = addressInReisTmp.getNumbers().stream()
+                .filter(number -> !number.equals(EMPTY))
+                .collect(Collectors.joining(", "));
+        return numbers
+                + (addressInReisTmp.getManager().isEmpty() ? EMPTY : SPACE + addressInReisTmp.getManager())
+                + (addressInReisTmp.getOrderNumber().isEmpty() ? EMPTY : SPACE + addressInReisTmp.getOrderNumber());
     }
 
     private String checkNull(int row, int col) {
@@ -274,6 +285,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         String taskNumber;
         String address;
         String startAddress;
+        String manager;
+        String orderNumber;
         List<String> numbers = new ArrayList<>();
 
         public static AddressInReis getAddressInReis(Set<AddressInReis> addressInReises, String taskNumber, String address) {
@@ -285,12 +298,6 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     .filter(data -> data.equals(tmpAddressInReis))
                     .findAny()
                     .get();
-        }
-
-        public static String getNumbers(AddressInReis addressInReise) {
-            return addressInReise.getNumbers().stream()
-                    .filter(number -> !number.equals(EMPTY))
-                    .collect(Collectors.joining(", "));
         }
 
         @Override
