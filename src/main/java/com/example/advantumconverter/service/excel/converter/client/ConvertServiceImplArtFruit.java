@@ -73,7 +73,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     startAddress = fillV(row);
                     lastNumberOrderStart = numberOrderStart;
                 }
-                var number = getCellValue(rowTmp, 1);
+                var number = getOrderNumber(rowTmp);
                 var taskNumber = getCellValue(rowTmp, 0);
                 val numbersTmp = new ArrayList<String>();
                 numbersTmp.add(number);
@@ -98,7 +98,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
             for (int rowTmp = row; rowTmp <= LAST_ROW; ++rowTmp) {
                 //заполнения поля комментарий рейс:
                 val numberOrderStart = getCellValue(rowTmp, 0);
-                var orderInReis = getCellValue(rowTmp, 1);
+                var orderInReis = getOrderNumber(rowTmp);
                 var savedOrderInReis = ordersInReis.get(numberOrderStart);
                 if (savedOrderInReis == null) {
                     List<String> orders = new ArrayList<>();
@@ -122,7 +122,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     numberUnloadingCounter = 0;
                     tonnage = getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
                     reisInOrder = ordersInReis.getOrDefault(numberOrderStart, new ArrayList<>()).stream()
-                            .filter(e->!e.equals(EMPTY))
+                            .filter(e -> !e.equals(EMPTY))
                             .collect(Collectors.joining(", "));
                 }
                 val address = fillV(row);
@@ -169,15 +169,15 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                                 isStart ? null : convertToDoubleOrNull(
                                         getCellValue(row, 30).replaceAll(",", "."))
                         )
-                        .setColumnAaData(getCellValue(row, 31))
+                        .setColumnAaData(checkNull(row, 31))
                         .setColumnAbData(getCellValue(row, 32))
                         .setColumnAcData(getCellValue(row, 33))
-                        .setColumnAdData(getCellValue(row, 34))
+                        .setColumnAdData(checkNull(row, 34))
                         .setColumnAeData(getCellValue(row, 35))
                         .setColumnAfData(null)
                         .setColumnAgData(EMPTY)
                         .setColumnAhData(getCellValue(row, 39))
-                        .setColumnAiData(getCellValue(row, 5))
+                        .setColumnAiData(getIntegerValue(isStart ? row + 1 : row, 40))
                         .setColumnAjData(getCellValue(row, 6))
                         .setColumnAkData(getCellValue(row, 24))
                         .setColumnAlData(getCellValue(row, 25))
@@ -208,6 +208,15 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     @Override
     public ExcelType getExcelType() {
         return CLIENT;
+    }
+
+    private String getOrderNumber(int row) {
+        return checkNull(row, 1);
+    }
+
+    private String checkNull(int row, int col) {
+        var value = getCellValue(row, col);
+        return value.equals("#NULL!") ? EMPTY : value;
     }
 
     private String getDateFromFile(int row) {

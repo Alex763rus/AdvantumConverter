@@ -97,7 +97,7 @@ public class ConvertServiceImplArtFruitTest {
                             .setColumnAfData(convertToIntegerOrNull(getCellValue(sheet, row, 31)))
                             .setColumnAgData(getCellValue(sheet, row, 32))
                             .setColumnAhData(getCellValue(sheet, row, 33))
-                            .setColumnAiData(getCellValue(sheet, row, 34))
+//                            .setColumnAiData(convertServiceImplArtFruit.getIntegerValue(row, 34))
                             .setColumnAjData(getCellValue(sheet, row, 35))
                             .setColumnAkData(getCellValue(sheet, row, 36))
                             .setColumnAlData(getCellValue(sheet, row, 37))

@@ -148,7 +148,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnAfData(null)
                             .setColumnAgData(EMPTY)
                             .setColumnAhData(EMPTY)
-                            .setColumnAiData(EMPTY)
+                            .setColumnAiData(null)
                             .setColumnAjData(EMPTY)
                             .setColumnAkData(EMPTY)
                             .setColumnAlData(EMPTY)

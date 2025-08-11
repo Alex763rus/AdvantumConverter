@@ -47,7 +47,7 @@ public class ConvertedListDataV2 {
     private Integer columnAfData;
     private String columnAgData;
     private String columnAhData;
-    private String columnAiData;
+    private Integer columnAiData;
     private String columnAjData;
     private String columnAkData;
     private String columnAlData;

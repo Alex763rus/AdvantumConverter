@@ -130,7 +130,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                             .setColumnAfData(null)
                             .setColumnAgData(EMPTY)
                             .setColumnAhData(EMPTY)
-                            .setColumnAiData(EMPTY)
+                            .setColumnAiData(null)
                             .setColumnAjData(EMPTY)
                             .setColumnAkData(EMPTY)
                             .setColumnAlData(EMPTY)
