@@ -31,6 +31,7 @@ import static org.example.tgcommons.utils.NumberConverter.convertToDoubleOrNull;
 @Component
 public class ConvertServiceImplArtFruit extends ConvertServiceBase implements ConvertService {
 
+    private static final String SLASH_DELIMETER = " / ";
     private final int START_ROW = 4;
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
@@ -221,8 +222,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 .filter(number -> !number.equals(EMPTY))
                 .collect(Collectors.joining(", "));
         return numbers
-                + (addressInReisTmp.getManager().isEmpty() ? EMPTY : SPACE + addressInReisTmp.getManager())
-                + (addressInReisTmp.getOrderNumber().isEmpty() ? EMPTY : SPACE + addressInReisTmp.getOrderNumber());
+                + (addressInReisTmp.getManager().isEmpty() ? EMPTY : SLASH_DELIMETER + addressInReisTmp.getManager())
+                + (addressInReisTmp.getOrderNumber().isEmpty() ? EMPTY : SLASH_DELIMETER + addressInReisTmp.getOrderNumber());
     }
 
     private String checkNull(int row, int col) {
