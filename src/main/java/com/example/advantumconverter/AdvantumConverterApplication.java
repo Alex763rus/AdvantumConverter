@@ -10,7 +10,7 @@ public class AdvantumConverterApplication {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(AdvantumConverterApplication.class)
-                .web(WebApplicationType.NONE)
+                .web(WebApplicationType.SERVLET)
                 .run(args);
     }
 
