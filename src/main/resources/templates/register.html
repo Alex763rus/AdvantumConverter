@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .link { text-align: center; margin-top: 15px; }
+        .link a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+<h2>Регистрация</h2>
+<p>Заполните форму, чтобы начать использование сервиса.</p>
+
+<form th:action="@{/register}" th:object="${registrationForm}" method="post">
+    <div class="form-group">
+        <label for="username">Логин:</label>
+        <input type="text" id="username" th:field="*{username}" required />
+    </div>
+
+    <div class="form-group">
+        <label for="fullName">Полное имя:</label>
+        <input type="text" id="fullName" th:field="*{fullName}" required />
+    </div>
+
+    <div class="form-group">
+        <label for="telegramChatId">Telegram chat_id:</label>
+        <input type="number" id="telegramChatId" th:field="*{telegramChatId}" required />
+        <small>Узнать chat_id можно у @userinfobot в Telegram</small>
+    </div>
+
+    <button type="submit">Зарегистрироваться</button>
+</form>
+
+<div class="link">
+    <a href="/login">Уже есть аккаунт? Войти</a>
+</div>
+</body>
+</html>

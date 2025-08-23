@@ -41,6 +41,24 @@ public class UserService {
         stateService.refreshUser(user);
     }
 
+    public User registerNewUser(Long chatId, String login, String firstName) {
+
+        User user = new User();
+
+        user.setChatId(chatId);
+        user.setFirstName(firstName);
+        user.setUserName(login);
+        user.setUserRole(NEED_SETTING);
+        user.setUserRoletext(NEED_SETTING.name());
+        user.setCompany(companyRepository.getCompaniesByCompanyName(COMPANY_NOT_FOUND));
+
+        user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
+
+        userRepository.save(user);
+        log.info("user saved: " + user);
+        return user;
+    }
+
     private Message getMessage(Update update) {
         if (update.hasMessage()) {
             return update.getMessage();

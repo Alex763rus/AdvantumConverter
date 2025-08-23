@@ -4,59 +4,33 @@
     <meta charset="UTF-8">
     <title>Конвертер Excel</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            text-align: center;
-        }
-        .form-group {
-            margin: 15px 0;
-            text-align: left;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        select, input[type="file"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .error {
-            color: red;
-            margin-top: 15px;
-        }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input[type="file"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .error { color: red; }
     </style>
 </head>
 <body>
+<div style="text-align: right;">
+    <form th:action="@{/logout}" method="post" style="display: inline;">
+        <button type="submit">Выйти</button>
+    </form>
+</div>
+
 <h2>Конвертер Excel</h2>
-<p>Выберите формат и загрузите файл для конвертации.</p>
+<p>Выберите формат и загрузите файл.</p>
 
 <form method="post" action="/convert" enctype="multipart/form-data">
     <div class="form-group">
-        <label for="converterType">Тип конвертации:</label>
+        <label for="converterType">Формат конвертации:</label>
         <select id="converterType" name="converterType" required>
-            <option value="">-- Выберите формат --</option>
-            <option value="csv">CSV</option>
-            <option value="json">JSON</option>
-            <option value="xml">XML</option>
+            <option value="">-- Выберите --</option>
+            <option th:each="format : ${formats}"
+                    th:value="${format.type}"
+                    th:text="${format.label}">
+            </option>
         </select>
     </div>
 
@@ -67,7 +41,5 @@
 
     <button type="submit">Конвертировать</button>
 </form>
-
-<div th:if="${error}" class="error" th:text="${error}"></div>
 </body>
 </html>

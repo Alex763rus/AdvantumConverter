@@ -1,23 +1,56 @@
 package com.example.advantumconverter.rest;
 
+import com.example.advantumconverter.model.jpa.UserRepository;
+import com.example.advantumconverter.security.ConverterAccessService;
+import com.example.advantumconverter.security.dto.RegistrationForm;
+import com.example.advantumconverter.service.database.UserService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 @Controller
 public class WebController {
 
+    private final ConverterAccessService converterAccessService;
+    private final UserService userService;
+
+    public WebController(ConverterAccessService converterAccessService, UserService userService) {
+        this.converterAccessService = converterAccessService;
+        this.userService = userService;
+    }
+
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("registrationForm", new RegistrationForm());
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String processRegistration(RegistrationForm form) {
+        // Перенаправляем на страницу настройки
+        userService.registerNewUser(form.getTelegramChatId(), form.getUsername(), form.getFullName());
+        return "redirect:/setup";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/")
-    public String showUploadPage() {
+    public String showUploadPage(Model model) {
+        model.addAttribute("formats", converterAccessService.getAvailableFormats());
         return "upload";
     }
 
@@ -31,15 +64,11 @@ public class WebController {
                 return ResponseEntity.badRequest().build();
             }
 
-            // Проверяем, поддерживаем ли такой тип
-            if (!Arrays.asList("csv", "json", "xml").contains(converterType)) {
-                return ResponseEntity.badRequest().build();
+            if (!converterAccessService.isConversionAllowed(converterType)) {
+                return ResponseEntity.status(403).build();
             }
 
-            // Конвертируем в зависимости от типа
             byte[] convertedData = convertExcel(file.getInputStream(), converterType);
-
-            // Определяем имя и тип файла
             String filename = "converted." + converterType;
             String contentType = getContentType(converterType);
 
@@ -57,12 +86,10 @@ public class WebController {
     }
 
     private byte[] convertExcel(InputStream inputStream, String type) throws IOException {
-        // Здесь будет твоя логика с Apache POI
-        // Пока — заглушки
-
         return switch (type.toLowerCase()) {
             case "csv" -> "id,name,age\n1,Alice,25\n2,Bob,30".getBytes();
-            case "json" -> "[{\"id\":1,\"name\":\"Alice\",\"age\":25},{\"id\":2,\"name\":\"Bob\",\"age\":30}]".getBytes();
+            case "json" ->
+                    "[{\"id\":1,\"name\":\"Alice\",\"age\":25},{\"id\":2,\"name\":\"Bob\",\"age\":30}]".getBytes();
             case "xml" -> """
                     <users>
                         <user id="1">
