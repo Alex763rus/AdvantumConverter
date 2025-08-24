@@ -1,6 +1,7 @@
 package com.example.advantumconverter.security;
 
 import com.example.advantumconverter.enums.UserRole;
+import com.example.advantumconverter.model.jpa.Company;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,7 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final UserRole role;
+    private final Company company;
 
 
     @Override

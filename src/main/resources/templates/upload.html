@@ -2,44 +2,161 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Конвертер Excel</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
-        .form-group { margin: 15px 0; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        select, input[type="file"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-        .error { color: red; }
-    </style>
+    <title>Адвантум Конвертер Excel</title>
+    <style> body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #f7f9fc;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .user-info {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .user-info strong {
+        color: #2c3e50;
+    }
+
+    .logout-form {
+        display: inline;
+    }
+
+    .logout-button {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .logout-button:hover {
+        background-color: #c0392b;
+    }
+
+    h2 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    p {
+        color: #666;
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin: 20px 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #444;
+    }
+
+    select, input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background-color: #fff;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    select:focus, input[type="file"]:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 14px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .submit-button:hover {
+        background-color: #0056b3;
+    }
+
+    .submit-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .no-formats {
+        text-align: center;
+        padding: 30px 20px;
+        background-color: #fdf6e3;
+        border: 1px solid #fae588;
+        border-radius: 6px;
+        color: #8a6d3b;
+        font-style: italic;
+    }
+
+    .error {
+        color: #e74c3c;
+        font-size: 14px;
+        margin-top: 10px;
+        text-align: center;
+    } </style>
 </head>
-<body>
-<div style="text-align: right;">
-    <form th:action="@{/logout}" method="post" style="display: inline;">
-        <button type="submit">Выйти</button>
+<body> <!-- Шапка с информацией о пользователе и компании -->
+<div class="header">
+    <div class="user-info"> Пользователь: <strong th:text="${username}">user</strong>, роль:
+        <strong th:text="${roleTitle}">Роль</strong>, компания: <strong
+                th:text="${companyName}">Компания</strong></div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-button">Выйти</button>
     </form>
-</div>
-
-<h2>Конвертер Excel</h2>
-<p>Выберите формат и загрузите файл.</p>
-
-<form method="post" action="/convert" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="converterType">Формат конвертации:</label>
-        <select id="converterType" name="converterType" required>
-            <option value="">-- Выберите --</option>
-            <option th:each="format : ${formats}"
-                    th:value="${format.type}"
-                    th:text="${format.label}">
-            </option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="file">Excel-файл:</label>
-        <input type="file" id="file" name="file" accept=".xlsx,.xls" required />
-    </div>
-
-    <button type="submit">Конвертировать</button>
+</div> <!-- Основной контент --> <h2>Адвантум конвертер Excel</h2>
+<p>Выберите формат и загрузите файл для конвертации.</p> <!-- Форма конвертации -->
+<form method="post" action="/convert" enctype="multipart/form-data"> <!-- Поле: выбор формата -->
+    <div class="form-group"><label for="converterType">Формат конвертации:</label> <!-- Если нет доступных форматов -->
+        <div th:if="${#lists.isEmpty(formats)}" class="no-formats"> ❌ У вашей роли и/или компании нет доступных форматов
+            конвертации.<br> Обратитесь к администратору.
+        </div> <!-- Выпадающий список, если форматы есть --> <select id="converterType" name="converterType"
+                                                                     th:disabled="${#lists.isEmpty(formats)}" required
+                                                                     th:if="${!#lists.isEmpty(formats)}">
+            <option value="">-- Выберите формат --</option>
+            <option th:each="format : ${formats}" th:value="${format.type}" th:text="${format.label}"></option>
+        </select></div> <!-- Поле: загрузка файла -->
+    <div class="form-group"><label for="file">Excel-файл (.xlsx, .xlsm):</label> <input type="file" id="file" name="file"
+                                                                                       accept=".xlsx,.xlsm" required/>
+    </div> <!-- Кнопка отправки -->
+    <button type="submit" class="submit-button" th:disabled="${#lists.isEmpty(formats)}"> Конвертировать</button>
+    <!-- Сообщение об ошибке (если передано) -->
+    <div th:if="${error}" class="error" th:text="${error}"></div>
 </form>
 </body>
 </html>

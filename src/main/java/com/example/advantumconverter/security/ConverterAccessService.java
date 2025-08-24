@@ -1,48 +1,53 @@
 package com.example.advantumconverter.security;
 
 import com.example.advantumconverter.enums.UserRole;
+import com.example.advantumconverter.model.dictionary.company.CompanySetting;
+import com.example.advantumconverter.model.jpa.Company;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class ConverterAccessService {
 
-    // Маппинг: UserRole → разрешённые форматы
-    private final Map<UserRole, List<String>> roleToFormats = Map.of(
-            UserRole.EMPLOYEE, List.of("csv", "xlsx"),
-            UserRole.MAIN_EMPLOYEE, List.of("csv", "json", "xlsx"),
-            UserRole.SUPPORT, List.of("csv", "json", "xlsx"),
-            UserRole.ADMIN, List.of("csv", "json", "xml", "xlsx")
-            // Остальные роли (BLOCKED, NEED_SETTING, EMPLOYEE_API) — не добавляем
-    );
+    private final CompanySetting companySetting;
 
-    public List<ConverterFormat> getAvailableFormats() {
-        UserRole userRole = getCurrentUserRole();
-        if (userRole == null) return Collections.emptyList();
-
-        List<String> allowedTypes = roleToFormats.getOrDefault(userRole, Collections.emptyList());
-
-        return allowedTypes.stream()
-                .map(type -> new ConverterFormat(type, toDisplayName(type)))
+    public List<ConverterFormat> getAvailableFormats(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Company company = userDetails.getCompany();
+        UserRole userRole = userDetails.getRole();
+        if (Objects.isNull(userRole) || Objects.isNull(company)) {
+            return Collections.emptyList();
+        }
+        return companySetting.getConverters(company).stream()
+                .filter(ConvertService::isV2) //только v2 будет поддерживаться
+                .map(converter -> new ConverterFormat(converter.getConverterCommand(), converter.getConverterName()))
                 .sorted(Comparator.comparing(ConverterFormat::getLabel))
                 .collect(Collectors.toList());
     }
 
+
+    public Optional<? extends ConvertService> getConverter(String converterCommand) {
+        return companySetting.getConverter(converterCommand);
+    }
+
     public boolean isConversionAllowed(String converterType) {
+        return true;
+       /*
         UserRole userRole = getCurrentUserRole();
         if (userRole == null) return false;
 
         List<String> allowed = roleToFormats.getOrDefault(userRole, Collections.emptyList());
         return allowed.stream().anyMatch(t -> t.equalsIgnoreCase(converterType));
+
+        */
     }
 
     private UserRole getCurrentUserRole() {

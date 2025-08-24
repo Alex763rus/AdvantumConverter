@@ -48,6 +48,11 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     }
 
     @Override
+    public boolean isV2() {
+        return true;
+    }
+
+    @Override
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();

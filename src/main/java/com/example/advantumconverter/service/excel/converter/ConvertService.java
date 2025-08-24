@@ -27,8 +27,8 @@ public interface ConvertService {
      * @return ConvertedBook - сформированный документ
      */
     @Deprecated
-    default ConvertedBook getConvertedBook(XSSFWorkbook book){
-       return null;
+    default ConvertedBook getConvertedBook(XSSFWorkbook book) {
+        return null;
     }
 
     /**
@@ -36,7 +36,7 @@ public interface ConvertService {
      * @return ConvertedBook - сформированный документ
      * обновленный DTO
      */
-    default ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book){
+    default ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         return null;
     }
 
@@ -48,7 +48,15 @@ public interface ConvertService {
     /**
      * @return логин пароль для получения токена в CRM
      */
-    default CrmConfigProperties.CrmCreds getCrmCreds(){
+    default CrmConfigProperties.CrmCreds getCrmCreds() {
         return null;
+    }
+
+    /**
+     * @return признак, что конвертер второй версии апи.
+     * версия v1 является @Deprecated, в web интерфейсе поддерживаться не будет, только в ТГ.
+     */
+    default boolean isV2() {
+        return false;
     }
 }

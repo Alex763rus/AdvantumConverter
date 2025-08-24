@@ -77,6 +77,11 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     private Map<String, Integer> uniqReisNumbers;
 
     @Override
+    public boolean isV2() {
+        return true;
+    }
+
+    @Override
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();

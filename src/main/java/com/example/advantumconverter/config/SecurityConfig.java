@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .map(user ->
                         new CustomUserDetails(String.valueOf(user.getChatId()),
                                 passwordEncoder.encode(String.valueOf(user.getChatId())),
-                                user.getUserRole())
+                                user.getUserRole(),
+                                user.getCompany())
                 )
                 .collect(Collectors.toList());
 
