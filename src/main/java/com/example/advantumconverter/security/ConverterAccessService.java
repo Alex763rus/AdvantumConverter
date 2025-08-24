@@ -18,10 +18,10 @@ public class ConverterAccessService {
 
     // Маппинг: UserRole → разрешённые форматы
     private final Map<UserRole, List<String>> roleToFormats = Map.of(
-            UserRole.EMPLOYEE, List.of("csv"),
-            UserRole.MAIN_EMPLOYEE, List.of("csv", "json"),
-            UserRole.SUPPORT, List.of("csv", "json"),
-            UserRole.ADMIN, List.of("csv", "json", "xml")
+            UserRole.EMPLOYEE, List.of("csv", "xlsx"),
+            UserRole.MAIN_EMPLOYEE, List.of("csv", "json", "xlsx"),
+            UserRole.SUPPORT, List.of("csv", "json", "xlsx"),
+            UserRole.ADMIN, List.of("csv", "json", "xml", "xlsx")
             // Остальные роли (BLOCKED, NEED_SETTING, EMPLOYEE_API) — не добавляем
     );
 
@@ -64,6 +64,7 @@ public class ConverterAccessService {
             case "csv" -> "CSV";
             case "json" -> "JSON";
             case "xml" -> "XML";
+            case "xlsx" -> "xlsx";
             default -> type.toUpperCase();
         };
     }
