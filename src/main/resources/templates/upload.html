@@ -1,162 +1,229 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Адвантум Конвертер Excel</title>
-    <style> body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #f7f9fc;
-        color: #333;
-        line-height: 1.6;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #ddd;
-        font-size: 14px;
-        color: #555;
-    }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            color: #555;
+        }
 
-    .user-info {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
+        .user-info {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-    .user-info strong {
-        color: #2c3e50;
-    }
+        .user-info strong {
+            color: #2c3e50;
+        }
 
-    .logout-form {
-        display: inline;
-    }
+        .logout-form {
+            display: inline;
+        }
 
-    .logout-button {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-    }
+        .logout-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
 
-    .logout-button:hover {
-        background-color: #c0392b;
-    }
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
 
-    h2 {
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 10px;
-    }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
 
-    p {
-        color: #666;
-        text-align: center;
-        font-size: 16px;
-        margin-bottom: 30px;
-    }
+        p {
+            color: #666;
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
 
-    .form-group {
-        margin: 20px 0;
-    }
+        .form-group {
+            margin: 20px 0;
+        }
 
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: #444;
-    }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+        }
 
-    select, input[type="file"] {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        background-color: #fff;
-        font-size: 16px;
-        box-sizing: border-box;
-    }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
 
-    select:focus, input[type="file"]:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
-    }
+        select:focus, input[type="file"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
 
-    .submit-button {
-        width: 100%;
-        padding: 14px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-    }
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
 
-    .submit-button:hover {
-        background-color: #0056b3;
-    }
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
 
-    .submit-button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
-    .no-formats {
-        text-align: center;
-        padding: 30px 20px;
-        background-color: #fdf6e3;
-        border: 1px solid #fae588;
-        border-radius: 6px;
-        color: #8a6d3b;
-        font-style: italic;
-    }
+        .admin-actions {
+            margin: 30px 0;
+            text-align: center;
+        }
 
-    .error {
-        color: #e74c3c;
-        font-size: 14px;
-        margin-top: 10px;
-        text-align: center;
-    } </style>
+        .admin-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ffc107;
+            color: #212529;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .admin-button:hover {
+            background-color: #e0a800;
+        }
+
+        .no-formats {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #fdf6e3;
+            border: 1px solid #fae588;
+            border-radius: 6px;
+            color: #8a6d3b;
+            font-style: italic;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
-<body> <!-- Шапка с информацией о пользователе и компании -->
+<body>
+
+<!-- Шапка: пользователь, компания, выход -->
 <div class="header">
-    <div class="user-info"> Пользователь: <strong th:text="${username}">user</strong>, роль:
-        <strong th:text="${roleTitle}">Роль</strong>, компания: <strong
-                th:text="${companyName}">Компания</strong></div>
+    <div class="user-info">
+        Пользователь: <strong th:text="${#authentication?.principal?.username} ?: 'Гость'">Гость</strong>,
+        роль: <strong th:text="${#authentication?.principal?.role?.title} ?: '—'">—</strong>,
+        компания: <strong th:text="${#authentication?.principal?.company?.companyName} ?: '—'">—</strong>
+    </div>
     <form class="logout-form" th:action="@{/logout}" method="post">
         <button type="submit" class="logout-button">Выйти</button>
     </form>
-</div> <!-- Основной контент --> <h2>Адвантум конвертер Excel</h2>
-<p>Выберите формат и загрузите файл для конвертации.</p> <!-- Форма конвертации -->
-<form method="post" action="/convert" enctype="multipart/form-data"> <!-- Поле: выбор формата -->
-    <div class="form-group"><label for="converterType">Формат конвертации:</label> <!-- Если нет доступных форматов -->
-        <div th:if="${#lists.isEmpty(formats)}" class="no-formats"> ❌ У вашей роли и/или компании нет доступных форматов
-            конвертации.<br> Обратитесь к администратору.
-        </div> <!-- Выпадающий список, если форматы есть --> <select id="converterType" name="converterType"
-                                                                     th:disabled="${#lists.isEmpty(formats)}" required
-                                                                     th:if="${!#lists.isEmpty(formats)}">
+</div>
+
+<!-- Основной контент -->
+<h2>Адвантум Конвертер Excel</h2>
+<p>Выберите формат и загрузите файл для конвертации.</p>
+
+<!-- Форма конвертации -->
+<form method="post" action="/convert" enctype="multipart/form-data">
+
+    <!-- Выбор формата -->
+    <div class="form-group">
+        <label for="converterType">Формат конвертации:</label>
+
+        <!-- Если нет доступных форматов -->
+        <div th:if="${#lists.isEmpty(formats)}" class="no-formats">
+            ❌ У вашей роли и/или компании нет доступных форматов конвертации.<br>
+            Обратитесь к администратору.
+        </div>
+
+        <!-- Выпадающий список -->
+        <select
+                id="converterType"
+                name="converterType"
+                th:disabled="${#lists.isEmpty(formats)}"
+                required
+                th:if="${!#lists.isEmpty(formats)}"
+        >
             <option value="">-- Выберите формат --</option>
-            <option th:each="format : ${formats}" th:value="${format.type}" th:text="${format.label}"></option>
-        </select></div> <!-- Поле: загрузка файла -->
-    <div class="form-group"><label for="file">Excel-файл (.xlsx, .xlsm):</label> <input type="file" id="file" name="file"
-                                                                                       accept=".xlsx,.xlsm" required/>
-    </div> <!-- Кнопка отправки -->
-    <button type="submit" class="submit-button" th:disabled="${#lists.isEmpty(formats)}"> Конвертировать</button>
-    <!-- Сообщение об ошибке (если передано) -->
+            <option th:each="format : ${formats}"
+                    th:value="${format.type}"
+                    th:text="${format.label}">
+            </option>
+        </select>
+    </div>
+
+    <!-- Загрузка файла -->
+    <div class="form-group">
+        <label for="file">Excel-файл (.xlsx, .xls):</label>
+        <input type="file" id="file" name="file" accept=".xlsx,.xls" required/>
+    </div>
+
+    <!-- Кнопка конвертации -->
+    <button type="submit" class="submit-button" th:disabled="${#lists.isEmpty(formats)}">
+        Конвертировать
+    </button>
+
+    <!-- Ошибка -->
     <div th:if="${error}" class="error" th:text="${error}"></div>
+
 </form>
+
+<!-- Кнопка "Обновить справочники" — только для ADMIN -->
+<div class="admin-actions" sec:authorize="hasRole('ADMIN')">
+    <a href="/admin/update-dictionaries" class="admin-button">
+        🔄 Обновить справочники
+    </a>
+</div>
+
 </body>
 </html>

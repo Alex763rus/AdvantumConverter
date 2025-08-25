@@ -68,6 +68,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/login", "/setup", "/register").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")  // 🔐 Только ADMIN
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

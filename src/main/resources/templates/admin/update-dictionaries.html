@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Обновление справочников</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .back { text-align: center; margin: 20px 0; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<h2>Обновление справочников</h2>
+
+<form method="post" th:action="@{/admin/update-dictionaries}">
+    <p th:text="${message}"></p>
+    <button type="submit">Обновить</button>
+</form>
+
+<div class="back">
+    <a href="/">← Назад на главную</a>
+</div>
+
+<div th:if="${success}" class="success" th:text="${success}"></div>
+<div th:if="${error}" class="error" th:text="${error}"></div>
+</body>
+</html>
