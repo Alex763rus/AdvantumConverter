@@ -40,8 +40,9 @@
 </div> <!-- Сообщение после AJAX -->
 <div id="message"></div> <!-- Админ-панель -->
 <div class="admin-panel" sec:authorize="hasRole('ADMIN')"><h3>Администрирование</h3>
-    <div class="admin-actions"><a href="/admin/update-dictionaries" class="admin-button"> 🔄 Обновить справочники </a> <a
-            href="/admin/pending-users" class="admin-button"> 👥 Управление пользователями </a></div>
+    <div class="admin-actions">
+        <button type="button" class="admin-button" onclick="updateDictionaries()">🔄 Обновить справочники</button>
+        <a href="/admin/pending-users" class="admin-button"> 👥 Управление пользователями </a></div>
 </div>
 <script> document.getElementById('convertForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -92,6 +93,41 @@ function showMessage(text, type) {
     messageEl.textContent = text;
     messageEl.className = type;
     messageEl.style.display = 'block';
-} </script>
+}
+
+async function updateDictionaries() {
+    const button = document.querySelector('button[onclick="updateDictionaries()"]');
+    const originalText = button.textContent;
+
+    // Блокировка
+    button.disabled = true;
+    button.textContent = "Обновляем...";
+
+    try {
+        const response = await fetch('/admin/update-dictionaries', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const message = await response.text();
+
+        if (response.ok) {
+            showMessage('✅ ' + message, 'success');
+        } else {
+            showMessage('❌ ' + message, 'error');
+        }
+    } catch (error) {
+        showMessage('❌ Ошибка сети: ' + error.message, 'error');
+    } finally {
+        // Восстановить
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
+</script>
 </body>
 </html>

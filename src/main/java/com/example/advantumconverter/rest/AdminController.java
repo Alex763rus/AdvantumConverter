@@ -7,6 +7,7 @@ import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
 import com.example.advantumconverter.service.database.DictionaryService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -121,22 +122,15 @@ public class AdminController {
         return "admin/pending-users";
     }
 
-    @GetMapping("/update-dictionaries")
-    public String showUpdatePage(Model model) {
-        model.addAttribute("message", "Готовы обновить справочники?");
-        return "admin/update-dictionaries"; // шаблон
-    }
-
     @PostMapping("/update-dictionaries")
-    public String updateDictionaries(RedirectAttributes redirectAttributes) {
+    public ResponseEntity<String> updateDictionaries(RedirectAttributes redirectAttributes) {
         try {
             dictionaryService.reloadDictionary();
-
             redirectAttributes.addFlashAttribute("success", "Справочники успешно обновлены!");
+            return ResponseEntity.ok("Справочники успешно обновлены!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Ошибка при обновлении: " + e.getMessage());
+            return ResponseEntity.status(500).body(e.getMessage());
         }
-        return "redirect:/admin/update-dictionaries";
     }
 
 }
