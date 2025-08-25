@@ -25,19 +25,6 @@ public class AdminController {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
 
-    // Показать всех пользователей с ролью NEED_SETTING
-    @GetMapping("/pending-users")
-    public String showPendingUsers(Model model) {
-        List<User> pendingUsers = userRepository.findUserByUserRole(NEED_SETTING);
-        List<Company> companies = companyRepository.findAll();
-
-        model.addAttribute("pendingUsers", pendingUsers);
-        model.addAttribute("companies", companies);
-        model.addAttribute("roles", UserRole.values()); // роли, которые можно назначить
-
-        return "admin/pending-users";
-    }
-
     // Обновить пользователя: назначить компанию и роль
     @PostMapping("/pending-users/{id}/assign")
     public String assignCompanyAndRole(
@@ -66,6 +53,72 @@ public class AdminController {
         }
 
         return "redirect:/admin/pending-users";
+    }
+
+    @GetMapping("/pending-users")
+    public String showPendingUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) Long telegramChatId,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) String userRole,
+            Model model) {
+
+        // Фильтруем пользователей с ролью NEED_SETTING
+        List<User> pendingUsers = userRepository.findAll();
+
+        // Применяем фильтры
+        if (username != null && !username.trim().isEmpty()) {
+            String lowerUsername = username.toLowerCase();
+            pendingUsers = pendingUsers.stream()
+                    .filter(u -> u.getUserName() != null && u.getUserName().toLowerCase().contains(lowerUsername))
+                    .toList();
+        }
+
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            String lowerFullName = fullName.toLowerCase();
+            pendingUsers = pendingUsers.stream()
+                    .filter(u -> u.getFirstName() != null && u.getFirstName().toLowerCase().contains(lowerFullName))
+                    .toList();
+        }
+
+        if (telegramChatId != null) {
+            pendingUsers = pendingUsers.stream()
+                    .filter(u -> u.getChatId() != null && u.getChatId().equals(telegramChatId))
+                    .toList();
+        }
+
+        // 🔹 Фильтр по компании
+        if (companyId != null) {
+            pendingUsers = pendingUsers.stream()
+                    .filter(u -> u.getCompany() != null && u.getCompany().getCompanyId().equals(companyId))
+                    .toList();
+        }
+
+        // 🔹 Фильтр по роли
+        if (userRole != null && !userRole.isEmpty()) {
+            try {
+                UserRole role = UserRole.valueOf(userRole);
+                pendingUsers = pendingUsers.stream()
+                        .filter(u -> u.getUserRole() == role)
+                        .toList();
+            } catch (IllegalArgumentException e) {
+                // Неверная роль — ничего не фильтруем
+            }
+        }
+
+        model.addAttribute("pendingUsers", pendingUsers);
+        model.addAttribute("companies", companyRepository.findAll());
+        model.addAttribute("roles", UserRole.values());
+
+        // Передаём значения фильтров обратно в форму
+        model.addAttribute("filterUsername", username);
+        model.addAttribute("filterFullName", fullName);
+        model.addAttribute("filterChatId", telegramChatId);
+        model.addAttribute("filterCompanyId", companyId);
+        model.addAttribute("filterUserRole", userRole);
+
+        return "admin/pending-users";
     }
 
     @GetMapping("/update-dictionaries")

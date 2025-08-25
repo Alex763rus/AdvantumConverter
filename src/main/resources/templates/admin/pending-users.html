@@ -92,12 +92,88 @@
 <div th:if="${success}" class="success" th:text="${success}"></div>
 <div th:if="${error}" class="error" th:text="${error}"></div>
 
+<!-- Форма фильтрации -->
+<form method="get" th:action="@{/admin/pending-users}"
+      style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: center;">
+        <div>
+            <label for="username">Логин</label>
+            <input type="text"
+                   id="username"
+                   name="username"
+                   th:value="${filterUsername}"
+                   placeholder="Поиск по логину"
+                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+        </div>
+
+        <div>
+            <label for="fullName">Имя</label>
+            <input type="text"
+                   id="fullName"
+                   name="fullName"
+                   th:value="${filterFullName}"
+                   placeholder="Поиск по имени"
+                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+        </div>
+
+        <div>
+            <label for="telegramChatId">Telegram chat_id</label>
+            <input type="number"
+                   id="telegramChatId"
+                   name="telegramChatId"
+                   th:value="${filterChatId}"
+                   placeholder="chat_id"
+                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+        </div>
+
+        <!-- 🔹 Фильтр по компании -->
+        <div>
+            <label for="companyId">Компания</label>
+            <select id="companyId" name="companyId"
+                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">-- Все --</option>
+                <option th:each="company : ${companies}"
+                        th:value="${company.companyId}"
+                        th:text="${company.companyName}"
+                        th:selected="${company.companyId} == ${filterCompanyId}">
+                </option>
+            </select>
+        </div>
+
+        <!-- 🔹 Фильтр по роли -->
+        <div>
+            <label for="userRole">Роль</label>
+            <select id="userRole" name="userRole"
+                    style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">-- Все --</option>
+                <option th:each="role : ${roles}"
+                        th:value="${role.name()}"
+                        th:text="${role.title}"
+                        th:selected="${role.name()} == ${filterUserRole}">
+                </option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 5px; align-self: end;">
+            <button type="submit"
+                    style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🔍 Фильтровать
+            </button>
+            <a href="/admin/pending-users"
+               style="padding: 8px 12px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; text-align: center;">
+                🗑 Очистить
+            </a>
+        </div>
+    </div>
+</form>
 <table>
     <thead>
     <tr>
         <th>Логин</th>
         <th>Имя</th>
         <th>Telegram chat_id</th>
+        <th>Текущая роль</th>
+        <th>Текущая компания</th>
         <th>Назначить компанию</th>
         <th>Назначить роль</th>
         <th>Действие</th>
@@ -108,6 +184,11 @@
         <td th:text="${user.userName}"></td>
         <td th:text="${user.firstName}"></td>
         <td th:text="${user.chatId}"></td>
+        <!-- 🔹 Текущая роль -->
+        <td th:text="${user.userRole.title}"></td>
+
+        <!-- 🔹 Текущая компания -->
+        <td th:text="${user.company?.companyName ?: '—'}"></td>
         <form th:action="@{'/admin/pending-users/' + ${user.chatId} + '/assign'}" method="post">
             <td>
                 <select name="companyId" required>
