@@ -31,10 +31,19 @@
                 <option value="">-- Выберите формат --</option>
                 <option th:each="format : ${formats}" th:value="${format.type}" th:text="${format.label}"></option>
             </select></div>
-        <div class="form-group"><label for="file">Excel-файл (.xlsx, .xls):</label> <input type="file" id="file"
-                                                                                           name="file"
-                                                                                           accept=".xlsx,.xls"
-                                                                                           required/></div>
+        <div class="form-group">
+            <label for="file">Excel-файл (.xlsx, .xls):</label>
+            <input type="file" id="file" name="file" accept=".xlsx" required/></div>
+        <!-- Чекбокс: Отправить в CRM (только для ADMIN и EMPLOYEE_API) -->
+        <div th:if="${showSendToCrm}" class="form-group">
+            <label>
+                <input type="checkbox" name="sendToCrm" value="true"/>
+                <strong>📤 Отправить в CRM</strong>
+            </label>
+            <p style="font-size: 13px; color: #666; margin-top: 4px;">
+                Данные будут переданы в CRM после конвертации.
+            </p>
+        </div>
         <button type="submit" class="submit-button">Конвертировать</button>
     </form>
 </div> <!-- Сообщение после AJAX -->

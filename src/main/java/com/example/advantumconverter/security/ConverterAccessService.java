@@ -34,6 +34,14 @@ public class ConverterAccessService {
     }
 
 
+    public boolean shouldShowSendToCrm(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (userDetails == null) return false;
+
+        UserRole role = userDetails.getRole();
+        return role == UserRole.ADMIN || role == UserRole.EMPLOYEE_API;
+    }
+
     public Optional<? extends ConvertService> getConverter(String converterCommand) {
         return companySetting.getConverter(converterCommand);
     }

@@ -6,8 +6,12 @@ import com.example.advantumconverter.security.CustomUserDetails;
 import com.example.advantumconverter.security.dto.RegistrationForm;
 import com.example.advantumconverter.service.database.UserService;
 import com.example.advantumconverter.service.excel.generate.ClientExcelGenerateService;
+import com.example.advantumconverter.service.rest.out.crm.CrmHelper;
+import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
@@ -22,22 +26,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
+@Log4j2
 public class WebController {
 
     private final ConverterAccessService converterAccessService;
     private final UserService userService;
     private final ClientExcelGenerateService excelGenerateService;
+    private final CrmHelper crmHelper;
 
 
     @GetMapping("/register")
@@ -65,6 +72,7 @@ public class WebController {
         model.addAttribute("roleTitle", userDetails.getRole().getTitle());
         model.addAttribute("companyName", userDetails.getCompany().getCompanyName());
         model.addAttribute("formats", converterAccessService.getAvailableFormats(authentication));
+        model.addAttribute("showSendToCrm", converterAccessService.shouldShowSendToCrm(authentication));
         return "upload";
     }
 
@@ -72,6 +80,7 @@ public class WebController {
     public ResponseEntity<?> convertFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("converterType") String converterType,
+            @RequestParam(required = false, defaultValue = "false") boolean sendToCrm,
             Authentication authentication) {
 
         try {
@@ -81,11 +90,11 @@ public class WebController {
             }
 
             // 2. Проверка доступа к конвертеру
-            var converter = converterAccessService.getConverter(converterType);
-            if (converter.isEmpty()) {
+            var converterOpt = converterAccessService.getConverter(converterType);
+            if (converterOpt.isEmpty()) {
                 return ResponseEntity.badRequest().body("Недопустимый тип конвертации: " + converterType);
             }
-
+            var converter = converterOpt.get();
             XSSFWorkbook inputFile;
             try (InputStream is = file.getInputStream()) {
                 inputFile = (XSSFWorkbook) WorkbookFactory.create(is);
@@ -94,7 +103,7 @@ public class WebController {
             // 🔻 Конвертация
             ConvertedBookV2 convertedFile;
             try {
-                convertedFile = converter.get().getConvertedBookV2(inputFile);
+                convertedFile = converter.getConvertedBookV2(inputFile);
             } catch (Exception e) {
                 return ResponseEntity.badRequest().body("Ошибка конвертации: " + e.getMessage());
             }
@@ -105,6 +114,29 @@ public class WebController {
                 return ResponseEntity.status(500).body("Не удалось сгенерировать файл");
             }
 
+            // ✅ Успех: отправляем в crm:
+            if (sendToCrm) {
+                var crmGatewayResponseDto = crmHelper.sendDocument(BookToCrmReisMapper.map(convertedFile), converter.getCrmCreds());
+                if (Objects.requireNonNullElse(crmGatewayResponseDto.getReisError(), new ArrayList<>()).isEmpty()) {
+                    return ResponseEntity.ok().body(crmGatewayResponseDto.getMessage());
+                } else {
+                    try {
+                        log.info("Начало формирования лога с ошибками обработки файла, пользователь: " /*+ user.getChatId()*/);
+                        val tmpFile = Files.createTempFile("log", ".txt").toFile();
+//                        try (FileWriter writer = new FileWriter(tmpFile)) {
+//                            writer.write(crmGatewayResponseDto.getMessage());
+//                            log.info("Запись завершена");
+//                        }
+//                                .setCaption("Ошибка во время загрузки рейсов. Детализация во вложении")
+//                                .setDocument(new InputFile(tmpFile))
+//                        log.info("Файл с ошибками обработки файла успешно сформирован и отправлен, пользователь: " + user.getChatId());
+                        return ResponseEntity.status(500).body("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
+                    } catch (Exception ex) {
+                        log.error("не смогли приложить лог: " + crmGatewayResponseDto.getMessage());
+                        return ResponseEntity.status(500).body("не смогли приложить лог: " + crmGatewayResponseDto.getMessage());
+                    }
+                }
+            }
             // ✅ Успех: возвращаем файл
             InputStreamResource resource = new InputStreamResource(new FileInputStream(resultFile));
 

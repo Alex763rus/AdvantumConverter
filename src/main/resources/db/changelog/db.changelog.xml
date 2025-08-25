@@ -63,4 +63,5 @@
     <include file="/db/changelog/siel/create_siel_cars.xml"/>
     <include file="/db/changelog/siel/InsertSielCars_1.sql"/>
     <include file="/db/changelog/lenta/InsertCar_4.sql"/>
+    <include file="/db/changelog/users/update_user_2.xml"/>
 </databaseChangeLog>
