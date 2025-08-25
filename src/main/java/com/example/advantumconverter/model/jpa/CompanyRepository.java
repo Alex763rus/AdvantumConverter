@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface CompanyRepository extends CrudRepository<Company, Long> {
 
-    public Company getCompaniesByCompanyName(String conpanyName);
+    Company getCompaniesByCompanyName(String conpanyName);
 
-    public Company findCompanyByCompanyId(Long companyId);
+    Company findCompanyByCompanyId(Long companyId);
     @Override
-    public List<Company> findAll();
+    List<Company> findAll();
 }

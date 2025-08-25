@@ -255,7 +255,12 @@
         🔄 Обновить справочники
     </a>
 </div>
-
+<!-- Только для ADMIN -->
+<div class="admin-actions" sec:authorize="hasRole('ADMIN')">
+    <a href="/admin/pending-users" class="admin-button">
+        👥 Проверить новых пользователей
+    </a>
+</div>
 <script>
     document.getElementById('convertForm').addEventListener('submit', async function(e) {
         e.preventDefault();

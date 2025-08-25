@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Настройка пользователей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: nowrap; /* Не переносить на новую строку */
+            justify-content: center; /* По центру ячейки */
+        }
+
+        select, .btn {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h2>Настройка новых пользователей</h2>
+
+<!-- Сообщения -->
+<div th:if="${success}" class="success" th:text="${success}"></div>
+<div th:if="${error}" class="error" th:text="${error}"></div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Логин</th>
+        <th>Имя</th>
+        <th>Telegram chat_id</th>
+        <th>Назначить компанию</th>
+        <th>Назначить роль</th>
+        <th>Действие</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${pendingUsers}">
+        <td th:text="${user.userName}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.chatId}"></td>
+        <form th:action="@{'/admin/pending-users/' + ${user.chatId} + '/assign'}" method="post">
+            <td>
+                <select name="companyId" required>
+                    <option value="">-- Выберите --</option>
+                    <option th:each="company : ${companies}"
+                            th:value="${company.companyId}"
+                            th:text="${company.companyName}">
+                    </option>
+                </select>
+            </td>
+            <td>
+                <select name="role" required>
+                    <option value="">-- Выберите --</option>
+                    <option th:each="role : ${roles}"
+                            th:value="${role.name()}"
+                            th:text="${role.title}">
+                    </option>
+                </select>
+            </td>
+            <td>
+                <button type="submit" class="btn">Сохранить</button>
+            </td>
+        </form>
+    </tr>
+    </tbody>
+</table>
+
+<a href="/" class="back-link">← Назад на главную</a>
+</body>
+</html>
