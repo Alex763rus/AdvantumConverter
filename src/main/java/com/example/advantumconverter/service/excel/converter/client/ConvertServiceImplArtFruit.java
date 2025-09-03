@@ -227,8 +227,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 .filter(number -> !number.equals(EMPTY))
                 .collect(Collectors.joining(", "));
         return numbers
-                + (addressInReisTmp.getManager().isEmpty() ? EMPTY : SLASH_DELIMETER + addressInReisTmp.getManager())
-                + (addressInReisTmp.getOrderNumber().isEmpty() ? EMPTY : SLASH_DELIMETER + addressInReisTmp.getOrderNumber());
+                + (addressInReisTmp.getOrderNumber().isEmpty() ? EMPTY : SLASH_DELIMETER + addressInReisTmp.getOrderNumber())
+                + (addressInReisTmp.getManager().isEmpty() ? EMPTY : SLASH_DELIMETER + addressInReisTmp.getManager());
     }
 
     private String checkNull(int row, int col) {

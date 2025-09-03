@@ -11,7 +11,6 @@ import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.val;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.InputStreamResource;
@@ -32,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -120,21 +118,8 @@ public class WebController {
                 if (Objects.requireNonNullElse(crmGatewayResponseDto.getReisError(), new ArrayList<>()).isEmpty()) {
                     return ResponseEntity.ok().body(crmGatewayResponseDto.getMessage());
                 } else {
-                    try {
-                        log.info("Начало формирования лога с ошибками обработки файла, пользователь: " /*+ user.getChatId()*/);
-                        val tmpFile = Files.createTempFile("log", ".txt").toFile();
-//                        try (FileWriter writer = new FileWriter(tmpFile)) {
-//                            writer.write(crmGatewayResponseDto.getMessage());
-//                            log.info("Запись завершена");
-//                        }
-//                                .setCaption("Ошибка во время загрузки рейсов. Детализация во вложении")
-//                                .setDocument(new InputFile(tmpFile))
-//                        log.info("Файл с ошибками обработки файла успешно сформирован и отправлен, пользователь: " + user.getChatId());
-                        return ResponseEntity.status(500).body("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
-                    } catch (Exception ex) {
-                        log.error("не смогли приложить лог: " + crmGatewayResponseDto.getMessage());
-                        return ResponseEntity.status(500).body("не смогли приложить лог: " + crmGatewayResponseDto.getMessage());
-                    }
+                    log.error("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
+                    return ResponseEntity.status(500).body("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
                 }
             }
             // ✅ Успех: возвращаем файл
