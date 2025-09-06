@@ -14,6 +14,8 @@ import com.example.advantumconverter.model.jpa.siel.SielCars;
 import com.example.advantumconverter.model.jpa.siel.SielCarsRepository;
 import com.example.advantumconverter.model.jpa.siel.SielPoints;
 import com.example.advantumconverter.model.jpa.siel.SielPointsRepository;
+import com.example.advantumconverter.model.jpa.spar.SparWindows;
+import com.example.advantumconverter.model.jpa.spar.SparWindowsRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,7 @@ public class DictionaryService {
     private final MetroDcAddressesDictionaryRepository metroDcAddressesDictionaryRepository;
     private final SberAddressDictionaryRepository sberAddressDictionaryRepository;
     private final LentaTsCityRepository lentaTsCityRepository;
+    private final SparWindowsRepository sparWindowsRepository;
 
     private HashSet<LentaDictionary> dictionary;
     private Set<Car> cars;
@@ -61,6 +64,7 @@ public class DictionaryService {
     private Set<OzonTonnageTime> ozonTonnageTime;
     private Set<SielPoints> sielPoints;
     private Set<SielCars> sielCars;
+    private Set<SparWindows> sparWindows;
 
     private Set<MetroAddressesDictionary> metroAddressesDictionaries;
     private Set<MetroTemperatureDictionary> metroTemperatureDictionaries;
@@ -98,6 +102,10 @@ public class DictionaryService {
         val sielCarsIter = sielCarsRepository.findAll();
         sielCars = new HashSet<>();
         sielCarsIter.forEach(sielCars::add);
+
+        val sparWindowsIter = sparWindowsRepository.findAll();
+        sparWindows = new HashSet<>();
+        sparWindowsIter.forEach(sparWindows::add);
 
         val ozonDictionaryIter = ozonDictionaryRepository.findAll();
         ozonDictionaries = new HashSet<>();
@@ -170,6 +178,13 @@ public class DictionaryService {
         return sielPoints.stream()
                 .filter(e -> e.getPointName().equals(pointName))
                 .findFirst().orElse(null);
+    }
+
+    public SparWindows getSparWindows(final String pointName) {
+        return sparWindows.stream()
+                .filter(e -> e.getPointName().equals(pointName))
+                .findFirst()
+                .orElse(null);
     }
 
     public String getSielCarrierName(final String carNumber) {

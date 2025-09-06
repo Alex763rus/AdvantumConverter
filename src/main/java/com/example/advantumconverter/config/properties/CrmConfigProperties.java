@@ -17,6 +17,7 @@ public class CrmConfigProperties {
     private CrmCreds ozon;
     private CrmCreds lenta;
     private CrmCreds siel;
+    private CrmCreds spark;
 
     @Data
     public static class CrmCreds {

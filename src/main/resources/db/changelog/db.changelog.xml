@@ -65,4 +65,7 @@
     <include file="/db/changelog/lenta/InsertCar_4.sql"/>
     <include file="/db/changelog/users/update_user_2.xml"/>
     <include file="/db/changelog/sber/InsertSberAddress2.sql"/>
+    <include file="/db/changelog/company/InsertCompany_3.sql"/>
+    <include file="/db/changelog/spar/create_spar_windows.xml"/>
+    <include file="/db/changelog/spar/InsertSparWindows_1.sql"/>
 </databaseChangeLog>
