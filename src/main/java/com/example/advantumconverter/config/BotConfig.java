@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.EnumMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +64,7 @@ public class BotConfig {
             ConvertServiceImplSber convertServiceImplSber,
             ConvertServiceImplArtFruit convertServiceImplArtFruit,
             ConvertServiceImplSiel convertServiceImplSiel,
-            ConvertServiceImplSpark convertServiceImplSpark,
+            ConvertServiceImplSpar convertServiceImplSpar,
             CompanyRepository companyRepository
     ) {
         val companySetting = new CompanySetting();
@@ -75,13 +74,13 @@ public class BotConfig {
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpark);
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar);
         val ozonConverter = List.of(convertServiceImplOzon);
         val metroConverter = List.of(convertServiceImplMetro);
         val sberConverter = List.of(convertServiceImplSber);
         val artFruitConverter = List.of(convertServiceImplArtFruit);
         val sielConverter = List.of(convertServiceImplSiel);
-        val sparkConverter = List.of(convertServiceImplSpark);
+        val sparConverter = List.of(convertServiceImplSpar);
 
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM), advantumConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA), lentaConverter);
@@ -91,7 +90,7 @@ public class BotConfig {
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SBER), sberConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_ART_FRUIT), artFruitConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SIEL), sielConverter);
-        companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPARK), sparkConverter);
+        companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPAR), sparConverter);
         companySetting.setCompanyConverter(companyConverter);
         return companySetting;
     }
@@ -111,7 +110,7 @@ public class BotConfig {
         allConverters.add(COMMAND_CONVERT_AGROPROM_DETAIL);
         allConverters.add(COMMAND_CONVERT_OZON);
         allConverters.add(COMMAND_CONVERT_SIEL);
-        allConverters.add(COMMAND_CONVERT_SPARK);
+        allConverters.add(COMMAND_CONVERT_SPAR);
         allConverters.add(COMMAND_CONVERT_METRO);
         allConverters.add(COMMAND_CONVERT_BOOKER);
         allConverters.add(COMMAND_CONVERT_SBER);
@@ -163,7 +162,7 @@ public class BotConfig {
                         /*Сбер логистик:*/, COMMAND_CONVERT_SBER
                         /*Арт Фрут:*/, COMMAND_CONVERT_ART_FRUIT
                         /*Сиэль:*/, COMMAND_CONVERT_SIEL
-                        /*Спарк:*/, COMMAND_CONVERT_SPARK
+                        /*Спар:*/, COMMAND_CONVERT_SPAR
                         /*Бухгалтерия*/, COMMAND_CONVERT_BOOKER
                         /*Саппорт:*/, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_RELOAD_DICTIONARY
                         /*админ:*/, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY
@@ -204,9 +203,9 @@ public class BotConfig {
                         , COMMAND_CONVERT_SIEL
                 )
         );
-        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPARK)
+        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPAR)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        , COMPANY_NAME_SPARK
+                        , COMPANY_NAME_SPAR
                 )
         );
         return commandAccessList;

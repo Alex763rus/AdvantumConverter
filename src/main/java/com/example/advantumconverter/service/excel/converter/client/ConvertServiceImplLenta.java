@@ -254,6 +254,11 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillC(int row) {
+        /*
+        В базе ищем по номеру машины. Если нашли, берем бриф - название компании
+        Если в базе не нашли,берем код из первого столбца, ищем в справочнике.
+        Если нашли, то Лента + название из справочника. Если нет, то "Нет региона"
+         */
         val tsCityBrief = dictionaryService.getTsCityBrief(getCarNumber(row));
         if (tsCityBrief != null) {
             return tsCityBrief;

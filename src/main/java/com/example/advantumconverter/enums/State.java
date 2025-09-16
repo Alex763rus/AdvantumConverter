@@ -16,7 +16,7 @@ public enum State {
 
     CONVERT_FILE_SIEL,
 
-    CONVERT_FILE_SPARK,
+    CONVERT_FILE_SPAR,
 
     CONVERT_FILE_METRO,
 

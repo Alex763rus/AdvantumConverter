@@ -11,6 +11,7 @@ import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.*;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -18,11 +19,11 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SPARK;
-import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_SPARK;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SPAR;
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_SPAR;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
-import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SPARK;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SPAR;
 import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
@@ -30,29 +31,29 @@ import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
-public class ConvertServiceImplSpark extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplSpar extends ConvertServiceBase implements ConvertService {
 
     private final int START_ROW = 4;
     private int LAST_ROW;
 
 
     private final CrmConfigProperties crmConfigProperties;
-    private final static String BAZA_ADDRESS = "603058, Нижегородская обл, Нижний Новгород, улица Героя Попова ул, дом № 43в";
+    private static final String BAZA_ADDRESS = "603058, Нижегородская обл, Нижний Новгород, улица Героя Попова ул, дом № 43в";
     private List<String> warnings = new ArrayList<>();
 
-    public ConvertServiceImplSpark(CrmConfigProperties crmConfigProperties) {
+    public ConvertServiceImplSpar(CrmConfigProperties crmConfigProperties) {
         super();
         this.crmConfigProperties = crmConfigProperties;
     }
 
     @Override
     public String getConverterName() {
-        return FILE_NAME_SPARK;
+        return FILE_NAME_SPAR;
     }
 
     @Override
     public String getConverterCommand() {
-        return COMMAND_CONVERT_SPARK;
+        return COMMAND_CONVERT_SPAR;
     }
 
     @Override
@@ -81,15 +82,17 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
                     warnings.add("Некорретная строка, №" + row + ", отсутствует номер или регион или номер рейса. Пропущена.");
                     continue;
                 }
+                var dateFromFile = convertDateFormat(getCellValue(row, 0), TEMPLATE_DATE_DOT);
+                var uniqNumber = convertDateFormat(dateFromFile, TEMPLATE_DATE) + "-" + carNumber + "-" + region + "-" + reisNumber;
                 var rowData = RowData.init()
-                        .setUniqNumber(carNumber + "-" + region + "-" + reisNumber)
+                        .setUniqNumber(uniqNumber)
                         .setCarNumber(carNumber)
                         .setRegion(region)
                         .setReisNumber(reisNumber)
                         .setCompanyName(getCellValue(row, 4))
                         .setAddress(getCellValue(row, 10))
                         .setFioDriver(getCellValue(row, 8))
-                        .setDateFromFile(convertDateFormat(getCellValue(row, 0), TEMPLATE_DATE_DOT))
+                        .setDateFromFile(dateFromFile)
                         .setTimeFrom(getCellValue(row, 11).replace(SPACE, EMPTY))
                         .setTimeTo(getCellValue(row, 12).replace(SPACE, EMPTY))
                         .setBazaName(getCellValue(row, 1))
@@ -137,8 +140,8 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
                 var dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(rowData.getUniqNumber())
                         .setColumnBdata(new Date())
-                        .setColumnCdata(COMPANY_NAME_SPARK)
-                        .setColumnDdata(COMPANY_NAME_SPARK)
+                        .setColumnCdata(COMPANY_NAME_SPAR)
+                        .setColumnDdata(COMPANY_NAME_SPAR)
                         .setColumnEdata(null)
                         .setColumnFdata(REFRIGERATOR)
                         .setColumnGdata(EMPTY)
@@ -146,16 +149,16 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
                         .setColumnIdata(12)
                         .setColumnJdata(1500)
                         .setColumnKdata(8)
-                        .setColumnLdata(3)
-                        .setColumnMdata(5)
-                        .setColumnNdata(2)
+                        .setColumnLdata(2)
+                        .setColumnMdata(6)
+                        .setColumnNdata(null)
                         .setColumnOdata(null)
                         .setColumnPdata(null)
                         .setColumnQdata(null)
                         .setColumnRdata(null)
                         .setColumnSdata(fillS(isStart, rowData))
                         .setColumnTdata(fillT(isStart, rowData))
-                        .setColumnUdata(rowData.getCompanyName())
+                        .setColumnUdata(isStart? "Склад" : rowData.getCompanyName())
                         .setColumnVdata(isStart ? BAZA_ADDRESS : rowData.getAddress())
                         .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
                         .setColumnXdata(numberUnloading)
@@ -163,7 +166,7 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
                         .setColumnZdata(null)
                         .setColumnAaData(EMPTY)
                         .setColumnAbData(EMPTY)
-                        .setColumnAcData(rowData.getCarNumber())
+                        .setColumnAcData(rowData.getCarNumber() + rowData.getRegion())
                         .setColumnAdData(EMPTY)
                         .setColumnAeData(rowData.getFioDriver())
                         .setColumnAfData(null)
@@ -199,6 +202,7 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
 
     @SneakyThrows
     private Date fillS(boolean isStart, RowData rowData) {
+        var dateT = fillT(isStart, rowData);
         String dateFromFileString = convertDateFormat(rowData.getDateFromFile(), TEMPLATE_DATE_DOT);
         String time = "08:00";
         if (isStart) {
@@ -212,7 +216,8 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
                 time = rowData.getTimeFrom();
             }
         }
-        return convertDateFormat(dateFromFileString + SPACE + time, TEMPLATE_DATE_TIME_DOT);
+        var dateS = convertDateFormat(dateFromFileString + SPACE + time, TEMPLATE_DATE_TIME_DOT);
+        return dateS.after(dateT) ? DateUtils.addDays(dateS, -1) : dateS;
     }
 
     @SneakyThrows
@@ -235,7 +240,7 @@ public class ConvertServiceImplSpark extends ConvertServiceBase implements Conve
 
     @Override
     public CrmConfigProperties.CrmCreds getCrmCreds() {
-        return crmConfigProperties.getSpark();
+        return crmConfigProperties.getSpar();
     }
 
     @Getter
