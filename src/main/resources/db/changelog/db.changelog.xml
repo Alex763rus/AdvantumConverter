@@ -69,4 +69,5 @@
     <include file="/db/changelog/spar/create_spar_windows.xml"/>
     <include file="/db/changelog/spar/InsertSparWindows_1.sql"/>
     <include file="/db/changelog/company/updateCompanySpar.xml"/>
+    <include file="/db/changelog/users/update_user_3.xml"/>
 </databaseChangeLog>

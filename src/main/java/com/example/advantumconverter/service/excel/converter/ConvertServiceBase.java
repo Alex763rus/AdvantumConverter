@@ -35,6 +35,7 @@ public class ConvertServiceBase {
     protected int LAST_COLUMN_NUMBER;
     protected int LAST_ROW;
     private static final int MAX_ROW = 10000;
+    protected static final String REGEX_NUMBER = "\\D+";
 
     protected XSSFSheet getExcelList(XSSFWorkbook book, String listName) {
         return Optional.ofNullable(book.getSheet(listName))

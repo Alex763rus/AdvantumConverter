@@ -128,7 +128,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                     addressesInReis.clear();
                     lastNumberOrderStart = numberOrderStart;
                     numberUnloadingCounter = 0;
-                    tonnage = getCellValue(row, 12).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY);
+                    tonnage = getCellValue(row, 12).replaceAll(REGEX_NUMBER, EMPTY);
                     reisInOrder = ordersInReis.getOrDefault(numberOrderStart, new ArrayList<>()).stream()
                             .filter(e -> !e.equals(EMPTY))
                             .collect(Collectors.joining(", "));
@@ -154,7 +154,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnIdata(getIntegerValue(row, 11))
                         .setColumnJdata(convertToIntegerOrNull(tonnage))
                         .setColumnKdata(convertToIntegerOrNull(
-                                getCellValue(row, 13).replaceAll(" ", EMPTY).replaceAll(SPACE, EMPTY)
+                                getCellValue(row, 13).replaceAll(REGEX_NUMBER, EMPTY)
                         ))
                         .setColumnLdata(getIntegerValue(row, 14))
                         .setColumnMdata(getIntegerValue(row, 15))
