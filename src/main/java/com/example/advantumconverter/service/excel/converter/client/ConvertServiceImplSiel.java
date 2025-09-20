@@ -186,7 +186,7 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
     }
 
     private String getCarNumber(int row) {
-        return getCellValue(row, 2).replaceAll(REGEX_NUMBER, EMPTY);
+        return getCellValue(row, 2).replaceAll(REGEX_NUMBER_AND_SIMBOL, EMPTY);
     }
 
     private Date fillS(boolean isStart, int row, String dateFromFileString) throws ParseException {

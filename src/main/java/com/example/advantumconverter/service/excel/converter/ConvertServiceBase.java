@@ -36,6 +36,7 @@ public class ConvertServiceBase {
     protected int LAST_ROW;
     private static final int MAX_ROW = 10000;
     protected static final String REGEX_NUMBER = "\\D+";
+    protected static final String REGEX_NUMBER_AND_SIMBOL = "[^a-zA-Zа-яА-ЯёЁ0-9]";
 
     protected XSSFSheet getExcelList(XSSFWorkbook book, String listName) {
         return Optional.ofNullable(book.getSheet(listName))
