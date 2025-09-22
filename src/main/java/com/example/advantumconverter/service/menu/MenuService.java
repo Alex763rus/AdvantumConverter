@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.menu;
 
+import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.model.menu.MenuActivity;
 import com.example.advantumconverter.model.menu.MenuDefault;
 import com.example.advantumconverter.model.menu.MenuStart;
@@ -45,6 +46,7 @@ public class MenuService {
     @Autowired
     private MenuStart menuStart;
 
+    @LogExecutionTime(value = "Полный цикл обработки", unit = LogExecutionTime.TimeUnit.SECONDS)
     public List<PartialBotApiMethod> messageProcess(Update update) {
         val user = userService.getUser(update);
         MenuActivity menuActivity = null;

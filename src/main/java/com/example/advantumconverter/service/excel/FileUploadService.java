@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel;
 
+import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.BotConfig;
 import com.example.advantumconverter.enums.FileType;
 import jakarta.annotation.PostConstruct;
@@ -59,6 +60,7 @@ public class FileUploadService {
         return new File(fullFilePath);
     }
 
+    @LogExecutionTime(value = "Загрузка входящего файла", unit = LogExecutionTime.TimeUnit.SECONDS)
     public XSSFWorkbook uploadXlsx(String fullFilePath, String file_id) throws Exception {
         return (XSSFWorkbook) (WorkbookFactory.create(uploadFileFromTg(fullFilePath, file_id)));
     }

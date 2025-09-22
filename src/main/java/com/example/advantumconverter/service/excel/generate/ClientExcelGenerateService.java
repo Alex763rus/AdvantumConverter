@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.generate;
 
+import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
@@ -133,6 +134,7 @@ public class ClientExcelGenerateService implements ExcelGenerateService {
     }
 
     @Override
+    @LogExecutionTime(value = "Генерация файла результата v2", unit = LogExecutionTime.TimeUnit.SECONDS)
     public InputFile createXlsxV2(ConvertedBookV2 convertedBook) {
         val book = convertedBook.getBookV2().get(0);
         this.dataV2 = book.getExcelListContentV2();

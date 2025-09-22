@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_ART_FRUIT;
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_ART_FRUIT;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_ART_FRUIT;
@@ -53,6 +55,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     }
 
     @Override
+    @LogExecutionTime(value = "Конвертация v2" + COMPANY_NAME_ART_FRUIT, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();

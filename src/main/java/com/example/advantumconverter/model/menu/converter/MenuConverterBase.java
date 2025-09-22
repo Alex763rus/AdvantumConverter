@@ -1,5 +1,6 @@
 package com.example.advantumconverter.model.menu.converter;
 
+import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.State;
 import com.example.advantumconverter.model.jpa.User;
@@ -45,6 +46,7 @@ public abstract class MenuConverterBase extends Menu {
     private Map<User, ConvertedBook> convertedBooks = new HashMap<>();
     private Map<User, ConvertedBookV2> convertedBooksV2 = new HashMap<>();
 
+    @LogExecutionTime(value = "Полная обработка файла", unit = LogExecutionTime.TimeUnit.SECONDS)
     protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {
         if (!update.hasMessage()) {
             return errorMessageDefault(update);
@@ -155,6 +157,7 @@ public abstract class MenuConverterBase extends Menu {
         return answer;
     }
 
+    @LogExecutionTime(value = "Загрузка в CRM", unit = LogExecutionTime.TimeUnit.SECONDS)
     protected List<PartialBotApiMethod> unloadInCrm(User user, Update update, CrmConfigProperties.CrmCreds crmCreds) {
         val convertedBookV1 = convertedBooks.get(user);
         val convertedBookV2 = convertedBooksV2.get(user);

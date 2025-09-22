@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
@@ -62,6 +63,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
     }
 
     @Override
+    @LogExecutionTime(value = "Конвертация v2", unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         ConvertedListDataV2 dataLine = null;
