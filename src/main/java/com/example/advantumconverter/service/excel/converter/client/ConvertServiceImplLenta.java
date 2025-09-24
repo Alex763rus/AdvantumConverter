@@ -18,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,8 +31,7 @@ import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_L
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
 import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
-import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
-import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
+import static org.example.tgcommons.constant.Constant.TextConstants.*;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
@@ -56,8 +56,6 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String START_ROW_TEXT = "ТК/РЦ";
-
-
     private Date stockIn = null; //из файла, ожидаемая дата прибытия, дата въезда на погрузку
     private List<String> warnings = new ArrayList<>();
 
@@ -82,19 +80,25 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
             row = START_ROW;
             int counterCopy = 1;
             String columnC = EMPTY;
+            Long code;
 
             LAST_ROW = getLastRow(START_ROW);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row <= LAST_ROW; ++row) {
                 isStart = isStart(row);
+                code = getCode(row);
+                if (code == null) {
+                    warnings.add(NEW_LINE + "некорректный код: " + getCellValue(row, 0) + ", пропускаем строчку");
+                    continue;
+                }
                 if (isStart) {
                     stockIn = getExpectedTimeIncome(row);
                     counterCopy = 1;
-                    columnC = fillC(row);
+                    columnC = fillC(row, code);
                 }
                 dataLine = ConvertedListDataV2.init()
-                        .setColumnAdata(getCellValue(row, 1))
-                        .setColumnBdata(new Date())
+                        .setColumnAdata(getCellValue(row, 5))
+                        .setColumnBdata(convertDateFormat(LocalDate.now().toString(), "YYYY-MM-DD"))
                         .setColumnCdata(columnC)
                         .setColumnDdata(fillD(row))
                         .setColumnEdata(null)
@@ -111,10 +115,10 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                         .setColumnPdata(null)
                         .setColumnQdata(null)
                         .setColumnRdata(null)
-                        .setColumnSdata(convertDateFormat(fillS(row, isStart), TEMPLATE_DATE_TIME_DOT))
-                        .setColumnTdata(convertDateFormat(fillT(row, isStart), TEMPLATE_DATE_TIME_DOT))
-                        .setColumnUdata(String.valueOf(getCode(row)))
-                        .setColumnVdata(fillU(row))
+                        .setColumnSdata(convertDateFormat(fillS(row, isStart, code), TEMPLATE_DATE_TIME_DOT))
+                        .setColumnTdata(convertDateFormat(fillT(row, isStart, code), TEMPLATE_DATE_TIME_DOT))
+                        .setColumnUdata(String.valueOf(code))
+                        .setColumnVdata(fillU(row, code))
                         .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
                         .setColumnXdata(counterCopy)
                         .setColumnYdata(null)
@@ -156,12 +160,11 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 .build();
     }
 
-    private String fillS(int row, boolean isStart) throws ParseException {
+    private String fillS(int row, boolean isStart, Long code) throws ParseException {
         if (isStart) {
             return convertDateFormat(stockIn, TEMPLATE_DATE_TIME_DOT);
         }
         val date = convertDateFormat(stockIn, TEMPLATE_DATE_DOT);
-        val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
             return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
@@ -173,18 +176,17 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         val dateTimeT = calculateDateTimeT(row, lentaDictionary);
         val result = dateTimeT.before(stockIn) ? DateUtils.addDays(dateTimeS, 1) : dateTimeS;
         //Если второе время меньше первого, то у первого времени отнимать 1 день
-        val dateTimeResultT = convertDateFormat(fillT(row, isStart), TEMPLATE_DATE_TIME_DOT);
+        val dateTimeResultT = convertDateFormat(fillT(row, isStart, code), TEMPLATE_DATE_TIME_DOT);
         val answer = dateTimeResultT.before(result) ? DateUtils.addDays(result, -1) : result;
 
         return convertDateFormat(answer, TEMPLATE_DATE_TIME_DOT);
     }
 
-    private String fillT(int row, boolean isStart) throws ParseException {
+    private String fillT(int row, boolean isStart, Long code) throws ParseException {
         if (isStart) {
             val result = DateUtils.addHours(stockIn, 3);
             return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
         }
-        val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         if (lentaDictionary == null) {
             return convertDateFormat(stockIn, TEMPLATE_DATE_DOT) + " 22:00";
@@ -209,11 +211,11 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String getCarNumber(int row) {
-        return getCellValue(row, 5).replaceAll(SPACE, EMPTY);
+        return getCellValue(row, 9).replaceAll(SPACE, EMPTY);
     }
 
     private String fillD(int row) {
-        val companyName = getCellValue(row, 8);
+        val companyName = getCellValue(row, 13);
         val carNumber = getCarNumber(row);
         if (companyName.toUpperCase().contains("ЛЕНТА")
                 && dictionaryService.getTsCityBrief(carNumber) == null
@@ -242,7 +244,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillJ(int row) {
-        val carNumber = getCellValue(row, 5).replaceAll(SPACE, EMPTY);
+        val carNumber = getCellValue(row, 9).replaceAll(SPACE, EMPTY);
         val lentaCar = dictionaryService.getLentaCarOrElse(carNumber, null);
         if (lentaCar != null) {
             return String.valueOf(lentaCar.getTonnage());
@@ -256,7 +258,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         return String.valueOf(car.getTonnage());
     }
 
-    private String fillC(int row) {
+    private String fillC(int row, Long code) {
         /*
         В базе ищем по номеру машины. Если нашли, берем бриф - название компании
         Если в базе не нашли,берем код из первого столбца, ищем в справочнике.
@@ -266,34 +268,42 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         if (tsCityBrief != null) {
             return tsCityBrief;
         }
-        val code = getCode(row);
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         return lentaDictionary == null ? "Нет региона" : "Лента (" + lentaDictionary.getRegion() + ")";
     }
 
     private String fillAE(int row) {
-        return WordUtils.capitalize(getCellValue(row, 2).toLowerCase());
+        return WordUtils.capitalize(getCellValue(row, 6).toLowerCase());
     }
 
 
     private Date getExpectedTimeIncome(int row) throws ParseException {
-        val date = getCellValue(row, 9);
+        val date = getCellValue(row, 14);
         return convertDateFormat(date, date.contains(".") ? TEMPLATE_DATE_TIME_DOT : TEMPLATE_DATE_TIME_SLASH);
     }
 
     private String getCarName(int row) {
-        return getCellValue(row, 3).replaceAll("\\\\", EMPTY);
+        return getCellValue(row, 7).replaceAll("\\\\", EMPTY);
     }
 
     private Long getCode(int row) {
-        val cellValue = getCellValue(row, 0);
+        String resultString;
+        val cellValue = getCellValue(row, 0).replaceAll(SPACE, EMPTY).replaceFirst("^\\D*", EMPTY);
         val indexDash = cellValue.indexOf(MINUS);
-        val longValue = indexDash != -1 ? cellValue.substring(0, indexDash) : cellValue;
-        return Long.parseLong(longValue);
+        if (indexDash != -1) {
+            resultString = indexDash != -1 ? cellValue.substring(0, indexDash) : cellValue;
+        } else {
+            val indexUnderscore = cellValue.indexOf(UNDERSCORE);
+            resultString = indexUnderscore != -1 ? cellValue.substring(0, indexUnderscore) : cellValue;
+        }
+        try {
+            return Long.parseLong(resultString);
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
-    private String fillU(int row) {
-        val code = getCode(row);
+    private String fillU(int row, Long code) {
         val lentaDictionary = dictionaryService.getDictionary(code.longValue());
         return lentaDictionary == null ? "Код адреса не найден в справочнике: " + code : lentaDictionary.getAddressName();
     }

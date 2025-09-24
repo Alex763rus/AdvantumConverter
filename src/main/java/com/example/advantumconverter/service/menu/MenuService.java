@@ -100,13 +100,4 @@ public class MenuService {
         return List.of(new BotCommand(menu.getMenuComand(), menu.getDescription()));
     }
 
-//    private String getChatId(Update update) {
-//        if (update.hasMessage()) {
-//            return String.valueOf(update.getMessage().getChatId());
-//        }
-//        if (update.hasCallbackQuery()) {
-//            return String.valueOf(update.getCallbackQuery().getMessage().getChatId());
-//        }
-//        return null;
-//    }
 }

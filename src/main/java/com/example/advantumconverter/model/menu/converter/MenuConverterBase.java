@@ -31,11 +31,14 @@ import java.util.*;
 import static com.example.advantumconverter.enums.FileType.USER_IN;
 import static com.example.advantumconverter.enums.State.CONVERTER_WAIT_UNLOAD_IN_CRM;
 import static com.example.advantumconverter.enums.State.FREE;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.utils.ButtonUtils.createVerticalColumnMenu;
 
 @MappedSuperclass
 @Log4j2
 public abstract class MenuConverterBase extends Menu {
+
+    private static final int CAPTION_LEN_LIMIT = 800;
 
     @Autowired
     protected ClientExcelGenerateService excelGenerateService;
@@ -75,9 +78,15 @@ public abstract class MenuConverterBase extends Menu {
                     : excelService.createXlsx(convertedBook);
             val message = isV2 ? convertedBookV2.getMessage() : convertedBook.getMessage();
 
+            String caption;
+            if(message!= null && message.length() > CAPTION_LEN_LIMIT) {
+                caption = message.substring(0, CAPTION_LEN_LIMIT) + NEW_LINE + NEW_LINE + "Весь текст не уместился .....";
+            } else{
+                caption = message;
+            }
             var answer = SendDocumentWrap.init()
                     .setChatIdLong(updateMessage.getChatId())
-                    .setCaption(message)
+                    .setCaption(caption)
                     .setDocument(document)
                     .build();
 
