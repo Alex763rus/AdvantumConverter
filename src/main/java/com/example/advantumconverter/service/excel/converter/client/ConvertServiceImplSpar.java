@@ -63,7 +63,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
     }
 
     @Override
-    @LogExecutionTime(value = "Конвертация v2", unit = LogExecutionTime.TimeUnit.SECONDS)
+    @LogExecutionTime(value = "Конвертация v2 " + COMPANY_NAME_SPAR, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         ConvertedListDataV2 dataLine = null;

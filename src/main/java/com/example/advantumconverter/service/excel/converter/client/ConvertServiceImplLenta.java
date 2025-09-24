@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_LENTA;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_LENTA;
@@ -66,7 +67,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     @Override
-    @LogExecutionTime(value = "Конвертация v2", unit = LogExecutionTime.TimeUnit.SECONDS)
+    @LogExecutionTime(value = "Конвертация v2 " + COMPANY_NAME_LENTA, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();

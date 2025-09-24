@@ -59,7 +59,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
     }
 
     @Override
-    @LogExecutionTime(value = "Конвертация v2", unit = LogExecutionTime.TimeUnit.SECONDS)
+    @LogExecutionTime(value = "Конвертация v2 " + FILE_NAME_COFIX, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();

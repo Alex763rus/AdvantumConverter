@@ -55,7 +55,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     }
 
     @Override
-    @LogExecutionTime(value = "Конвертация v2" + COMPANY_NAME_ART_FRUIT, unit = LogExecutionTime.TimeUnit.SECONDS)
+    @LogExecutionTime(value = "Конвертация v2 " + COMPANY_NAME_ART_FRUIT, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
