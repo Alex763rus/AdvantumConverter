@@ -98,7 +98,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                 }
                 dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(getCellValue(row, 5))
-                        .setColumnBdata(convertDateFormat(LocalDate.now().toString(), "YYYY-MM-DD"))
+                        .setColumnBdata(convertDateFormat(convertDateFormat(new Date(), TEMPLATE_DATE_DOT), TEMPLATE_DATE_DOT))
                         .setColumnCdata(columnC)
                         .setColumnDdata(fillD(row))
                         .setColumnEdata(null)
