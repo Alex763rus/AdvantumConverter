@@ -215,7 +215,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
         String dateFromFileString = convertDateFormat(rowData.getDateFromFile(), TEMPLATE_DATE_DOT);
         String time = "08:00";
         if (isStart) {
-            time = "00:01";
+            time = "04:00";
         } else {
             var sparDbWindows = dictionaryService.getSparWindows(rowData.companyName);
             if (sparDbWindows != null) {
@@ -234,7 +234,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
         String dateFromFileString = convertDateFormat(rowData.getDateFromFile(), TEMPLATE_DATE_DOT);
         String time = "18:00";
         if (isStart) {
-            time = "23:59";
+            time = "09:00";
         } else {
             var sparDbWindows = dictionaryService.getSparWindows(rowData.companyName);
             if (sparDbWindows != null) {
