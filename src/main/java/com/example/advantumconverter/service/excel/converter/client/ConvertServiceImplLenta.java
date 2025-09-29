@@ -323,8 +323,8 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         if (row == START_ROW) {
             return true;
         }
-        val cur = getValueOrDefault(row, 0, 1);
-        val prev1 = getValueOrDefault(row, -1, 1);
+        val cur = getValueOrDefault(row, 0, 5);
+        val prev1 = getValueOrDefault(row, -1, 5);
         return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
     }
 
