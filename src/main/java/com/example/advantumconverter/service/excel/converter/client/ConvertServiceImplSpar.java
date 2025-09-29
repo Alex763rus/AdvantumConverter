@@ -17,6 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +85,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
                     warnings.add("Некорретная строка, №" + row + ", отсутствует номер или регион или номер рейса. Пропущена.");
                     continue;
                 }
-                var dateFromFile = convertDateFormat(getCellValue(row, 0), TEMPLATE_DATE_DOT);
+                var dateFromFile = convertDateFormat(getCellValue(row, 0), TEMPLATE_DATE_SLASH);
                 var uniqNumber = convertDateFormat(dateFromFile, TEMPLATE_DATE) + "-" + carNumber + "-" + region + "-" + reisNumber;
                 var rowData = RowData.init()
                         .setUniqNumber(uniqNumber)
@@ -108,7 +109,13 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
                 rows.add(rowData);
             }
             data = rowsdata.entrySet().stream()
-                    .map(reis -> prepareConvertedList(reis.getValue()))
+                    .map(reis -> {
+                        try {
+                            return prepareConvertedList(reis.getValue());
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
                     .collect(Collectors.flatMapping(List::stream, Collectors.toList()));
         } catch (TemperatureNodValidException e) {
             throw e;
@@ -129,7 +136,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
                 .build();
     }
 
-    private List<ConvertedListDataV2> prepareConvertedList(LinkedList<RowData> rowsData) {
+    private List<ConvertedListDataV2> prepareConvertedList(LinkedList<RowData> rowsData) throws ParseException {
         boolean isStart = true;
         int numberUnloading = 0;
         List<ConvertedListDataV2> result = new LinkedList<>();
@@ -141,7 +148,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
             for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
                 var dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(rowData.getUniqNumber())
-                        .setColumnBdata(new Date())
+                        .setColumnBdata(convertDateFormat(convertDateFormat(new Date(), TEMPLATE_DATE_DOT), TEMPLATE_DATE_DOT))
                         .setColumnCdata(COMPANY_NAME_SPAR)
                         .setColumnDdata(COMPANY_NAME_SPAR)
                         .setColumnEdata(null)
