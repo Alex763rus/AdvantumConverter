@@ -98,6 +98,11 @@ public class ConvertServiceBase {
         return convertToIntegerOrNull(getCellValue(row, col));
     }
 
+    protected Integer getIntegerValue(int row, int col, int defaultValue) {
+        return Optional.ofNullable(convertToIntegerOrNull(getCellValue(row, col)))
+                .orElse(defaultValue);
+    }
+
     protected Integer convertToIntegerOrNull(String value) {
         try {
             if (value.equals(EMPTY)) {

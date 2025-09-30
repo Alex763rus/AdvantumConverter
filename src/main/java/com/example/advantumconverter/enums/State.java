@@ -18,6 +18,8 @@ public enum State {
 
     CONVERT_FILE_SPAR,
 
+    CONVERT_FILE_NIKA,
+
     CONVERT_FILE_METRO,
 
     CONVERT_FILE_DOMINOS,

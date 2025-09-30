@@ -18,6 +18,7 @@ public class CrmConfigProperties {
     private CrmCreds lenta;
     private CrmCreds siel;
     private CrmCreds spar;
+    private CrmCreds nika;
 
     @Data
     public static class CrmCreds {

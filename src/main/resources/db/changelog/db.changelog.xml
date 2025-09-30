@@ -72,4 +72,5 @@
     <include file="/db/changelog/users/update_user_3.xml"/>
     <include file="/db/changelog/users/InsertUser3.sql"/>
     <include file="/db/changelog/lenta/InsertCar_5.sql"/>
+    <include file="/db/changelog/company/InsertCompany_4.sql"/>
 </databaseChangeLog>

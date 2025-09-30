@@ -65,6 +65,7 @@ public class BotConfig {
             ConvertServiceImplArtFruit convertServiceImplArtFruit,
             ConvertServiceImplSiel convertServiceImplSiel,
             ConvertServiceImplSpar convertServiceImplSpar,
+            ConvertServiceImplNika convertServiceImplNika,
             CompanyRepository companyRepository
     ) {
         val companySetting = new CompanySetting();
@@ -74,13 +75,14 @@ public class BotConfig {
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar);
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar, convertServiceImplNika);
         val ozonConverter = List.of(convertServiceImplOzon);
         val metroConverter = List.of(convertServiceImplMetro);
         val sberConverter = List.of(convertServiceImplSber);
         val artFruitConverter = List.of(convertServiceImplArtFruit);
         val sielConverter = List.of(convertServiceImplSiel);
         val sparConverter = List.of(convertServiceImplSpar);
+        val snikaConverter = List.of(convertServiceImplNika);
 
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_ADVANTUM), advantumConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA), lentaConverter);
@@ -91,6 +93,7 @@ public class BotConfig {
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_ART_FRUIT), artFruitConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SIEL), sielConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPAR), sparConverter);
+        companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_NIKA), snikaConverter);
         companySetting.setCompanyConverter(companyConverter);
         return companySetting;
     }
@@ -111,6 +114,7 @@ public class BotConfig {
         allConverters.add(COMMAND_CONVERT_OZON);
         allConverters.add(COMMAND_CONVERT_SIEL);
         allConverters.add(COMMAND_CONVERT_SPAR);
+        allConverters.add(COMMAND_CONVERT_NIKA);
         allConverters.add(COMMAND_CONVERT_METRO);
         allConverters.add(COMMAND_CONVERT_BOOKER);
         allConverters.add(COMMAND_CONVERT_SBER);
@@ -163,6 +167,7 @@ public class BotConfig {
                         /*Арт Фрут:*/, COMMAND_CONVERT_ART_FRUIT
                         /*Сиэль:*/, COMMAND_CONVERT_SIEL
                         /*Спар:*/, COMMAND_CONVERT_SPAR
+                        /*Ника Транс:*/, COMMAND_CONVERT_NIKA
                         /*Бухгалтерия*/, COMMAND_CONVERT_BOOKER
                         /*Саппорт:*/, COMMAND_SHOW_OPEN_TASK, COMMAND_SHOW_MY_TASK, COMMAND_RELOAD_DICTIONARY
                         /*админ:*/, COMMAND_SETTING_NEW_USER, COMMAND_RELOAD_DICTIONARY
@@ -206,6 +211,11 @@ public class BotConfig {
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPAR)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
                         , COMPANY_NAME_SPAR
+                )
+        );
+        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_NIKA)
+                , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
+                        , COMPANY_NAME_NIKA
                 )
         );
         return commandAccessList;
