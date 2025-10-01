@@ -3,7 +3,7 @@ cd target/tmp
 
 # Собираем Docker образ
 echo "Building Docker image..."
-docker build -t alex163rus/advantumconverter:latest ..
+docker build -t alex163rus/advantumconverter:latest .
 
 # Пушим образ в Docker Hub
 echo "Pushing Docker image..."

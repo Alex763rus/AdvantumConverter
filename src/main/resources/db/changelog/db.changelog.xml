@@ -73,4 +73,5 @@
     <include file="/db/changelog/users/InsertUser3.sql"/>
     <include file="/db/changelog/lenta/InsertCar_5.sql"/>
     <include file="/db/changelog/company/InsertCompany_4.sql"/>
+    <include file="/db/changelog/sber/updateSberAddress6.xml"/>
 </databaseChangeLog>
