@@ -78,14 +78,14 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
             //==============================
             //начитываем для сортировки:
             for (; row <= LAST_ROW; ++row) {
-                var carNumber = getCellValue(row, 6).replace(SPACE, EMPTY);
-                var region = getCellValue(row, 7).replace(SPACE, EMPTY);
-                var reisNumber = getCellValue(row, 9).replace(SPACE, EMPTY);
+                var carNumber = getCellValue(row, 8).replace(SPACE, EMPTY);
+                var region = getCellValue(row, 9).replace(SPACE, EMPTY);
+                var reisNumber = getCellValue(row, 11).replace(SPACE, EMPTY);
                 if (ObjectUtils.isEmpty(carNumber) || ObjectUtils.isEmpty(region) || ObjectUtils.isEmpty(reisNumber)) {
                     warnings.add("Некорретная строка, №" + row + ", отсутствует номер или регион или номер рейса. Пропущена.");
                     continue;
                 }
-                var dateFromFile = convertDateFormat(getCellValue(row, 0), TEMPLATE_DATE_SLASH);
+                var dateFromFile = convertDate(row, 0, List.of(TEMPLATE_DATE_DOT, TEMPLATE_DATE_SLASH)).orElseThrow();
                 var uniqNumber = convertDateFormat(dateFromFile, TEMPLATE_DATE) + "-" + carNumber + "-" + region + "-" + reisNumber;
                 var rowData = RowData.init()
                         .setUniqNumber(uniqNumber)
@@ -93,12 +93,14 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
                         .setRegion(region)
                         .setReisNumber(reisNumber)
                         .setCompanyName(getCellValue(row, 4))
-                        .setAddress(getCellValue(row, 10))
-                        .setFioDriver(getCellValue(row, 8))
+                        .setAddress(getCellValue(row, 12))
+                        .setFioDriver(getCellValue(row, 10))
                         .setDateFromFile(dateFromFile)
-                        .setTimeFrom(getCellValue(row, 11).replace(SPACE, EMPTY))
-                        .setTimeTo(getCellValue(row, 12).replace(SPACE, EMPTY))
+                        .setTimeFrom(getCellValue(row, 13).replace(SPACE, EMPTY))
+                        .setTimeTo(getCellValue(row, 14).replace(SPACE, EMPTY))
                         .setBazaName(getCellValue(row, 1))
+                        .setXCoordinate(getDoubleValue(row, 5))
+                        .setYCoordinate(getDoubleValue(row, 6))
                         .build();
 
                 LinkedList<RowData> rows = rowsdata.get(rowData.getUniqNumber());
@@ -167,12 +169,12 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
                         .setColumnRdata(null)
                         .setColumnSdata(fillS(isStart, rowData))
                         .setColumnTdata(fillT(isStart, rowData))
-                        .setColumnUdata(isStart? "Склад" : rowData.getCompanyName())
+                        .setColumnUdata(isStart ? "Склад" : rowData.getCompanyName())
                         .setColumnVdata(isStart ? BAZA_ADDRESS : rowData.getAddress())
                         .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
                         .setColumnXdata(numberUnloading)
-                        .setColumnYdata(null)
-                        .setColumnZdata(null)
+                        .setColumnYdata(rowData.getXCoordinate())
+                        .setColumnZdata(rowData.getYCoordinate())
                         .setColumnAaData(EMPTY)
                         .setColumnAbData(EMPTY)
                         .setColumnAcData(rowData.getCarNumber() + rowData.getRegion())
@@ -268,6 +270,8 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
         String timeFrom;
         String timeTo;
         String bazaName;
+        Double xCoordinate;
+        Double yCoordinate;
 
         @Override
         public boolean equals(Object o) {

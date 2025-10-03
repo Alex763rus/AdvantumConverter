@@ -115,7 +115,7 @@ public class ConvertServiceBase {
     }
 
     protected Double getDoubleValue(int row, int col) {
-        val cellValue = getCellValue(row, col);
+        val cellValue = getCellValue(row, col).replace(",", ".");
         return cellValue.equals(EMPTY) ? null : Double.parseDouble(cellValue);
     }
 
@@ -140,4 +140,14 @@ public class ConvertServiceBase {
                 .build();
     }
 
+    protected Optional<Date> convertDate(int row, int col, List<String> templates) {
+        var cellValue = getCellValue(row, col);
+        for (String template : templates) {
+            try {
+                return Optional.of(convertDateFormat(cellValue, template));
+            } catch (Exception ex) {
+            }
+        }
+        return Optional.empty();
+    }
 }
