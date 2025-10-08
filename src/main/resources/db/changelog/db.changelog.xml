@@ -75,4 +75,6 @@
     <include file="/db/changelog/company/InsertCompany_4.sql"/>
     <include file="/db/changelog/sber/updateSberAddress6.xml"/>
     <include file="/db/changelog/sber/updateSberAddress7.xml"/>
+    <include file="/db/changelog/sber/updateSberAddress8.xml"/>
+    <include file="/db/changelog/lenta/UpdateLentaDictionaryAll.sql"/>
 </databaseChangeLog>
