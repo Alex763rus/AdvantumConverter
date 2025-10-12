@@ -35,7 +35,7 @@ import static org.example.tgcommons.utils.DateConverterUtils.*;
 @Component
 public class ConvertServiceImplSpar extends ConvertServiceBase implements ConvertService {
 
-    private final int START_ROW = 4;
+    private final int START_ROW = 1;
     private int LAST_ROW;
 
 
