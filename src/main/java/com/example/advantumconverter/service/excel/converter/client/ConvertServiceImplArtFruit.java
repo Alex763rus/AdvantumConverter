@@ -21,7 +21,7 @@ import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NA
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_ART_FRUIT;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
+import static com.example.advantumconverter.constant.Constant.Heap.TWO_SPACE;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -58,7 +58,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
         int row = START_ROW;
-        Set<String> addressesInReis = new HashSet<>();
+        Set<String> addressesAndPontNameInReis = new HashSet<>();
         Set<AddressInReis> uniqReisAndAddress = new HashSet<>();
         ConvertedListDataV2 dataLine = null;
         boolean isStart = true;
@@ -85,8 +85,10 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 val numbersTmp = new ArrayList<String>();
                 numbersTmp.add(number);
                 val address = getPointAddress(rowTmp);
+                val pointName = getPointName(rowTmp);
                 val addressInReisTmp = AddressInReis.init()
                         .setTaskNumber(taskNumber)
+                        .setPointName(pointName)
                         .setAddress(address)
                         .setStartAddress(startAddress)
                         .setNumbers(numbersTmp)
@@ -126,7 +128,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 val numberOrderStart = getCellValue(row, 0);
                 isStart = !lastNumberOrderStart.equals(numberOrderStart);
                 if (isStart) {
-                    addressesInReis.clear();
+                    addressesAndPontNameInReis.clear();
                     lastNumberOrderStart = numberOrderStart;
                     numberUnloadingCounter = 0;
                     tonnage = getCellValue(row, 12).replaceAll(REGEX_NUMBER, EMPTY);
@@ -134,14 +136,17 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                             .filter(e -> !e.equals(EMPTY))
                             .collect(Collectors.joining(", "));
                 }
+                val pointName = getPointName(row);
                 val address = getPointAddress(row);
-                addressInReisTmp = AddressInReis.getAddressInReis(uniqReisAndAddress, numberOrderStart, address);
-                if (!isStart && addressesInReis.contains(address)) {
+                var addressAndPointName = pointName + "_" + address;
+                addressInReisTmp = AddressInReis.getAddressInReis(uniqReisAndAddress, numberOrderStart, pointName, address);
+                if (!isStart && addressesAndPontNameInReis.contains(addressAndPointName)) {
+                    //Если это не база, то пропускам:
                     if (!addressInReisTmp.getStartAddress().equals(address)) {
                         continue;
                     }
                 }
-                addressesInReis.add(address);
+                addressesAndPontNameInReis.add(addressAndPointName);
 
                 dataLine = ConvertedListDataV2.init()
                         .setColumnAdata(numberOrderStart)
@@ -279,14 +284,16 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
     @ToString
     private static class AddressInReis {
         String taskNumber;
+        String pointName;
         String address;
         String startAddress;
         String manager;
         String orderNumber;
         List<String> numbers = new ArrayList<>();
 
-        public static AddressInReis getAddressInReis(Set<AddressInReis> addressInReises, String taskNumber, String address) {
+        public static AddressInReis getAddressInReis(Set<AddressInReis> addressInReises, String taskNumber, String pointName, String address) {
             val tmpAddressInReis = AddressInReis.init()
+                    .setPointName(pointName)
                     .setTaskNumber(taskNumber)
                     .setAddress(address)
                     .build();
@@ -301,12 +308,12 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             AddressInReis that = (AddressInReis) o;
-            return Objects.equals(taskNumber, that.taskNumber) && Objects.equals(address, that.address);
+            return Objects.equals(taskNumber, that.taskNumber) && Objects.equals(address, that.address) && Objects.equals(pointName, that.pointName);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(taskNumber, address);
+            return Objects.hash(taskNumber, address, pointName);
         }
     }
 
