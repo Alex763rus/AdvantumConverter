@@ -2,8 +2,12 @@ package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
+import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.database.DictionaryService;
 import lombok.val;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -17,7 +21,9 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
@@ -149,5 +155,19 @@ public class ConvertServiceBase {
             }
         }
         return Optional.empty();
+    }
+
+    protected ConvertedBookV2 createDefaultBookV2(List<ConvertedListDataV2> data, List<String> warnings, String getConverterName) {
+        return ConvertedBookV2.init()
+                .setBookV2(List.of(
+                        ConvertedListV2.init()
+                                .setHeadersV2(Header.headersOutputClientV2)
+                                .setExcelListName(EXPORT)
+                                .setExcelListContentV2(data)
+                                .build()
+                ))
+                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining(EMPTY)))
+                .setBookName(getConverterName + UNDERSCORE)
+                .build();
     }
 }

@@ -4,10 +4,8 @@ import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
-import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.*;
@@ -79,14 +77,14 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 val numberOrderStart = getCellValue(row, 0);
                 isStart = !lastNumberOrderStart.equals(numberOrderStart);
                 if (isStart) {
-                    startAddress = fillV(row);
+                    startAddress = getPointAddress(row);
                     lastNumberOrderStart = numberOrderStart;
                 }
                 var number = getOrderNumber(rowTmp);
                 var taskNumber = getCellValue(rowTmp, 0);
                 val numbersTmp = new ArrayList<String>();
                 numbersTmp.add(number);
-                val address = fillV(rowTmp);
+                val address = getPointAddress(rowTmp);
                 val addressInReisTmp = AddressInReis.init()
                         .setTaskNumber(taskNumber)
                         .setAddress(address)
@@ -136,7 +134,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                             .filter(e -> !e.equals(EMPTY))
                             .collect(Collectors.joining(", "));
                 }
-                val address = fillV(row);
+                val address = getPointAddress(row);
                 addressInReisTmp = AddressInReis.getAddressInReis(uniqReisAndAddress, numberOrderStart, address);
                 if (!isStart && addressesInReis.contains(address)) {
                     if (!addressInReisTmp.getStartAddress().equals(address)) {
@@ -168,7 +166,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnRdata(getIntegerValue(row, 20))
                         .setColumnSdata(fillS(row))
                         .setColumnTdata(fillT(row))
-                        .setColumnUdata(fillU(row))
+                        .setColumnUdata(getPointName(row))
                         .setColumnVdata(address)
                         .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
                         .setColumnXdata(isStart ? 0 : numberUnloadingCounter)
@@ -202,19 +200,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-        return ConvertedBookV2.init()
-                .setBookV2(List.of(
-                        ConvertedListV2.init()
-                                .setHeadersV2(Header.headersOutputClientV2)
-                                .setExcelListName(EXPORT)
-                                .setExcelListContentV2(data)
-                                .build()
-                ))
-                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining("")))
-                .setBookName(getConverterName() + UNDERSCORE)
-                .build();
+        return createDefaultBookV2(data, warnings, getConverterName());
     }
-
 
     @Override
     public ExcelType getExcelType() {
@@ -270,11 +257,11 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 , TEMPLATE_DATE_TIME_DOT);
     }
 
-    private String fillU(int row) {
+    private String getPointName(int row) {
         return clearDoubleSpace(getCellValue(row, 23));
     }
 
-    private String fillV(int row) {
+    private String getPointAddress(int row) {
         return clearDoubleSpace(getCellValue(row, 26));
     }
 

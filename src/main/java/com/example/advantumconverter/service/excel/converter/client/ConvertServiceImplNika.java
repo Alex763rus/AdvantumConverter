@@ -149,18 +149,7 @@ public class ConvertServiceImplNika extends ConvertServiceBase implements Conver
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
-
-        return ConvertedBookV2.init()
-                .setBookV2(List.of(
-                        ConvertedListV2.init()
-                                .setHeadersV2(Header.headersOutputClientV2)
-                                .setExcelListName(EXPORT)
-                                .setExcelListContentV2(data)
-                                .build()
-                ))
-                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining("")))
-                .setBookName(getConverterName() + UNDERSCORE)
-                .build();
+        return createDefaultBookV2(data, warnings, getConverterName());
     }
 
     private Double fillZ(int row, boolean isStart) {
