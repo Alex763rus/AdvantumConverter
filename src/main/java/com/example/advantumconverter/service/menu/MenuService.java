@@ -1,17 +1,19 @@
 package com.example.advantumconverter.service.menu;
 
 import com.example.advantumconverter.aspect.LogExecutionTime;
+import com.example.advantumconverter.exception.DatabaseException;
 import com.example.advantumconverter.model.menu.MenuActivity;
 import com.example.advantumconverter.model.menu.MenuDefault;
 import com.example.advantumconverter.model.menu.MenuStart;
 import com.example.advantumconverter.service.HistoryActionService;
 import com.example.advantumconverter.service.SecurityService;
 import com.example.advantumconverter.service.database.UserService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.example.tgcommons.constant.Constant;
 import org.example.tgcommons.model.wrapper.EditMessageTextWrap;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -26,25 +28,15 @@ import static com.example.advantumconverter.enums.State.FREE;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class MenuService {
 
-    @Autowired
-    private MenuDefault menuActivityDefault;
-
-    @Autowired
-    private StateService stateService;
-
-    @Autowired
-    private HistoryActionService historyActionService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private MenuStart menuStart;
+    private final MenuDefault menuActivityDefault;
+    private final StateService stateService;
+    private final HistoryActionService historyActionService;
+    private final UserService userService;
+    private final SecurityService securityService;
+    private final MenuStart menuStart;
 
     @LogExecutionTime(value = "Полный цикл обработки", unit = LogExecutionTime.TimeUnit.SECONDS)
     public List<PartialBotApiMethod> messageProcess(Update update) {
@@ -89,6 +81,8 @@ public class MenuService {
             if (!menuActivity.getMenuComand().equals(COMMAND_START) && !menuActivity.getMenuComand().equals(COMMAND_HISTORIC_ACTION)) {
                 historyActionService.saveHistoryAnswerAction(user, answer);
             }
+        } catch (InvalidDataAccessResourceUsageException ex) {
+            throw new DatabaseException("Не смогли сохранить историю действий в HistoryAction: ", ex);
         } catch (Exception ex) {
             log.error("Ошибка во время сохранения HistoryAction:" + ex.getMessage());
         }

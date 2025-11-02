@@ -1,9 +1,12 @@
 package com.example.advantumconverter.service.database;
 
+import com.example.advantumconverter.enums.State;
+import com.example.advantumconverter.exception.DatabaseException;
 import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
 import com.example.advantumconverter.service.menu.StateService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NOT_FOUND;
 import static com.example.advantumconverter.enums.UserRole.NEED_SETTING;
@@ -28,13 +30,26 @@ public class UserService {
 
     private final CompanyRepository companyRepository;
 
+    @PostConstruct
+    public void init() {
+        reloadUsers();
+    }
+
+    private void reloadUsers() {
+        var users = userRepository.findAll();
+        users.forEach(user -> stateService.setState(user, State.FREE));
+    }
+
     public User getUser(Update update) {
+
         val message = getMessage(update);
         val chatId = message.getChatId();
-        return Objects.requireNonNullElse(
-                stateService.getUser(chatId),
-                userRepository.findById(chatId).orElseGet(() -> registerNewUser(message))
-        );
+
+        User user = stateService.getUser(chatId);
+        if (user != null) {
+            return user;
+        }
+        return userRepository.findById(chatId).orElseGet(() -> registerNewUser(message));
     }
 
     public void refreshUser(User user) {
@@ -85,8 +100,13 @@ public class UserService {
 
         user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
 
-        userRepository.save(user);
-        log.info("user saved: " + user);
+        try {
+            userRepository.save(user);
+            log.info("user saved: " + user);
+        } catch (Exception ex) {
+            var errorMessage = String.format("Не смогли сохранить нового пользователя, chatId = %s, ", user.getChatId());
+            throw new DatabaseException(errorMessage, ex);
+        }
         return user;
     }
 }

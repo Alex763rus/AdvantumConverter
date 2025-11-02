@@ -47,10 +47,6 @@ public class StateService {
         userState.remove(user);
     }
 
-    public void clearOldState() {
-        userState.entrySet().removeIf(e -> e.getValue() == FREE);
-    }
-
     public void refreshUser(User user) {
         deleteUser(getUser(user.getChatId()));
         setState(user, FREE);

@@ -39,17 +39,13 @@ public class MenuSettingUser extends Menu {
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
-        switch (stateService.getState(user)) {
-            case FREE:
-                return freelogic(user, update);
-            case ADMIN_SETTING_WAIT_USERNAME:
-                return adminSettingUsernameLogic(user, update);
-            case ADMIN_SETTING_WAIT_COMPANY:
-                return adminSettingWaitCompany(user, update);
-            case ADMIN_SETTING_WAIT_ROLE:
-                return adminSettingWaitRole(user, update);
-        }
-        return errorMessageDefault(update);
+        return switch (stateService.getState(user)) {
+            case FREE -> freelogic(user, update);
+            case ADMIN_SETTING_WAIT_USERNAME -> adminSettingUsernameLogic(user, update);
+            case ADMIN_SETTING_WAIT_COMPANY -> adminSettingWaitCompany(user, update);
+            case ADMIN_SETTING_WAIT_ROLE -> adminSettingWaitRole(user, update);
+            default -> errorMessageDefault(update);
+        };
     }
 
     private List<PartialBotApiMethod> adminSettingWaitRole(User user, Update update) {
