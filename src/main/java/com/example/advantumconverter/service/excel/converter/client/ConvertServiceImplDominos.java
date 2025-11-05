@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -10,6 +11,7 @@ import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -20,11 +22,11 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_DOMINOS;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplDominos extends ConvertServiceBase implements ConvertService {
@@ -197,6 +199,10 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
         val cur = getValueOrDefault(row, 0, 3);
         val prev1 = getValueOrDefault(row, -1, 3);
         return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
+    }
+    @Override
+    public ConverterProperties.ConverterSettings converterSettings() {
+        return converterProperties.getDominos();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -96,5 +97,10 @@ public class ConvertServiceImplAgropromDetail extends ConvertServiceBase impleme
     @Override
     public ExcelType getExcelType() {
         return ExcelType.CLIENT;
+    }
+
+    @Override
+    public ConverterProperties.ConverterSettings converterSettings() {
+        return converterProperties.getAgropromDetail();
     }
 }

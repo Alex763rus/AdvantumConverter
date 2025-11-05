@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
@@ -58,5 +59,12 @@ public interface ConvertService {
      */
     default boolean isV2() {
         return false;
+    }
+
+    /**
+     * @return настройки конвертера
+     */
+    default ConverterProperties.ConverterSettings converterSettings() {
+        return null;
     }
 }

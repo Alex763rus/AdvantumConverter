@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -162,5 +163,10 @@ public class ConvertServiceImplSamokat extends ConvertServiceBase implements Con
         val cur = getValueOrDefault(row, 0, 1);
         val prev1 = getValueOrDefault(row, -1, 1);
         return !(cur.equals(prev1) || row == (START_ROW + 1) || row == (START_ROW) || prev1.equals(EMPTY));
+    }
+
+    @Override
+    public ConverterProperties.ConverterSettings converterSettings() {
+        return converterProperties.getSamokat();
     }
 }

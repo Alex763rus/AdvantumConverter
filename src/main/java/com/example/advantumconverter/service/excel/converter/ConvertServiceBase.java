@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter;
 
+import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -30,6 +31,9 @@ import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
 @Component
 public class ConvertServiceBase {
+
+    @Autowired
+    protected ConverterProperties converterProperties;
 
     @Autowired
     protected CrmConfigProperties crmConfigProperties;

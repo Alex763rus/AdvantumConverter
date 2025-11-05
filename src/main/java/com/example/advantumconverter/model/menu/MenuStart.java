@@ -94,6 +94,11 @@ public class MenuStart extends Menu {
         menu.append("Обработка файлов:").append(NEW_LINE);
         val converters = companySetting.getConverters(company);
         for (val convertService : converters) {
+            var converterSettings = convertService.converterSettings();
+            if (converterSettings != null && Boolean.FALSE.equals(converterSettings.getEnabled())) {
+                log.info("Конвертер: " + convertService.getConverterName() + " выключен в конфигурации");
+                continue;
+            }
             menu.append("- ").append(convertService.getConverterName()).append(": ")
                     .append(SPACE).append(prepareShield(convertService.getConverterCommand())).append(NEW_LINE);
         }

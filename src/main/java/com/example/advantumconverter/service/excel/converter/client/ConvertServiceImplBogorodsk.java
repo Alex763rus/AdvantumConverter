@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service.excel.converter.client;
 
+import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
@@ -20,17 +21,17 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_BOGORODSK;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
+
 @Component
 public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements ConvertService {
     private final int START_ROW = 1;
 
     private int LAST_ROW;
-
 
     @Override
     public String getConverterName() {
@@ -134,5 +135,10 @@ public class ConvertServiceImplBogorodsk extends ConvertServiceBase implements C
     @Override
     public ExcelType getExcelType() {
         return CLIENT;
+    }
+
+    @Override
+    public ConverterProperties.ConverterSettings converterSettings() {
+        return converterProperties.getBogorodsk();
     }
 }
