@@ -1,7 +1,7 @@
 package com.example.advantumconverter.service.menu;
 
 import com.example.advantumconverter.aspect.LogExecutionTime;
-import com.example.advantumconverter.exception.DatabaseException;
+import com.example.advantumconverter.config.BotConfig;
 import com.example.advantumconverter.model.menu.MenuActivity;
 import com.example.advantumconverter.model.menu.MenuDefault;
 import com.example.advantumconverter.model.menu.MenuStart;
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.example.tgcommons.constant.Constant;
 import org.example.tgcommons.model.wrapper.EditMessageTextWrap;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -37,10 +37,22 @@ public class MenuService {
     private final UserService userService;
     private final SecurityService securityService;
     private final MenuStart menuStart;
+    private final BotConfig botConfig;
 
     @LogExecutionTime(value = "Полный цикл обработки", unit = LogExecutionTime.TimeUnit.SECONDS)
     public List<PartialBotApiMethod> messageProcess(Update update) {
         val user = userService.getUser(update);
+        val answer = new ArrayList<PartialBotApiMethod>();
+        if(user == null){
+            //такое возможно только если не смогли сохранить нового пользователя
+            var errorMessage = "Не смогли сохранить нового пользоватля!";
+            log.error(errorMessage);
+            answer.add(SendMessageWrap.init()
+                    .setChatIdString(botConfig.getAdminChatId())
+                    .setText(errorMessage)
+                    .build().createMessage());
+            return answer;
+        }
         MenuActivity menuActivity = null;
         if (update.hasMessage()) {
             val menu = securityService.getMenuActivity(update.getMessage().getText());
@@ -57,7 +69,6 @@ public class MenuService {
                 menuActivity = menuActivityDefault;
             }
         }
-        val answer = new ArrayList<PartialBotApiMethod>();
         if (update.hasCallbackQuery()) {
             val message = update.getCallbackQuery().getMessage();
             if (message.getText() != null) {
@@ -81,10 +92,13 @@ public class MenuService {
             if (!menuActivity.getMenuComand().equals(COMMAND_START) && !menuActivity.getMenuComand().equals(COMMAND_HISTORIC_ACTION)) {
                 historyActionService.saveHistoryAnswerAction(user, answer);
             }
-        } catch (InvalidDataAccessResourceUsageException ex) {
-            throw new DatabaseException("Не смогли сохранить историю действий в HistoryAction: ", ex);
         } catch (Exception ex) {
-            log.error("Ошибка во время сохранения HistoryAction:" + ex.getMessage());
+            var errorMessage = "Ошибка во время сохранения HistoryAction:" + ex.getMessage();
+            log.error(errorMessage);
+            answer.add(SendMessageWrap.init()
+                            .setChatIdString(botConfig.getAdminChatId())
+                            .setText(errorMessage)
+                            .build().createMessage());
         }
         return answer;
     }

@@ -1,7 +1,6 @@
 package com.example.advantumconverter.service.database;
 
 import com.example.advantumconverter.enums.State;
-import com.example.advantumconverter.exception.DatabaseException;
 import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
@@ -70,6 +69,8 @@ public class UserService {
         user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
 
         userRepository.save(user);
+
+        stateService.setState(user, State.FREE);
         log.info("user saved: " + user);
         return user;
     }
@@ -102,10 +103,11 @@ public class UserService {
 
         try {
             userRepository.save(user);
+            stateService.setState(user, State.FREE);
             log.info("user saved: " + user);
         } catch (Exception ex) {
             var errorMessage = String.format("Не смогли сохранить нового пользователя, chatId = %s, ", user.getChatId());
-            throw new DatabaseException(errorMessage, ex);
+            log.error(errorMessage);
         }
         return user;
     }
