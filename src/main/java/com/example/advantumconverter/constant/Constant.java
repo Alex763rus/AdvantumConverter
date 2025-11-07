@@ -20,6 +20,7 @@ public final class Constant {
         public static final String SBER_SQUIRREL_ORGANIZATION_NAME = "ООО \"Белка Драйв\"";
         public static final String SHEET_RESULT_NAME = "ИМПОРТ";
         public static final String LOAD_THE_GOODS = "Погрузка";
+        public static final String RETURN_CONTAINERS = "Возврат тары";
         public static final String DC_NOGINSK = "DC Noginsk";
         public static final String RC_NOGINSK = "РЦ НОГИНСК";
         public static final String UNLOAD_THE_GOODS = "Разгрузка";
@@ -47,6 +48,7 @@ public final class Constant {
     @NoArgsConstructor(access = PRIVATE)
     public static final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
+        public static final String FILE_NAME_RS_LENTA = "Лента RS";
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_SIEL = "Сиэль";
@@ -82,6 +84,7 @@ public final class Constant {
     public static final class ExcelType {
         public static final String CLIENT = "Client";
         public static final String BOOKER = "Booker";
+        public static final String RS = "Rs";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -102,6 +105,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_BOGORODSK = "/convert_bogorodsk";
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
+        public static final String COMMAND_CONVERT_RS_LENTA = "/convert_rs_lenta";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
         public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
         public static final String COMMAND_CONVERT_SPAR = "/convert_spar";
@@ -141,6 +145,9 @@ public final class Constant {
 
         public static final String EXCEL_LINE_CONVERT_ERROR =
                 "не удалось обработать строку: %d, после значения: %s. Ошибка: %s";
+
+        public static final String EXCEL_LINE_CONVERT_RS_ERROR =
+                "не удалось обработать лист: %s, строку: %d. Ошибка: %s";
 
         public static final String CRM_EXCEPTION =
                 "Ошибка во время получения токена: ";

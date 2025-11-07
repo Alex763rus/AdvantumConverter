@@ -8,7 +8,8 @@ public enum UserRole {
     MAIN_EMPLOYEE("Главный сотрудник"),
     SUPPORT("Поддержка"),
     ADMIN("Администратор"),
-    EMPLOYEE_API("Сотрудник апи");
+    EMPLOYEE_API("Сотрудник апи"),
+    EMPLOYEE_RS("Сотрудник РС");
 
     private String title;
 

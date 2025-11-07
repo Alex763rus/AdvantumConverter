@@ -4,10 +4,9 @@ import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.DictionaryException;
-import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +25,6 @@ import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NA
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_METRO;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
@@ -82,8 +80,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
-        ConvertedListDataV2 dataLine = null;
-
+        ConvertedListDataClientsV2 dataLine = null;
 
         processedRows = new HashSet<>();
         val currentFlights = new ArrayList<Flight>();
@@ -103,7 +100,7 @@ public class ConvertServiceImplMetro extends ConvertServiceBase implements Conve
                 isStart = true;
                 for (int iFlight = 0; iFlight < currentFlights.size(); iFlight++) {
                     flight = currentFlights.get(iFlight);
-                    dataLine = ConvertedListDataV2.init()
+                    dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(fillA(flight.getExcelRow()))
                             .setColumnBdata(convertDateFormat(getCellValue(flight.getExcelRow(), 0), "dd/MM/yy"))
                             .setColumnCdata(COMPANY_METRO)

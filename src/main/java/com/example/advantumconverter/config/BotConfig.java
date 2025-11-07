@@ -7,6 +7,7 @@ import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.booker.ConvertServiceImplBooker;
 import com.example.advantumconverter.service.excel.converter.client.*;
+import com.example.advantumconverter.service.excel.converter.rs.ConvertServiceImplRsLenta;
 import lombok.Data;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,16 +67,17 @@ public class BotConfig {
             ConvertServiceImplSiel convertServiceImplSiel,
             ConvertServiceImplSpar convertServiceImplSpar,
             ConvertServiceImplNika convertServiceImplNika,
-            CompanyRepository companyRepository
+            CompanyRepository companyRepository,
+            ConvertServiceImplRsLenta convertServiceImplRsLenta
     ) {
         val companySetting = new CompanySetting();
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
-        val lentaConverter = List.of(convertServiceImplLenta);
+        val lentaConverter = List.of(convertServiceImplLenta, convertServiceImplRsLenta);
         val bushConverter = List.of(convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar, convertServiceImplNika);
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar, convertServiceImplNika, convertServiceImplRsLenta);
         val ozonConverter = List.of(convertServiceImplOzon);
         val metroConverter = List.of(convertServiceImplMetro);
         val sberConverter = List.of(convertServiceImplSber);
@@ -102,6 +104,9 @@ public class BotConfig {
     public Map<UserRole, List<String>> roleAccess() {
         var defaultCommands = List.of(COMMAND_DEFAULT, COMMAND_START);
 
+        var rsConverters = new ArrayList<String>(defaultCommands);
+        rsConverters.add(COMMAND_CONVERT_RS_LENTA);
+
         var allConverters = new ArrayList<String>(defaultCommands);
         allConverters.add(COMMAND_FAQ);
         allConverters.add(COMMAND_CONVERT_BOGORODSK);
@@ -121,24 +126,31 @@ public class BotConfig {
         allConverters.add(COMMAND_CONVERT_ART_FRUIT);
 
         var employeeCommands = new ArrayList<>(allConverters);
+        employeeCommands.addAll(rsConverters);
 
         var mainEmployeeCommands = new ArrayList<String>(allConverters);
+        mainEmployeeCommands.addAll(rsConverters);
         mainEmployeeCommands.add(COMMAND_HISTORIC_ACTION);
 
         var supportCommands = new ArrayList<String>(mainEmployeeCommands);
+        supportCommands.addAll(rsConverters);
         supportCommands.add(COMMAND_SHOW_OPEN_TASK);
         supportCommands.add(COMMAND_SHOW_MY_TASK);
         supportCommands.add(COMMAND_RELOAD_DICTIONARY);
 
         var adminCommands = new ArrayList<String>(mainEmployeeCommands);
+        adminCommands.addAll(rsConverters);
         adminCommands.add(COMMAND_SETTING_NEW_USER);
         adminCommands.add(COMMAND_RELOAD_DICTIONARY);
         adminCommands.add(COMMAND_HISTORIC_ACTION);
 
-        var employeeApiCoomands = new ArrayList<String>(mainEmployeeCommands);
-        employeeApiCoomands.add(COMMAND_SHOW_OPEN_TASK);
-        employeeApiCoomands.add(COMMAND_SHOW_MY_TASK);
-        employeeApiCoomands.add(COMMAND_RELOAD_DICTIONARY);
+        var employeeApiCommands = new ArrayList<String>(mainEmployeeCommands);
+        employeeApiCommands.addAll(rsConverters);
+        employeeApiCommands.add(COMMAND_SHOW_OPEN_TASK);
+        employeeApiCommands.add(COMMAND_SHOW_MY_TASK);
+        employeeApiCommands.add(COMMAND_RELOAD_DICTIONARY);
+
+        var employeeRsCommands = new ArrayList<>(rsConverters);
 
         // Настройка команд по ролям:
         val roleAccess = new HashMap<UserRole, List<String>>();
@@ -148,7 +160,8 @@ public class BotConfig {
         roleAccess.put(MAIN_EMPLOYEE, mainEmployeeCommands);
         roleAccess.put(SUPPORT, supportCommands);
         roleAccess.put(ADMIN, adminCommands);
-        roleAccess.put(EMPLOYEE_API, employeeApiCoomands);
+        roleAccess.put(EMPLOYEE_API, employeeApiCommands);
+        roleAccess.put(EMPLOYEE_RS, employeeRsCommands);
 
         return roleAccess;
     }
@@ -161,6 +174,7 @@ public class BotConfig {
                 , List.of(/*Общие:*/COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
                         /*Буш автопром:*/, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL
                         /*Лента:*/, COMMAND_CONVERT_LENTA
+                        /*RS Лента:*/, COMMAND_CONVERT_RS_LENTA
                         /*Озон:*/, COMMAND_CONVERT_OZON
                         /*Метро:*/, COMMAND_CONVERT_METRO
                         /*Сбер логистик:*/, COMMAND_CONVERT_SBER
@@ -175,7 +189,7 @@ public class BotConfig {
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        , COMMAND_CONVERT_LENTA
+                        , COMMAND_CONVERT_LENTA, COMMAND_CONVERT_RS_LENTA
                 )
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BUSH_AVTOPROM)

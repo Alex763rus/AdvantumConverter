@@ -5,6 +5,7 @@ import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
@@ -60,7 +61,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         int row = START_ROW;
         Set<String> addressesAndPontNameInReis = new HashSet<>();
         Set<AddressInReis> uniqReisAndAddress = new HashSet<>();
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
         boolean isStart = true;
         int numberUnloadingCounter = 0;
         String tonnage = EMPTY;
@@ -148,7 +149,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 }
                 addressesAndPontNameInReis.add(addressAndPointName);
 
-                dataLine = ConvertedListDataV2.init()
+                dataLine = ConvertedListDataClientsV2.init()
                         .setColumnAdata(numberOrderStart)
                         .setColumnBdata(convertDateFormat(getDateFromFile(row), TEMPLATE_DATE_DOT))
                         .setColumnCdata(getCellValue(row, 3))

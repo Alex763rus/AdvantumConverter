@@ -4,11 +4,10 @@ import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
-import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.lenta.LentaDictionary;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -18,11 +17,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_LENTA;
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_LENTA;
@@ -69,7 +66,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
 
         int row = 0;
         boolean isStart = true;
@@ -96,7 +93,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
                     counterCopy = 1;
                     columnC = fillC(row, code);
                 }
-                dataLine = ConvertedListDataV2.init()
+                dataLine = ConvertedListDataClientsV2.init()
                         .setColumnAdata(getCellValue(row, 5))
                         .setColumnBdata(convertDateFormat(convertDateFormat(new Date(), TEMPLATE_DATE_DOT), TEMPLATE_DATE_DOT))
                         .setColumnCdata(columnC)

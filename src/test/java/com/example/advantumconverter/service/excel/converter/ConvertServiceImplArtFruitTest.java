@@ -1,10 +1,9 @@
 package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.config.DatabaseTestConfig;
-import com.example.advantumconverter.config.DatabaseTestConfiguration;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.client.ConvertServiceImplArtFruit;
 import lombok.val;
@@ -55,12 +54,12 @@ public class ConvertServiceImplArtFruitTest {
         var sheet = book.getSheetAt(0);
         var lastRow = getLastRow(sheet);
 //        var lastColNumber = sheet.getRow(lastRow).getLastCellNum() - 1;
-        val data = new ArrayList<ConvertedListDataV2>();
+        val data = new ArrayList<ConvertedListDataClientsV2>();
         int row = 0;
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
         for (; row <= lastRow; ++row) {
             dataLine =
-                    ConvertedListDataV2.init()
+                    ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(sheet, row, 0))
                             .setColumnBdata(convertDateFormat(getCellValue(sheet, row, 1), TEMPLATE_DATE_DOT))
                             .setColumnCdata(getCellValue(sheet, row, 2))

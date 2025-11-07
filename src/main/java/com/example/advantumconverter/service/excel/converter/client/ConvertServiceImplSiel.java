@@ -6,10 +6,9 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.SberAddressNotFoundException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
-import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
@@ -20,14 +19,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SIEL;
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_SIEL;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SIEL;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -74,7 +71,7 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
 
         int row = START_ROW;
         boolean isStart = true;
@@ -105,7 +102,7 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
                     uniqReisCounter = dateFromFileNumberOnly + reisCounter;
                 } //
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-                    dataLine = ConvertedListDataV2.init()
+                    dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(uniqReisCounter)
                             .setColumnBdata(dateFromFile)
                             .setColumnCdata(COMPANY_NAME)

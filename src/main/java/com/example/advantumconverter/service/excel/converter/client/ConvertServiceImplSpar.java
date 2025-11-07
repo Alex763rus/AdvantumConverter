@@ -5,10 +5,9 @@ import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
-import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.*;
@@ -26,7 +25,6 @@ import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NA
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SPAR;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -67,7 +65,7 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
     @LogExecutionTime(value = "Конвертация v2 " + COMPANY_NAME_SPAR, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
         List<ConvertedListDataV2> data = List.of();
         int row = START_ROW;
         Map<String, LinkedList<RowData>> rowsdata = new LinkedHashMap<>();
@@ -127,17 +125,17 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
         return createDefaultBookV2(data, warnings, getConverterName());
     }
 
-    private List<ConvertedListDataV2> prepareConvertedList(LinkedList<RowData> rowsData) throws ParseException {
+    private List<ConvertedListDataClientsV2> prepareConvertedList(LinkedList<RowData> rowsData) throws ParseException {
         boolean isStart = true;
         int numberUnloading = 0;
-        List<ConvertedListDataV2> result = new LinkedList<>();
+        List<ConvertedListDataClientsV2> result = new LinkedList<>();
 
         for (var rowData : rowsData) {
             if (isStart) {
                 numberUnloading = 0;
             }
             for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-                var dataLine = ConvertedListDataV2.init()
+                var dataLine = ConvertedListDataClientsV2.init()
                         .setColumnAdata(rowData.getUniqNumber())
                         .setColumnBdata(convertDateFormat(convertDateFormat(new Date(), TEMPLATE_DATE_DOT), TEMPLATE_DATE_DOT))
                         .setColumnCdata(COMPANY_NAME_SPAR)

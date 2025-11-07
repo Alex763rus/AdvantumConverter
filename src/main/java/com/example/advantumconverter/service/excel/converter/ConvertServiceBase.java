@@ -7,6 +7,7 @@ import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.database.DictionaryService;
@@ -51,6 +52,16 @@ public class ConvertServiceBase {
     protected XSSFSheet getExcelList(XSSFWorkbook book, String listName) {
         return Optional.ofNullable(book.getSheet(listName))
                 .orElseThrow(() -> new ExcelListNotFoundException(listName));
+    }
+
+    protected String getCellValue(XSSFSheet sheet, int row, int col) {
+        if (sheet.getRow(row) == null) {
+            return EMPTY;
+        }
+        if (sheet.getRow(row).getCell(col) == null) {
+            return EMPTY;
+        }
+        return getCellValue(sheet.getRow(row).getCell(col));
     }
 
     protected String getCellValue(int row, int col) {
@@ -108,6 +119,11 @@ public class ConvertServiceBase {
         return convertToIntegerOrNull(getCellValue(row, col));
     }
 
+    protected Integer getIntegerValue(XSSFSheet sheet, int row, int col, int defaultValue) {
+        return Optional.ofNullable(convertToIntegerOrNull(getCellValue(sheet, row, col)))
+                .orElse(defaultValue);
+    }
+
     protected Integer getIntegerValue(int row, int col, int defaultValue) {
         return Optional.ofNullable(convertToIntegerOrNull(getCellValue(row, col)))
                 .orElse(defaultValue);
@@ -122,6 +138,11 @@ public class ConvertServiceBase {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    protected Double getDoubleValue(XSSFSheet sheet, int row, int col) {
+        val cellValue = getCellValue(sheet, row, col).replace(",", ".");
+        return cellValue.equals(EMPTY) ? null : Double.parseDouble(cellValue);
     }
 
     protected Double getDoubleValue(int row, int col) {
@@ -161,17 +182,22 @@ public class ConvertServiceBase {
         return Optional.empty();
     }
 
-    protected ConvertedBookV2 createDefaultBookV2(List<ConvertedListDataV2> data, List<String> warnings, String getConverterName) {
+    protected ConvertedBookV2 createDefaultBookV2(List<ConvertedListDataV2> data, List<String> warnings, String listName, List<String> header,
+                                                  String excelListName) {
         return ConvertedBookV2.init()
                 .setBookV2(List.of(
                         ConvertedListV2.init()
-                                .setHeadersV2(Header.headersOutputClientV2)
-                                .setExcelListName(EXPORT)
+                                .setHeadersV2(header)
+                                .setExcelListName(excelListName)
                                 .setExcelListContentV2(data)
                                 .build()
                 ))
                 .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining(EMPTY)))
-                .setBookName(getConverterName + UNDERSCORE)
+                .setBookName(listName + UNDERSCORE)
                 .build();
+    }
+
+    protected ConvertedBookV2 createDefaultBookV2(List<ConvertedListDataV2> data, List<String> warnings, String listName) {
+        return createDefaultBookV2(data, warnings, listName, Header.headersOutputClientV2, EXPORT);
     }
 }

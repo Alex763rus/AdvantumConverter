@@ -8,6 +8,7 @@ import com.example.advantumconverter.exception.SberAddressNotFoundException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
 import com.example.advantumconverter.model.jpa.Car;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
@@ -60,7 +61,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
 
         int row = START_ROW;
         try {
@@ -69,7 +70,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
             for (; row < LAST_ROW; ++row) {
 
-                dataLine = ConvertedListDataV2.init()
+                dataLine = ConvertedListDataClientsV2.init()
                         .setColumnAdata(fillA(row))
                         .setColumnBdata(convertDateFormat(getCellValue(1, 0), TEMPLATE_DATE_SLASH))
                         .setColumnCdata(FILE_NAME_COFIX)

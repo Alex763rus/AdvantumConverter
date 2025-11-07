@@ -15,6 +15,8 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.enums.Emoji.BLUSH;
+import static com.example.advantumconverter.enums.ExcelType.BOOKER;
+import static com.example.advantumconverter.enums.ExcelType.RS;
 import static org.example.tgcommons.constant.Constant.TextConstants.*;
 import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
@@ -93,10 +95,31 @@ public class MenuStart extends Menu {
         val menu = new StringBuilder();
         menu.append("Обработка файлов:").append(NEW_LINE);
         val converters = companySetting.getConverters(company);
+        boolean existsRsConverter = false;
         for (val convertService : converters) {
             var converterSettings = convertService.converterSettings();
             if (converterSettings != null && Boolean.FALSE.equals(converterSettings.getEnabled())) {
-                log.info("Конвертер: " + convertService.getConverterName() + " выключен в конфигурации");
+                continue;
+            }
+            if (BOOKER.equals(convertService.getExcelType())) {
+                continue;
+            }
+            if (RS.equals(convertService.getExcelType())) {
+                existsRsConverter = true;
+                //конвертеры RS будут добавлены отдельно ниже
+                continue;
+            }
+            menu.append("- ").append(convertService.getConverterName()).append(": ")
+                    .append(SPACE).append(prepareShield(convertService.getConverterCommand())).append(NEW_LINE);
+        }
+
+        //добавление конвертеров RS:
+        if (!existsRsConverter) {
+            return menu.toString();
+        }
+        menu.append(NEW_LINE).append("Обработка файлов RS:").append(NEW_LINE);
+        for (val convertService : converters) {
+            if (!RS.equals(convertService.getExcelType())) {
                 continue;
             }
             menu.append("- ").append(convertService.getConverterName()).append(": ")

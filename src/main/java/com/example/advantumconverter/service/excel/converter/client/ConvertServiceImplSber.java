@@ -6,11 +6,10 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.SberAddressNotFoundException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
-import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.jpa.sber.SberAddressDictionary;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.SneakyThrows;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_SBER;
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_SBER;
@@ -88,7 +86,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
-        ConvertedListDataV2 dataLine = null;
+        ConvertedListDataClientsV2 dataLine = null;
 
         int row = START_ROW;
         boolean isStart = true;
@@ -121,7 +119,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 }
 
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-                    dataLine = ConvertedListDataV2.init()
+                    dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
                             .setColumnCdata(cityFromDictionary.getCity().trim())

@@ -3,7 +3,8 @@ package com.example.advantumconverter.enums;
 public enum ExcelType {
 
     CLIENT("Client"),
-    BOOKER("Booker");
+    BOOKER("Booker"),
+    RS("Rs");
 
     private String excelType;
 

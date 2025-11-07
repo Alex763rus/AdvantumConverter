@@ -3,7 +3,7 @@ package com.example.advantumconverter.service.rest.out.mapper;
 import com.example.advantumconverter.gen.model.*;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.math.BigDecimal;
@@ -11,10 +11,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Converter.LOAD_THE_GOODS;
@@ -40,12 +37,14 @@ public class BookToCrmReisMapper {
 
     public static List<RouteWithDictionaryDto> map(ConvertedBookV2 convertedBookV2) {
         var content = convertedBookV2.getBookV2().get(0).getExcelListContentV2();
-        Map<String, List<ConvertedListDataV2>> documents = content.stream()
-                .collect(Collectors.groupingBy(ConvertedListDataV2::getColumnAdata));
+        Map<String, List<ConvertedListDataClientsV2>> documents = new HashMap<>();
+                //TODO добавился новый тип конвертера
+//                content.stream()
+//                .collect(Collectors.groupingBy(ConvertedListDataClientsV2::getColumnAdata));
         List<RouteWithDictionaryDto> result = new ArrayList<>();
         documents.forEach((reisNumber, points) -> {
             var pointsDto = new ArrayList<RoutePointDto>();
-            for (ConvertedListDataV2 point : points) {
+            for (ConvertedListDataClientsV2 point : points) {
                 pointsDto.add(
                         RoutePointDto.init()
                                 .setPoint(preparePoint(point))
@@ -89,7 +88,7 @@ public class BookToCrmReisMapper {
         return result;
     }
 
-    private static ExternalPointDto preparePoint(ConvertedListDataV2 point) {
+    private static ExternalPointDto preparePoint(ConvertedListDataClientsV2 point) {
         return ExternalPointDto.init()
                 .setExternalId(point.getColumnUdata())
                 .setName(point.getColumnUdata())

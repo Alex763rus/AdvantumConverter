@@ -189,6 +189,23 @@ public class Header {
                     "(Тип поля: строка)"
     );
 
+    public static List<String> headersOutputRsClientV2 = List.of(
+            "№ тр-ки",
+            "№ ост-ки",
+            "Пункт",
+            "Тип ост-ки",
+            "Дата начала",
+            "Время",
+            "Группа оборудования",
+            "Тип паллет",
+            "Кол-во",
+            "Вес",
+            "Объем",
+            "Лог. кат.",
+            "",
+            "ID рейса"
+    );
+
     public static List<String> headersOutputBooker = List.of(
             "ИНН",
             "Количество по полю Гос.номер",
