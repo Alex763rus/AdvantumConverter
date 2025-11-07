@@ -131,8 +131,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnIdata(null)
                             .setColumnJdata(5000)
                             .setColumnKdata(12)
-                            .setColumnLdata(Integer.parseInt(fillL(row)))
-                            .setColumnMdata(Integer.parseInt(fillM(row)))
+                            .setColumnLdata(getTemperage(row, 15, 0))
+                            .setColumnMdata(getTemperage(row, 15, 1))
                             .setColumnNdata(2)
                             .setColumnOdata(null)
                             .setColumnPdata(null)
@@ -162,6 +162,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnAnData(EMPTY)
                             .setColumnAoData(EMPTY)
                             .setColumnApData(fio)
+                            .setColumnAqData(getTemperage2(row, 17, 0))
+                            .setColumnArData(getTemperage2(row, 17, 1))
                             .setTechFullFio(fio)
                             .build();
                     data.add(dataLine);
@@ -198,32 +200,28 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         return value == null ? EMPTY : value.trim();
     }
 
-    private String prepareTemperature(int row) {
-        return getCellValue(row, 15)
+    private String prepareTemperature(int row, int col) {
+        return getCellValue(row, col)
                 .replace(SPACE, EMPTY)
                 .replace("(", EMPTY)
                 .replace(")", EMPTY)
                 .replace("+", EMPTY);
     }
 
-//    private String generateId() {
-//        return String.valueOf((int) (11111 + Math.random() * (99999 - 11111 + 1)));
-//    }
-
-    private String fillL(int row) {
-        var temperature = prepareTemperature(row).split(",");
+    private Integer getTemperage(int row, int col, int index) {
+        var temperature = prepareTemperature(row, col).split(",");
         if (temperature.length < 2) {
             throw new TemperatureNodValidException(String.valueOf(row + 1));
         }
-        return temperature[0];
+        return Integer.parseInt(temperature[index]);
     }
 
-    private String fillM(int row) {
-        var temperature = prepareTemperature(row).split(",");
+    private Integer getTemperage2(int row, int col, int index) {
+        var temperature = prepareTemperature(row, col).split(",");
         if (temperature.length < 2) {
-            throw new TemperatureNodValidException(String.valueOf(row + 1));
+            return null;
         }
-        return temperature[1];
+        return Integer.parseInt(temperature[index]);
     }
 
 

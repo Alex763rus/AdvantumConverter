@@ -55,6 +55,8 @@ public class ConvertedListDataClientsV2 implements ConvertedListDataV2{
     private String columnAnData;
     private String columnAoData;
     private String columnApData;
+    private Integer columnAqData;
+    private Integer columnArData;
 
     //==Технические поля, не участвующие в формировании файла: =============================
     private String techFullFio;

@@ -187,6 +187,8 @@ public class Header {
             , "комментарий рейс"
             , "Внешний ID водителя\n" +
                     "(Тип поля: строка)"
+            , "Мин температура 2 отсека, С"
+            , "Макс температура 2 отсека, С"
     );
 
     public static List<String> headersOutputRsClientV2 = List.of(
