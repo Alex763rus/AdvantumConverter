@@ -82,9 +82,6 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
                         .setStartDelivery(convertDateFormat(getCellValue(sheetMain, rowMain, 3), TEMPLATE_DATE_DOT))
                         .setStartPlan(convertDateFormat(getCellValue(sheetMain, rowMain, 6), TEMPLATE_DATE_TIME_DOT_SMALL_YEAR))
                         .setGroup(getCellValue(sheetMain, rowMain, 10))
-                        .setCargoSpace(getIntegerValue(sheetMain, rowMain, 14, 0))
-                        .setCargoWeight(getDoubleValue(sheetMain, rowMain, 15))
-                        .setCargoVolume(getDoubleValue(sheetMain, rowMain, 16))
                         .build()
                 );
             }
@@ -112,6 +109,9 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
                                 .setPointNumber(getIntegerValue(sheetFull, rowFull, 7, 0))
                                 .setPointName(POINT_VALISHEVO.equals(pointNameFromFile) ? POINT_VALISHEVO_REAL : pointNameFromFile)
                                 .setPointType(pointType)
+                                .setCargoSpace(getIntegerValue(sheetFull, rowFull, 25, 0))
+                                .setCargoWeight(getDoubleValue(sheetFull, rowFull, 26))
+                                .setCargoVolume(getDoubleValue(sheetFull, rowFull, 27))
                                 .build()
                 );
             }
@@ -139,9 +139,9 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
                 .setColumnFdata(reisMain.getStartPlan())
                 .setColumnGdata(reisMain.getGroup())
                 .setColumnHdata(STANDART_PALLET)
-                .setColumnIdata(isLoad ? reisMain.getCargoSpace() : 1)
-                .setColumnJdata(isLoad ? reisMain.getCargoWeight() : 1)
-                .setColumnKdata(isLoad ? reisMain.getCargoVolume() : 1)
+                .setColumnIdata(isLoad ? reisFull.getCargoSpace() : 1)
+                .setColumnJdata(isLoad ? reisFull.getCargoWeight() : 1)
+                .setColumnKdata(isLoad ? reisFull.getCargoVolume() : 1)
                 .setColumnLdata(FD)
                 .setColumnMdata(EMPTY)
                 .setColumnNdata(reisMain.getReisId())
@@ -159,9 +159,6 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
         private Date startDelivery;
         private Date startPlan;
         private String group;
-        private Integer cargoSpace; //грузомест
-        private Double cargoWeight; //вес груза
-        private Double cargoVolume; //объем груза
     }
 
     @Getter
@@ -176,6 +173,9 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
         private Integer pointNumber;
         private String pointName;
         private String pointType;
+        private Integer cargoSpace; //грузомест
+        private Double cargoWeight; //вес груза
+        private Double cargoVolume; //объем груза
     }
 
 }
