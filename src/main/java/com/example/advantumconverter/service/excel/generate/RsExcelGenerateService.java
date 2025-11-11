@@ -34,6 +34,7 @@ public class RsExcelGenerateService implements ExcelGenerateService {
     private CellStyle styleDateTimeDot;
     private CellStyle styleInt;
     private CellStyle styleDouble;
+    private CellStyle styleGeneral;
     private CellStyle styleTime;
 
     private void createCellString(Row row, int y, int x) {
@@ -75,6 +76,7 @@ public class RsExcelGenerateService implements ExcelGenerateService {
         styleDateTimeDot = getStyle(TEMPLATE_DATE_TIME_DOT);
         styleInt = getStyle("0");
         styleDouble = getStyle("0,000000");
+        styleGeneral = getStyle("general");
         styleTime = getStyle(TEMPLATE_TIME_SECOND);
         int y = 0;
         int x = 0;
@@ -96,11 +98,11 @@ public class RsExcelGenerateService implements ExcelGenerateService {
                 createCell(row, 6, rowData.getColumnGdata());
                 createCell(row, 7, rowData.getColumnHdata());
                 createCell(row, 8, rowData.getColumnIdata());
-                createCell(row, 9, rowData.getColumnJdata());
-                createCell(row, 10,rowData.getColumnKdata());
-                createCell(row, 11,rowData.getColumnLdata());
-                createCell(row, 12,rowData.getColumnMdata());
-                createCell(row, 13,rowData.getColumnNdata());
+                createGeneralCell(row, 9, rowData.getColumnJdata());
+                createGeneralCell(row, 10, rowData.getColumnKdata());
+                createCell(row, 11, rowData.getColumnLdata());
+                createCell(row, 12, rowData.getColumnMdata());
+                createCell(row, 13, rowData.getColumnNdata());
             }
             val tmpFile = Files.createTempFile(convertedBook.getBookName(), ".xlsx").toFile();
             workbook.write(new FileOutputStream(tmpFile));
@@ -134,6 +136,14 @@ public class RsExcelGenerateService implements ExcelGenerateService {
         cell1.setCellStyle(cellStyle);
         if (value != null) {
             cell1.setCellValue(value);
+        }
+    }
+
+    private void createGeneralCell(Row row, int x, Double value) throws ParseException {
+        val cell = row.createCell(x);
+        cell.setCellStyle(styleGeneral);
+        if (value != null) {
+            cell.setCellValue(value);
         }
     }
 

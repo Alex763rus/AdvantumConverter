@@ -98,7 +98,7 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
             Set<ReisFull> reisFulls = new LinkedHashSet<>();
 
             for (; !EMPTY.equals(reisId = getCellValue(sheetFull, rowFull, 0)); ++rowFull) {
-                var pointNameFromFile = getCellValue(sheetFull, rowFull, 0);
+                var pointNameFromFile = getCellValue(sheetFull, rowFull, 9);
                 var pointOperationType = getCellValue(sheetFull, rowFull, 8);
                 var pointType = switch (pointOperationType) {
                     case RETURN_CONTAINERS -> POINTTYPE_D;
