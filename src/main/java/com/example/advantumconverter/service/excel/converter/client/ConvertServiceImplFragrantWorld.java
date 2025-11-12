@@ -66,6 +66,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                                 .setShopNumber(shopNumber)
                                 .setTimeStart(getCellValue(sheetDomino, rowOrder, 35))
                                 .setTimeEnd(getCellValue(sheetDomino, rowOrder, 36))
+                                .setAddress(getCellValue(sheetDomino, rowOrder, 16))
                                 .build()
                 );
             }
@@ -87,11 +88,12 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                         .setReisNumber(reisId)
                         .setShopNumber(shopNumber)
                         .setOrganization(getCellValue(sheetOrders, rowMain, 15))
-                        .setDateOrder(convertDateFormat(getCellValue(sheetOrders, rowMain, 2).replaceAll("\"", ""), TEMPLATE_DATE_SLASH))
+                        .setDateOrder(convertDateFormat(getCellValue(sheetOrders, rowMain, 2)
+                                .replaceAll("\"", "")
+                                .replaceAll("/", "."), TEMPLATE_DATE_DOT))
                         .setTonnage(fillInteger(getCellValue(sheetOrders, rowMain, 23)) * 1000)
                         .setPackageCount(fillInteger(getCellValue(sheetOrders, rowMain, 28)))
-                        .setPointName(shopNumber)
-                        .setAddress(getCellValue(sheetOrders, rowMain, 9))
+                        .setPointName(getCellValue(sheetOrders, rowMain, 9))
                         .setCarNumber(getCellValue(sheetOrders, rowMain, 20).replaceAll(SPACE, EMPTY))
                         .setFio(getCellValue(sheetOrders, rowMain, 16))
                         .build()
@@ -150,7 +152,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                             .setColumnSdata(convertDateFormat(dateS, TEMPLATE_DATE_TIME_DOT))
                             .setColumnTdata(convertDateFormat(dateT, TEMPLATE_DATE_TIME_DOT))
                             .setColumnUdata(isStart ? "309" : row.getPointName())
-                            .setColumnVdata(isStart ? "Внуково" : row.getAddress())
+                            .setColumnVdata(isStart ? "Внуково" : rowOrderData.getAddress())
                             .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
                             .setColumnXdata(isStart ? 0 : numberUnloading)
                             .setColumnYdata(null)
@@ -212,7 +214,6 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         Integer tonnage;
         Integer packageCount;
         String pointName;
-        String address;
         String carNumber;
         String fio;
     }
@@ -227,6 +228,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         String shopNumber;
         String timeStart;
         String timeEnd;
+        String address;
     }
 
     @Override
