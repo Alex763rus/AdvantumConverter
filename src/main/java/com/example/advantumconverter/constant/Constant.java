@@ -53,6 +53,7 @@ public final class Constant {
         public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_SIEL = "Сиэль";
         public static final String FILE_NAME_SPAR = "Спар";
+        public static final String FILE_NAME_FRAGRANT_WORLD = "Ароматный мир";
         public static final String FILE_NAME_NIKA = "Ника Транс";
         public static final String FILE_NAME_COFIX = "Рулог Кофикс";
         public static final String FILE_NAME_AGROPROM = "Х5 Агропром Торг";
@@ -77,6 +78,7 @@ public final class Constant {
         public static final String COMPANY_NAME_ART_FRUIT = "ArtFruit";
         public static final String COMPANY_NAME_SIEL = "СИЭЛЬ";
         public static final String COMPANY_NAME_SPAR = "Спар";
+        public static final String COMPANY_NAME_FRAGRANT_WORLD = "Ароматный мир";
         public static final String COMPANY_NAME_NIKA = "Ника Транс";
     }
 
@@ -109,6 +111,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
         public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
         public static final String COMMAND_CONVERT_SPAR = "/convert_spar";
+        public static final String COMMAND_CONVERT_FRAGRANT_WORLD = "/convert_fragrant_world";
         public static final String COMMAND_CONVERT_NIKA = "/convert_nika";
         public static final String COMMAND_CONVERT_METRO = "/convert_metro";
         public static final String COMMAND_CONVERT_SAMOKAT = "/convert_samokat";

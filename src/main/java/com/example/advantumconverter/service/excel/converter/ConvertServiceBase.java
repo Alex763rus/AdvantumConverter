@@ -7,12 +7,11 @@ import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListV2;
 import com.example.advantumconverter.service.database.DictionaryService;
 import lombok.val;
-import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Heap.*;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
@@ -58,10 +58,11 @@ public class ConvertServiceBase {
         if (sheet.getRow(row) == null) {
             return EMPTY;
         }
-        if (sheet.getRow(row).getCell(col) == null) {
+        var cell = sheet.getRow(row).getCell(col);
+        if (cell == null) {
             return EMPTY;
         }
-        return getCellValue(sheet.getRow(row).getCell(col));
+        return getCellValue(cell);
     }
 
     protected String getCellValue(int row, int col) {
@@ -74,9 +75,62 @@ public class ConvertServiceBase {
         return getCellValue(sheet.getRow(row).getCell(col));
     }
 
+    protected String getFormulaCellValue(XSSFSheet sheet, int row, int col) {
+        if (sheet.getRow(row) == null) {
+            return EMPTY;
+        }
+        if (sheet.getRow(row).getCell(col) == null) {
+            return EMPTY;
+        }
+        var xssfCell = sheet.getRow(row).getCell(col);
+
+        DataFormatter formatter = new DataFormatter();
+        // Если ячейка содержит формулу, вычисляем ее значение
+        if (xssfCell != null && xssfCell.getCellType() == CELL_TYPE_FORMULA) {
+            Workbook workbook = xssfCell.getSheet().getWorkbook();
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
+            // Вычисляем значение формулы
+            CellValue cellValue = evaluator.evaluate(xssfCell);
+
+            int i = 0;
+            // Форматируем вычисленное значение
+            return switch (cellValue.getCellType()) {
+                case Cell.CELL_TYPE_NUMERIC -> String.valueOf(cellValue.getNumberValue());
+                case Cell.CELL_TYPE_STRING -> cellValue.getStringValue();
+                case Cell.CELL_TYPE_BOOLEAN -> String.valueOf(cellValue.getBooleanValue());
+                case Cell.CELL_TYPE_ERROR -> "ERROR";
+                default -> "";
+            };
+        } else {
+            // Для обычных ячеек используем стандартный форматтер
+            return formatter.formatCellValue(xssfCell);
+        }
+    }
+
     protected String getCellValue(XSSFCell xssfCell) {
         DataFormatter formatter = new DataFormatter();
-        return formatter.formatCellValue(xssfCell);
+        // Если ячейка содержит формулу, вычисляем ее значение
+        if (xssfCell != null && xssfCell.getCellType() == CELL_TYPE_FORMULA) {
+            Workbook workbook = xssfCell.getSheet().getWorkbook();
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
+            // Вычисляем значение формулы
+            CellValue cellValue = evaluator.evaluate(xssfCell);
+
+            int i = 0;
+            // Форматируем вычисленное значение
+            return switch (cellValue.getCellType()) {
+                case Cell.CELL_TYPE_NUMERIC -> String.valueOf(cellValue.getNumberValue());
+                case Cell.CELL_TYPE_STRING -> cellValue.getStringValue();
+                case Cell.CELL_TYPE_BOOLEAN -> String.valueOf(cellValue.getBooleanValue());
+                case Cell.CELL_TYPE_ERROR -> "ERROR";
+                default -> "";
+            };
+        } else {
+            // Для обычных ячеек используем стандартный форматтер
+            return formatter.formatCellValue(xssfCell);
+        }
     }
 
     protected Date getCellDate(int row, int col) {
