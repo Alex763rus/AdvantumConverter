@@ -88,6 +88,7 @@ public class MenuSettingUser extends Menu {
         buttons.add(Button.init().setKey(MAIN_EMPLOYEE.name()).setValue(MAIN_EMPLOYEE.getTitle()).build());
         buttons.add(Button.init().setKey(SUPPORT.name()).setValue(SUPPORT.getTitle()).build());
         buttons.add(Button.init().setKey(EMPLOYEE_API.name()).setValue(EMPLOYEE_API.getTitle()).build());
+        buttons.add(Button.init().setKey(EMPLOYEE_RS.name()).setValue(EMPLOYEE_RS.getTitle()).build());
         val buttonsDescription = ButtonsDescription.init().setCountColumn(1).setButtons(buttons).build();
         return createMessageList(user, "Укажите роль:", buttonsDescription);
     }
