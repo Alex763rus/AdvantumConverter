@@ -66,6 +66,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                                 .setShopNumber(shopNumber)
                                 .setTimeStart(getCellValue(sheetDomino, rowOrder, 35))
                                 .setTimeEnd(getCellValue(sheetDomino, rowOrder, 36))
+                                .setCity(getCellValue(sheetDomino, rowOrder, 15))
                                 .setAddress(getCellValue(sheetDomino, rowOrder, 16))
                                 .build()
                 );
@@ -152,7 +153,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                             .setColumnSdata(convertDateFormat(dateS, TEMPLATE_DATE_TIME_DOT))
                             .setColumnTdata(convertDateFormat(dateT, TEMPLATE_DATE_TIME_DOT))
                             .setColumnUdata(isStart ? "309" : row.getPointName())
-                            .setColumnVdata(isStart ? "Внуково" : rowOrderData.getAddress())
+                            .setColumnVdata(isStart ? "Внуково" : rowOrderData.getCity() + SPACE + rowOrderData.getAddress())
                             .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
                             .setColumnXdata(isStart ? 0 : numberUnloading)
                             .setColumnYdata(null)
@@ -228,6 +229,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         String shopNumber;
         String timeStart;
         String timeEnd;
+        String city;
         String address;
     }
 

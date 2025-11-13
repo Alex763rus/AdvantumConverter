@@ -46,6 +46,7 @@ public class MenuStart extends Menu {
             case SUPPORT -> messageText = getSupportMenuText(user);
             case ADMIN -> messageText = getAdminMenuText(user);
             case EMPLOYEE_API -> messageText = getSupportMenuText(user);
+            case EMPLOYEE_RS -> messageText = getEmployeeMenuText(user);
             default -> messageText = EMPTY;
         }
         return createMessageList(user, EmojiParser.parseToUnicode(messageText));
