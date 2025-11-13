@@ -133,7 +133,7 @@ public class ConvertServiceBase {
         }
     }
 
-    protected Date getCellDate(int row, int col) {
+    protected Date getCellDate(XSSFSheet sheet, int row, int col) {
         if (sheet.getRow(row) == null) {
             return null;
         }
@@ -141,6 +141,10 @@ public class ConvertServiceBase {
             return null;
         }
         return sheet.getRow(row).getCell(col).getDateCellValue();
+    }
+
+    protected Date getCellDate(int row, int col) {
+        return getCellDate(sheet, row, col);
     }
 
     protected int getLastRow(int startRow) {

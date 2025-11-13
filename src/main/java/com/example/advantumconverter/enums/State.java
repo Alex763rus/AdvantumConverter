@@ -14,6 +14,8 @@ public enum State {
 
     CONVERT_FILE_RS_LENTA,
 
+    CONVERT_FILE_RS_INNER_LENTA,
+
     CONVERT_FILE_OZON,
 
     CONVERT_FILE_SIEL,
