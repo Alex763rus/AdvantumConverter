@@ -52,7 +52,7 @@ public class MenuStart extends Menu {
     }
 
     private String getEmployeeMenuText(User user) {
-        val menu = new StringBuilder(prepareMainMenu());
+        val menu = new StringBuilder(/*prepareMainMenu()*/);
         menu.append(prepareAvailableConverters(user.getCompany()));
         return menu.toString();
     }
@@ -83,6 +83,7 @@ public class MenuStart extends Menu {
         return menu.toString();
     }
 
+    /*
     private String prepareMainMenu() {
         val mainMenu = new StringBuilder();
         mainMenu.append("Главное меню:").append(NEW_LINE)
@@ -90,6 +91,7 @@ public class MenuStart extends Menu {
                 .append(NEW_LINE);
         return mainMenu.toString();
     }
+*/
 
     private String prepareAvailableConverters(Company company) {
         val menu = new StringBuilder();
