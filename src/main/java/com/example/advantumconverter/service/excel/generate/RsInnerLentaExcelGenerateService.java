@@ -3,8 +3,7 @@ package com.example.advantumconverter.service.excel.generate;
 import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsClientsV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaClientsV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsInnerLentaV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -22,13 +21,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.ExcelType.RS_LENTA;
+import static com.example.advantumconverter.constant.Constant.ExcelType.RS_INNER_LENTA;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 
-@Component(RS_LENTA)
-public class RsLentaExcelGenerateService implements ExcelGenerateService {
+@Component(RS_INNER_LENTA)
+public class RsInnerLentaExcelGenerateService implements ExcelGenerateService {
     private Workbook workbook;
     private List<List<String>> data;
     private CellStyle styleDateDot;
@@ -81,29 +80,35 @@ public class RsLentaExcelGenerateService implements ExcelGenerateService {
         styleTime = getStyle(TEMPLATE_TIME_SECOND);
         int y = 0;
         int x = 0;
+        int dataCounter = 0;
         try {
             Row row = sheet.createRow(y);
             for (x = 0; x < book.getHeadersV2().size(); x++) {
                 val cell = row.createCell(x);
                 cell.setCellValue(book.getHeadersV2().get(x));
             }
-            for (; y < dataV2.size(); y++) {
-                ConvertedListDataRsLentaClientsV2 rowData = (ConvertedListDataRsLentaClientsV2) dataV2.get(y);
-                row = sheet.createRow(y + 1);
-                createCell(row, 0, rowData.getColumnAdata());
-                createCell(row, 1, styleDateDot, rowData.getColumnBdata());
-                createCell(row, 2, rowData.getColumnCdata());
-                createCell(row, 3, rowData.getColumnDdata());
-                createCell(row, 4, rowData.getColumnEdata());
-                createCell(row, 5, rowData.getColumnFdata());
-                createCell(row, 6, rowData.getColumnGdata());
-                createCell(row, 7, rowData.getColumnHdata());
-                createCell(row, 8, rowData.getColumnIdata());
-                createCell(row, 9, rowData.getColumnJdata());
-                createCell(row, 10, rowData.getColumnKdata());
-                createCell(row, 11, rowData.getColumnLdata());
-                createCell(row, 12, rowData.getColumnMdata());
-                createCell(row, 13, rowData.getColumnNdata());
+
+            for (ConvertedListDataV2 convertedListDataV2 : dataV2) {
+                ConvertedListDataRsInnerLentaV2 rowData = (ConvertedListDataRsInnerLentaV2) convertedListDataV2;
+
+                for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
+                    row = sheet.createRow(y + 1);
+                    createCell(row, 0, rowData.getColumnAdata());
+                    createCell(row, 1, styleDateDot, rowData.getColumnBdata());
+                    createCell(row, 2, rowData.getColumnCdata());
+                    createCell(row, 3, rowData.getColumnDdata());
+                    createCell(row, 4, rowData.getColumnEdata());
+                    createCell(row, 5, rowData.getColumnFdata());
+                    createCell(row, 6, rowData.getColumnGdata());
+                    createCell(row, 7, rowData.getColumnHdata());
+                    createCell(row, 8, rowData.getColumnIdata());
+                    createCell(row, 9, rowData.getColumnJdata());
+                    createCell(row, 10, rowData.getColumnKdata());
+                    createCell(row, 11, rowData.getColumnLdata());
+                    createCell(row, 12, rowData.getColumnMdata());
+                    createCell(row, 13, rowData.getColumnNdata());
+                    y = y + 1;
+                }
             }
             val tmpFile = Files.createTempFile(convertedBook.getBookName(), ".xlsx").toFile();
             workbook.write(new FileOutputStream(tmpFile));

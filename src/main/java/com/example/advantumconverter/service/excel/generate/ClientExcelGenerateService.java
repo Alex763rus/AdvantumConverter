@@ -5,7 +5,6 @@ import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsClientsV2;
 import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;

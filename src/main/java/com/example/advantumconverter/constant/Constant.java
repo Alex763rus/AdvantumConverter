@@ -88,7 +88,7 @@ public final class Constant {
         public static final String CLIENT = "Client";
         public static final String BOOKER = "Booker";
         public static final String RS = "Rs";
-        public static final String RS_LENTA = "RsLenta";
+        public static final String RS_INNER_LENTA = "RsInnerLenta";
     }
 
     @NoArgsConstructor(access = PRIVATE)

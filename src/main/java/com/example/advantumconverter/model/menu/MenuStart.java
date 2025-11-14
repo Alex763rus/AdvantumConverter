@@ -15,8 +15,7 @@ import java.util.List;
 
 import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.enums.Emoji.BLUSH;
-import static com.example.advantumconverter.enums.ExcelType.BOOKER;
-import static com.example.advantumconverter.enums.ExcelType.RS;
+import static com.example.advantumconverter.enums.ExcelType.*;
 import static org.example.tgcommons.constant.Constant.TextConstants.*;
 import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
@@ -105,7 +104,7 @@ public class MenuStart extends Menu {
             if (BOOKER.equals(convertService.getExcelType())) {
                 continue;
             }
-            if (RS.equals(convertService.getExcelType())) {
+            if (RS.equals(convertService.getExcelType()) || RS_INNER_LENTA.equals(convertService.getExcelType())) {
                 existsRsConverter = true;
                 //конвертеры RS будут добавлены отдельно ниже
                 continue;
@@ -120,7 +119,7 @@ public class MenuStart extends Menu {
         }
         menu.append(NEW_LINE).append("Обработка файлов RS:").append(NEW_LINE);
         for (val convertService : converters) {
-            if (!RS.equals(convertService.getExcelType())) {
+            if (!(RS.equals(convertService.getExcelType()) || RS_INNER_LENTA.equals(convertService.getExcelType()))) {
                 continue;
             }
             menu.append("- ").append(convertService.getConverterName()).append(": ")

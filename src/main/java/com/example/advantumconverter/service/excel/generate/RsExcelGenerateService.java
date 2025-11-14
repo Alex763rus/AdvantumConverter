@@ -3,7 +3,7 @@ package com.example.advantumconverter.service.excel.generate;
 import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsClientsV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -88,7 +88,7 @@ public class RsExcelGenerateService implements ExcelGenerateService {
             }
             for (; y < dataV2.size(); y++) {
                 row = sheet.createRow(y + 1);
-                ConvertedListDataRsClientsV2 rowData = (ConvertedListDataRsClientsV2) dataV2.get(y);
+                ConvertedListDataRsLentaV2 rowData = (ConvertedListDataRsLentaV2) dataV2.get(y);
                 createCell(row, 0, rowData.getColumnAdata());
                 createCell(row, 1, rowData.getColumnBdata());
                 createCell(row, 2, rowData.getColumnCdata());

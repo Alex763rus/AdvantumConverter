@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
 @ToString
-public class ConvertedListDataRsClientsV2 implements ConvertedListDataV2{
+public class ConvertedListDataRsLentaV2 implements ConvertedListDataV2{
 
     private String columnAdata;
     private Integer columnBdata;

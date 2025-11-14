@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
 @ToString
-public class ConvertedListDataRsLentaClientsV2 implements ConvertedListDataV2 {
+public class ConvertedListDataRsInnerLentaV2 implements ConvertedListDataV2 {
 
     private String columnAdata;
     private Date columnBdata;
@@ -29,6 +29,6 @@ public class ConvertedListDataRsLentaClientsV2 implements ConvertedListDataV2 {
     private String columnNdata;
 
     //==Технические поля, не участвующие в формировании файла: =============================
-    private String techCountRepeat;
+    private Integer techCountRepeat;
 
 }

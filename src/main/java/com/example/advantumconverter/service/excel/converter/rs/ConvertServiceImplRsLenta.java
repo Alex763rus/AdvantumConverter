@@ -5,7 +5,7 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsClientsV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
@@ -128,9 +128,9 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
         return createDefaultBookV2(data, warnings, getConverterName(), Header.headersOutputRsClientV2, "Шаблон для Лента");
     }
 
-    private ConvertedListDataRsClientsV2 prepareData(ReisMain reisMain, ReisFull reisFull) {
+    private ConvertedListDataRsLentaV2 prepareData(ReisMain reisMain, ReisFull reisFull) {
         var isLoad = POINTTYPE_PD.equals(reisFull.getPointType());
-        return ConvertedListDataRsClientsV2.init()
+        return ConvertedListDataRsLentaV2.init()
                 .setColumnAdata(EMPTY)
                 .setColumnBdata(reisFull.getPointNumber())
                 .setColumnCdata(reisFull.getPointName())

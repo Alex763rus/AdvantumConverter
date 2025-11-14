@@ -5,7 +5,7 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaClientsV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsInnerLentaV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
@@ -19,7 +19,7 @@ import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CO
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_LENTA;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_RS_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_RS_INNER_LENTA;
-import static com.example.advantumconverter.enums.ExcelType.RS_LENTA;
+import static com.example.advantumconverter.enums.ExcelType.RS_INNER_LENTA;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
@@ -27,7 +27,7 @@ public class ConvertServiceImplRsInnerLenta extends ConvertServiceBase implement
 
     @Override
     public ExcelType getExcelType() {
-        return RS_LENTA;
+        return RS_INNER_LENTA;
     }
 
     @Override
@@ -68,13 +68,13 @@ public class ConvertServiceImplRsInnerLenta extends ConvertServiceBase implement
         return createDefaultBookV2(data, warnings, getConverterName(), Header.headersOutputRsLentaClientV2, "Шаблон для Лента");
     }
 
-    private ConvertedListDataRsLentaClientsV2 prepareData(
+    private ConvertedListDataRsInnerLentaV2 prepareData(
             ReisMain reisMain,
             Map<String, SpWindows> spWindowsData,
             Map<String, SpParams> spParamsData) {
         var window = spWindowsData.get(reisMain.getNumberYr());
         var params = spParamsData.get(reisMain.getNumberYr());
-        return ConvertedListDataRsLentaClientsV2.init()
+        return ConvertedListDataRsInnerLentaV2.init()
                 .setColumnAdata(EMPTY)
                 .setColumnBdata(reisMain.getDateDelivery())
                 .setColumnCdata("8023")
@@ -92,6 +92,7 @@ public class ConvertServiceImplRsInnerLenta extends ConvertServiceBase implement
                                 ROLIKS.equalsIgnoreCase(params.getTypeGm()) ? 150 : 0
                 )
                 .setColumnNdata(params.getTonnageMax())
+                .setTechCountRepeat(reisMain.getPalletCount())
                 .build();
     }
 
