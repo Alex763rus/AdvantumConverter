@@ -109,10 +109,6 @@ public class BotConfig {
     public Map<UserRole, List<String>> roleAccess() {
         var defaultCommands = List.of(COMMAND_DEFAULT, COMMAND_START);
 
-        var rsConverters = new ArrayList<String>(defaultCommands);
-        rsConverters.add(COMMAND_CONVERT_RS_LENTA);
-        rsConverters.add(COMMAND_CONVERT_RS_INNER_LENTA);
-
         var allConverters = new ArrayList<String>(defaultCommands);
         allConverters.add(COMMAND_FAQ);
         allConverters.add(COMMAND_CONVERT_BOGORODSK);
@@ -132,11 +128,13 @@ public class BotConfig {
         allConverters.add(COMMAND_CONVERT_SBER);
         allConverters.add(COMMAND_CONVERT_ART_FRUIT);
 
+        var rsConverters = new ArrayList<String>(defaultCommands);
+        rsConverters.add(COMMAND_CONVERT_RS_LENTA);
+        rsConverters.add(COMMAND_CONVERT_RS_INNER_LENTA);
+
         var employeeCommands = new ArrayList<>(allConverters);
-        employeeCommands.addAll(rsConverters);
 
         var mainEmployeeCommands = new ArrayList<String>(allConverters);
-        mainEmployeeCommands.addAll(rsConverters);
         mainEmployeeCommands.add(COMMAND_HISTORIC_ACTION);
 
         var supportCommands = new ArrayList<String>(mainEmployeeCommands);

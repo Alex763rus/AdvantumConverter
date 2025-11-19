@@ -50,7 +50,7 @@ public class SupportService {
 
     public List<PartialBotApiMethod> processNewTask(User user, Update update, ConvertService convertService
             , String fullFileName, Exception ex) throws ParseException {
-        if (user.getUserRole() == SUPPORT || user.getUserRole() == ADMIN || user.getUserRole() == EMPLOYEE_API) {
+        if (user.getUserRole() != EMPLOYEE && user.getUserRole() == MAIN_EMPLOYEE) {
             return SendMessageWrap.init().setChatIdLong(user.getChatId())
                     .setText(prepareShield(ex.getMessage()))
                     .build().createMessageList();

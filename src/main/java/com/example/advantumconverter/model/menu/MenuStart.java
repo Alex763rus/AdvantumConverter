@@ -1,5 +1,6 @@
 package com.example.advantumconverter.model.menu;
 
+import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.Company;
 import com.example.advantumconverter.model.jpa.User;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.enums.Emoji.BLUSH;
@@ -30,6 +32,8 @@ public class MenuStart extends Menu {
     }
 
     private final CompanySetting companySetting;
+    private final Map<UserRole, List<String>> roleAccess;
+    private final Map<Company, List<String>> companyAccessList;
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
@@ -45,7 +49,7 @@ public class MenuStart extends Menu {
             case SUPPORT -> messageText = getSupportMenuText(user);
             case ADMIN -> messageText = getAdminMenuText(user);
             case EMPLOYEE_API -> messageText = getSupportMenuText(user);
-            case EMPLOYEE_RS -> messageText = getEmployeeMenuText(user);
+            case EMPLOYEE_RS -> messageText = getEmployeeRsMenuText(user);
             default -> messageText = EMPTY;
         }
         return createMessageList(user, EmojiParser.parseToUnicode(messageText));
@@ -53,10 +57,15 @@ public class MenuStart extends Menu {
 
     private String getEmployeeMenuText(User user) {
         val menu = new StringBuilder(/*prepareMainMenu()*/);
-        menu.append(prepareAvailableConverters(user.getCompany()));
+        menu.append(prepareAvailableConverters(user));
         return menu.toString();
     }
 
+    private String getEmployeeRsMenuText(User user) {
+        val menu = new StringBuilder(/*prepareMainMenu()*/);
+        menu.append(prepareAvailableConverters(user));
+        return menu.toString();
+    }
 
     private String getMainEmployeeMenuText(User user) {
         val menu = new StringBuilder(getEmployeeMenuText(user));
@@ -93,10 +102,10 @@ public class MenuStart extends Menu {
     }
 */
 
-    private String prepareAvailableConverters(Company company) {
+    private String prepareAvailableConverters(User user) {
         val menu = new StringBuilder();
         menu.append("Обработка файлов:").append(NEW_LINE);
-        val converters = companySetting.getConverters(company);
+        val converters = companySetting.getConverters(user.getCompany());
         boolean existsRsConverter = false;
         for (val convertService : converters) {
             var converterSettings = convertService.converterSettings();
@@ -109,6 +118,9 @@ public class MenuStart extends Menu {
             if (RS.equals(convertService.getExcelType()) || RS_INNER_LENTA.equals(convertService.getExcelType())) {
                 existsRsConverter = true;
                 //конвертеры RS будут добавлены отдельно ниже
+                continue;
+            }
+            if (!checkAccess(user, convertService.getConverterCommand())) {
                 continue;
             }
             menu.append("- ").append(convertService.getConverterName()).append(": ")
@@ -128,6 +140,15 @@ public class MenuStart extends Menu {
                     .append(SPACE).append(prepareShield(convertService.getConverterCommand())).append(NEW_LINE);
         }
         return menu.toString();
+    }
+
+    public boolean checkAccess(User user, String menuComand) {
+        if (menuComand.equals(COMMAND_START) || menuComand.equals(COMMAND_DEFAULT)) {
+            return true;
+        }
+        val isRoleAccess = roleAccess.get(user.getUserRole()).contains(menuComand);
+        val isCompanyAccess = companyAccessList.get(user.getCompany()).contains(menuComand);
+        return isRoleAccess && isCompanyAccess;
     }
 
     @Override
