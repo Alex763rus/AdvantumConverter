@@ -79,4 +79,5 @@
     <include file="/db/changelog/lenta/UpdateLentaDictionaryAll.sql"/>
     <include file="/db/changelog/company/InsertCompany_5.sql"/>
     <include file="/db/changelog/users/InsertUser4.sql"/>
+    <include file="/db/changelog/sber/InsertSberAddress3.sql"/>
 </databaseChangeLog>
