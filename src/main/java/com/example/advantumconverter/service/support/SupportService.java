@@ -50,42 +50,42 @@ public class SupportService {
 
     public List<PartialBotApiMethod> processNewTask(User user, Update update, ConvertService convertService
             , String fullFileName, Exception ex) throws ParseException {
-        if (user.getUserRole() != EMPLOYEE && user.getUserRole() == MAIN_EMPLOYEE) {
-            return SendMessageWrap.init().setChatIdLong(user.getChatId())
-                    .setText(prepareShield(ex.getMessage()))
-                    .build().createMessageList();
-        }
-        val message = update.getMessage();
-        val inputFile = new InputFile(fileUploadService.uploadFileFromServer(fullFileName));
-
-        val supportTask = new SupportTask();
-        supportTask.setEmployeeChatId(user.getChatId());
-        supportTask.setMessageId(message.getMessageId());
-        supportTask.setConverterName(convertService.getConverterName());
-        supportTask.setErrorText(ex.getMessage());
-        supportTask.setFilePath(fullFileName);
-        supportTask.setTaskState(NEW);
-        supportTask.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
-        val supportEntity = supportTaskRepository.save(supportTask);
-
-        val supportMessages = new ArrayList<PartialBotApiMethod>();
-        val userErrorMessage = SendMessageWrap.init()
-                .setChatIdLong(message.getChatId())
-                .setText(getErrorMessageText(supportEntity.getSupportTaskId()))
-                .build().createMessage();
-        supportMessages.add(userErrorMessage);
-
-        for (User supportUser : supportUserList) {
-            supportMessages.add(
-                    SendMessageWrap.init().setChatIdLong(supportUser.getChatId())
-                            .setText(getSupportMessageText(supportEntity))
-                            .build().createMessage());
-            supportMessages.add(
-                    SendDocumentWrap.init().setChatIdLong(supportUser.getChatId())
-                            .setDocument(inputFile)
-                            .build().createMessage());
-        }
-        return supportMessages;
+        //if (user.getUserRole() != EMPLOYEE && user.getUserRole() == MAIN_EMPLOYEE) {
+        return SendMessageWrap.init().setChatIdLong(user.getChatId())
+                .setText(prepareShield(ex.getMessage()))
+                .build().createMessageList();
+        //}
+//        val message = update.getMessage();
+//        val inputFile = new InputFile(fileUploadService.uploadFileFromServer(fullFileName));
+//
+//        val supportTask = new SupportTask();
+//        supportTask.setEmployeeChatId(user.getChatId());
+//        supportTask.setMessageId(message.getMessageId());
+//        supportTask.setConverterName(convertService.getConverterName());
+//        supportTask.setErrorText(ex.getMessage());
+//        supportTask.setFilePath(fullFileName);
+//        supportTask.setTaskState(NEW);
+//        supportTask.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
+//        val supportEntity = supportTaskRepository.save(supportTask);
+//
+//        val supportMessages = new ArrayList<PartialBotApiMethod>();
+//        val userErrorMessage = SendMessageWrap.init()
+//                .setChatIdLong(message.getChatId())
+//                .setText(getErrorMessageText(supportEntity.getSupportTaskId()))
+//                .build().createMessage();
+//        supportMessages.add(userErrorMessage);
+//
+//        for (User supportUser : supportUserList) {
+//            supportMessages.add(
+//                    SendMessageWrap.init().setChatIdLong(supportUser.getChatId())
+//                            .setText(getSupportMessageText(supportEntity))
+//                            .build().createMessage());
+//            supportMessages.add(
+//                    SendDocumentWrap.init().setChatIdLong(supportUser.getChatId())
+//                            .setDocument(inputFile)
+//                            .build().createMessage());
+//        }
+//        return supportMessages;
     }
 
     private String getErrorMessageText(Long supportId) {

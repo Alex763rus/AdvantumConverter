@@ -10,6 +10,8 @@ import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
@@ -59,15 +61,16 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         Map<String, RowOrdersData> rowOrdersData = new HashMap<>();
         try {
             String shopNumber;
-            var sheetDomino = book.getSheet("Orders");
-            for (; !StringUtils.EMPTY.equals(shopNumber = getCellValue(sheetDomino, rowOrder, 3)); ++rowOrder) {
+            var ordersSheet = book.getSheet("Orders");
+            for (; !StringUtils.EMPTY.equals(shopNumber = getCellValue(ordersSheet, rowOrder, 3)); ++rowOrder) {
                 rowOrdersData.put(shopNumber,
                         RowOrdersData.init()
                                 .setShopNumber(shopNumber)
-                                .setTimeStart(getCellValue(sheetDomino, rowOrder, 35))
-                                .setTimeEnd(getCellValue(sheetDomino, rowOrder, 36))
-                                .setCity(getCellValue(sheetDomino, rowOrder, 15))
-                                .setAddress(getCellValue(sheetDomino, rowOrder, 16))
+                                .setTimeStart(getCellValue(ordersSheet, rowOrder, 35))
+                                .setTimeEnd(getCellValue(ordersSheet, rowOrder, 36))
+                                .setCity(getCellValue(ordersSheet, rowOrder, 15))
+                                .setAddress(getCellValue(ordersSheet, rowOrder, 16))
+//                                .setTimePointStart(getCellValue(ordersSheet, rowOrder, 35))
                                 .build()
                 );
             }
@@ -78,25 +81,33 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         boolean isStart = true;
         var startRowMain = 1;
         int rowMain = startRowMain;
-        Set<RowData> rowData = new LinkedHashSet<>();
-        String reisId;
+        Set<RowDominoData> rowDominoData = new LinkedHashSet<>();
+        String reisNumber;
         try {
-            var sheetOrders = book.getSheet("ДЛЯ ДОМИНО");
-            for (; !StringUtils.EMPTY.equals(reisId = getCellValue(sheetOrders, rowMain, 10)); ++rowMain) {
-                var shopNumber = getCellValue(sheetOrders, rowMain, 7);
-                //происходит склеивание по номеру рейса (ReisNumber) + номер магазина (ShopNumber):
-                rowData.add(RowData.init()
-                        .setReisNumber(reisId)
+            var dominoSheet = book.getSheet("ДЛЯ ДОМИНО");
+            var currentDate = "_" + getCurrentDate(TEMPLATE_DATE);
+            Date dateOrder = null;
+            for (; !StringUtils.EMPTY.equals(reisNumber = prepareReisNumer(dominoSheet, rowMain, currentDate)); ++rowMain) {
+                var shopNumber = getCellValue(dominoSheet, rowMain, 7);
+                if (dateOrder == null) {
+                    //берем первое значение для всего файла:
+                    dateOrder = convertDateFormat(getCellValue(dominoSheet, rowMain, 2)
+                            .replaceAll("\"", "")
+                            .replaceAll("/", "."), TEMPLATE_DATE_DOT);
+                }
+                //происходит склеивание по номеру рейса (reisNumber) + номер магазина (ShopNumber):
+                rowDominoData.add(RowDominoData.init()
+                        .setReisNumber(reisNumber)
                         .setShopNumber(shopNumber)
-                        .setOrganization(getCellValue(sheetOrders, rowMain, 15))
-                        .setDateOrder(convertDateFormat(getCellValue(sheetOrders, rowMain, 2)
-                                .replaceAll("\"", "")
-                                .replaceAll("/", "."), TEMPLATE_DATE_DOT))
-                        .setTonnage(fillInteger(getCellValue(sheetOrders, rowMain, 23)) * 1000)
-                        .setPackageCount(fillInteger(getCellValue(sheetOrders, rowMain, 28)))
-                        .setPointName(getCellValue(sheetOrders, rowMain, 9))
-                        .setCarNumber(getCellValue(sheetOrders, rowMain, 20).replaceAll(SPACE, EMPTY))
-                        .setFio(getCellValue(sheetOrders, rowMain, 16))
+                        .setOrganization(getCellValue(dominoSheet, rowMain, 15))
+                        .setDateOrder(dateOrder)
+                        .setTonnage(fillInteger(getCellValue(dominoSheet, rowMain, 23)) * 1000)
+                        .setPackageCount(fillInteger(getCellValue(dominoSheet, rowMain, 28)))
+                        .setPointName(getCellValue(dominoSheet, rowMain, 9))
+                        .setCarNumber(getCellValue(dominoSheet, rowMain, 20).replaceAll(SPACE, EMPTY))
+                        .setFio(getCellValue(dominoSheet, rowMain, 16))
+//                        .setTimeStart(getCellValue(dominoSheet, rowMain, 13))
+//                        .setTimeEnd(getCellValue(dominoSheet, rowMain, 14))
                         .build()
                 );
             }
@@ -105,9 +116,10 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         }
 
         try {
+            String dateOrderString = null;
             var reisNumberTmp = EMPTY;
             var numberUnloading = 0;
-            for (RowData row : rowData) {
+            for (RowDominoData row : rowDominoData) {
                 isStart = !row.getReisNumber().equals(reisNumberTmp);
                 if (isStart) {
                     reisNumberTmp = row.getReisNumber();
@@ -115,22 +127,33 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                 }
                 ++numberUnloading;
                 var rowOrderData = rowOrdersData.get(row.getShopNumber());
-                if (rowOrderData == null) {
-                    int qqq = 0;
-                    // исключение
+                if (dateOrderString == null) {
+                    //берем первое значение для всего файла:
+                    dateOrderString = convertDateFormat(row.getDateOrder(), TEMPLATE_DATE_DOT) + SPACE;
                 }
-
-                var dateOrderString = convertDateFormat(row.getDateOrder(), TEMPLATE_DATE_DOT) + SPACE;
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-                    var dateS = isStart ?
-                            dateOrderString + "04:00" :
-                            dateOrderString + rowOrderData.getTimeStart();
 
-                    var dateT = isStart ?
-                            dateOrderString + "18:00" :
-                            dateOrderString + rowOrderData.getTimeEnd();
+                    Date dateSResult = null;
+                    String dateSString = null;
+                    Date dateTResult = null;
+                    String dateTString = null;
+                    if (isStart) {
+                        //S:
+                        dateSString = dateOrderString +  "04:00"; //rowOrderData.getTimePointStart();
+                        dateSResult = DateUtils.addMinutes(convertDateFormat(dateSString, TEMPLATE_DATE_TIME_DOT), -20);
+                        //T:
+                        dateTString = dateOrderString + "18:00"; //row.getTimeEnd();
+                        dateTResult = DateUtils.addHours(convertDateFormat(dateTString, TEMPLATE_DATE_TIME_DOT), 2);
+                    } else {
+                        //S:
+                        dateSString = dateOrderString + rowOrderData.getTimeStart();
+                        dateSResult = convertDateFormat(dateSString, TEMPLATE_DATE_TIME_DOT);
+                        //T:
+                        dateTString = dateOrderString + rowOrderData.getTimeEnd();
+                        dateTResult = convertDateFormat(dateTString, TEMPLATE_DATE_TIME_DOT);
+                    }
 
-                    var needTemperage = row.getReisNumber().contains("_T");
+                    var needTemperage = !row.getReisNumber().contains("T_"); //если нет T_, то заполняем
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(row.getReisNumber())
                             .setColumnBdata(row.getDateOrder())
@@ -143,15 +166,15 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                             .setColumnIdata(null)
                             .setColumnJdata(row.getTonnage())
                             .setColumnKdata(row.getPackageCount())
-                            .setColumnLdata(needTemperage ? 2 : null)
-                            .setColumnMdata(needTemperage ? 4 : null)
+                            .setColumnLdata(needTemperage ? 4 : null)
+                            .setColumnMdata(needTemperage ? 6 : null)
                             .setColumnNdata(null)
                             .setColumnOdata(null)
                             .setColumnPdata(null)
                             .setColumnQdata(null)
                             .setColumnRdata(null)
-                            .setColumnSdata(convertDateFormat(dateS, TEMPLATE_DATE_TIME_DOT))
-                            .setColumnTdata(convertDateFormat(dateT, TEMPLATE_DATE_TIME_DOT))
+                            .setColumnSdata(dateSResult)
+                            .setColumnTdata(dateTResult)
                             .setColumnUdata(isStart ? "309" : row.getPointName())
                             .setColumnVdata(isStart ? "Внуково" : rowOrderData.getCity() + SPACE + rowOrderData.getAddress())
                             .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
@@ -191,6 +214,13 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         return createDefaultBookV2(data, warnings, getConverterName());
     }
 
+    private String prepareReisNumer(XSSFSheet sheetOrders, int rowMain, String currentDate) {
+        var reisNumber = getCellValue(sheetOrders, rowMain, 10);
+        if (EMPTY.equals(reisNumber)) {
+            return EMPTY;
+        }
+        return reisNumber + currentDate;
+    }
 
     private Integer fillInteger(String value) {
         try {
@@ -205,7 +235,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
     @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
     @ToString
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    private static class RowData {
+    private static class RowDominoData {
         @EqualsAndHashCode.Include
         String reisNumber;
         @EqualsAndHashCode.Include
@@ -217,6 +247,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         String pointName;
         String carNumber;
         String fio;
+//        String timeEnd;
     }
 
     @Getter
@@ -231,6 +262,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         String timeEnd;
         String city;
         String address;
+//        String timePointStart;
     }
 
     @Override
