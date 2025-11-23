@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="clear_users">
+        <sql>
+            update user_tbl set user_role = 1, user_role_text = 'NEED_SETTING' where chat_id in(188745369, 968518965, 1010052269, 1041167280, 1279017832);
+            update user_tbl set user_role = 2, user_role_text = 'EMPLOYEE' where chat_id in(6166184036, 6619162062, 6678935766, 7590034099, 799008767);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

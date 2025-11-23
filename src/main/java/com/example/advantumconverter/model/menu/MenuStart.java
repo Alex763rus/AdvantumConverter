@@ -76,11 +76,11 @@ public class MenuStart extends Menu {
 
     private String getSupportMenuText(User user) {
         val menu = new StringBuilder(getEmployeeMenuText(user));
-        menu.append(NEW_LINE)
-                .append("Сопровождение пользователей:").append(NEW_LINE)
-                .append("- Открытые обращения: ").append(prepareShield(COMMAND_SHOW_OPEN_TASK)).append(NEW_LINE)
-                .append("- Мои задачи: ").append(prepareShield(COMMAND_SHOW_MY_TASK)).append(NEW_LINE)
-                .append("- Обновить справочники: ").append(prepareShield(COMMAND_RELOAD_DICTIONARY)).append(NEW_LINE);
+//        menu.append(NEW_LINE)
+//                .append("Сопровождение пользователей:").append(NEW_LINE)
+//                .append("- Открытые обращения: ").append(prepareShield(COMMAND_SHOW_OPEN_TASK)).append(NEW_LINE)
+//                .append("- Мои задачи: ").append(prepareShield(COMMAND_SHOW_MY_TASK)).append(NEW_LINE)
+//                .append("- Обновить справочники: ").append(prepareShield(COMMAND_RELOAD_DICTIONARY)).append(NEW_LINE);
         return menu.toString();
     }
 
@@ -104,9 +104,9 @@ public class MenuStart extends Menu {
 
     private String prepareAvailableConverters(User user) {
         val menu = new StringBuilder();
-        menu.append("Обработка файлов:").append(NEW_LINE);
         val converters = companySetting.getConverters(user.getCompany());
         boolean existsRsConverter = false;
+        boolean isStart = true;
         for (val convertService : converters) {
             var converterSettings = convertService.converterSettings();
             if (converterSettings != null && Boolean.FALSE.equals(converterSettings.getEnabled())) {
@@ -122,6 +122,10 @@ public class MenuStart extends Menu {
             }
             if (!checkAccess(user, convertService.getConverterCommand())) {
                 continue;
+            }
+            if (isStart) {
+                menu.append("Обработка файлов:").append(NEW_LINE);
+                isStart = false;
             }
             menu.append("- ").append(convertService.getConverterName()).append(": ")
                     .append(SPACE).append(prepareShield(convertService.getConverterCommand())).append(NEW_LINE);

@@ -11,6 +11,14 @@ public enum UserRole {
     /* 6 */ EMPLOYEE_API("Сотрудник апи"),
     /* 7 */ EMPLOYEE_RS("Сотрудник РС");
 
+    /*
+    EMPLOYEE - только конвертеры в рамках компании
+    MAIN_EMPLOYEE - не используется
+    SUPPORT - все конвертеры
+    EMPLOYEE_API - все конвертеры + CRM
+    EMPLOYEE_RS - только RS конвертеры в рамках компании
+
+     */
     private String title;
 
     UserRole(String title) {
