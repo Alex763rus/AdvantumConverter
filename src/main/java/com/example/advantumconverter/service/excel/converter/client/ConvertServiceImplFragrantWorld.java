@@ -89,16 +89,13 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         String reisNumber;
         try {
             var dominoSheet = book.getSheet("ДЛЯ ДОМИНО");
-            var currentDate = "_" + getCurrentDate(TEMPLATE_DATE);
-            Date dateOrder = null;
-            for (; !StringUtils.EMPTY.equals(reisNumber = prepareReisNumer(dominoSheet, rowMain, currentDate)); ++rowMain) {
+            //берем первое значение для всего файла:
+            var dateOrder = convertDateFormat(getCellValue(dominoSheet, rowMain, 2)
+                    .replaceAll("\"", "")
+                    .replaceAll("/", "."), TEMPLATE_DATE_DOT);
+            var dateOrderString = "_" + convertDateFormat(dateOrder, TEMPLATE_DATE);
+            for (; !StringUtils.EMPTY.equals(reisNumber = prepareReisNumer(dominoSheet, rowMain, dateOrderString)); ++rowMain) {
                 var shopNumber = getCellValue(dominoSheet, rowMain, 7);
-                if (dateOrder == null) {
-                    //берем первое значение для всего файла:
-                    dateOrder = convertDateFormat(getCellValue(dominoSheet, rowMain, 2)
-                            .replaceAll("\"", "")
-                            .replaceAll("/", "."), TEMPLATE_DATE_DOT);
-                }
                 //происходит склеивание по номеру рейса (reisNumber) + номер магазина (ShopNumber):
                 rowDominoData.add(RowDominoData.init()
                                 .setReisNumber(reisNumber)
@@ -157,7 +154,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                         dateTResult = convertDateFormat(dateTString, TEMPLATE_DATE_TIME_DOT);
                     }
 
-                    var needTemperage = !row.getReisNumber().contains("T_"); //если нет T_, то заполняем
+                    var needTemperage = !row.getReisNumber().contains("Т_"); //если нет T_, то заполняем
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(row.getReisNumber())
                             .setColumnBdata(row.getDateOrder())
