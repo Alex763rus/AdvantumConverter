@@ -81,4 +81,5 @@
     <include file="/db/changelog/users/InsertUser4.sql"/>
     <include file="/db/changelog/sber/InsertSberAddress3.sql"/>
     <include file="/db/changelog/users/update_user_4.xml"/>
+    <include file="/db/changelog/sber/InsertSberAddress4.sql"/>
 </databaseChangeLog>

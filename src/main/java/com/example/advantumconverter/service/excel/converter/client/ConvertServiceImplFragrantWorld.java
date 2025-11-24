@@ -61,8 +61,12 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         Map<String, RowOrdersData> rowOrdersData = new HashMap<>();
         try {
             String shopNumber;
+            String lastTimePointStart = EMPTY;
             var ordersSheet = book.getSheet("Orders");
             for (; !StringUtils.EMPTY.equals(shopNumber = getCellValue(ordersSheet, rowOrder, 3)); ++rowOrder) {
+                var pointStartFromFile = getCellValue(ordersSheet, rowOrder, 9);
+                lastTimePointStart = EMPTY.equals(pointStartFromFile) ? lastTimePointStart : pointStartFromFile;
+
                 rowOrdersData.put(shopNumber,
                         RowOrdersData.init()
                                 .setShopNumber(shopNumber)
@@ -70,7 +74,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                                 .setTimeEnd(getCellValue(ordersSheet, rowOrder, 36))
                                 .setCity(getCellValue(ordersSheet, rowOrder, 15))
                                 .setAddress(getCellValue(ordersSheet, rowOrder, 16))
-//                                .setTimePointStart(getCellValue(ordersSheet, rowOrder, 35))
+                                .setTimePointStart(lastTimePointStart)
                                 .build()
                 );
             }
@@ -97,18 +101,18 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                 }
                 //происходит склеивание по номеру рейса (reisNumber) + номер магазина (ShopNumber):
                 rowDominoData.add(RowDominoData.init()
-                        .setReisNumber(reisNumber)
-                        .setShopNumber(shopNumber)
-                        .setOrganization(getCellValue(dominoSheet, rowMain, 15))
-                        .setDateOrder(dateOrder)
-                        .setTonnage(fillInteger(getCellValue(dominoSheet, rowMain, 23)) * 1000)
-                        .setPackageCount(fillInteger(getCellValue(dominoSheet, rowMain, 28)))
-                        .setPointName(getCellValue(dominoSheet, rowMain, 9))
-                        .setCarNumber(getCellValue(dominoSheet, rowMain, 20).replaceAll(SPACE, EMPTY))
-                        .setFio(getCellValue(dominoSheet, rowMain, 16))
+                                .setReisNumber(reisNumber)
+                                .setShopNumber(shopNumber)
+                                .setOrganization(getCellValue(dominoSheet, rowMain, 15))
+                                .setDateOrder(dateOrder)
+                                .setTonnage(fillInteger(getCellValue(dominoSheet, rowMain, 23)) * 1000)
+                                .setPackageCount(fillInteger(getCellValue(dominoSheet, rowMain, 28)))
+                                .setPointName(getCellValue(dominoSheet, rowMain, 9))
+                                .setCarNumber(getCellValue(dominoSheet, rowMain, 20).replaceAll(SPACE, EMPTY))
+                                .setFio(getCellValue(dominoSheet, rowMain, 16))
 //                        .setTimeStart(getCellValue(dominoSheet, rowMain, 13))
 //                        .setTimeEnd(getCellValue(dominoSheet, rowMain, 14))
-                        .build()
+                                .build()
                 );
             }
         } catch (Exception e) {
@@ -139,10 +143,10 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                     String dateTString = null;
                     if (isStart) {
                         //S:
-                        dateSString = dateOrderString +  "04:00"; //rowOrderData.getTimePointStart();
+                        dateSString = dateOrderString + rowOrderData.getTimePointStart();
                         dateSResult = DateUtils.addMinutes(convertDateFormat(dateSString, TEMPLATE_DATE_TIME_DOT), -20);
                         //T:
-                        dateTString = dateOrderString + "18:00"; //row.getTimeEnd();
+                        dateTString = dateOrderString + rowOrderData.getTimePointStart();
                         dateTResult = DateUtils.addHours(convertDateFormat(dateTString, TEMPLATE_DATE_TIME_DOT), 2);
                     } else {
                         //S:
@@ -262,7 +266,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
         String timeEnd;
         String city;
         String address;
-//        String timePointStart;
+        String timePointStart;
     }
 
     @Override
