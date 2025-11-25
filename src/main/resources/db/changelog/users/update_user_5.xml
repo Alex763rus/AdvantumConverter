@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="clear_users">
+        <sql>
+            update user_tbl set user_role = 2, user_role_text = 'EMPLOYEE' where chat_id in(1010052269);
+            update user_tbl set user_role = 7, user_role_text = 'EMPLOYEE_RS' where chat_id in(15964122);
+            update user_tbl set user_role = 5, user_role_text = 'ADMIN' where chat_id in(799008767);
+        </sql>
+    </changeSet>
+</databaseChangeLog>
