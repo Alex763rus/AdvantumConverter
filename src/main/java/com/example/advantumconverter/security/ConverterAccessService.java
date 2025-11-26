@@ -3,9 +3,11 @@ package com.example.advantumconverter.security;
 import com.example.advantumconverter.enums.UserRole;
 import com.example.advantumconverter.model.dictionary.company.CompanySetting;
 import com.example.advantumconverter.model.jpa.Company;
+import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.val;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,16 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_DEFAULT;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_START;
+
 @Service
 @AllArgsConstructor
 public class ConverterAccessService {
 
     private final CompanySetting companySetting;
+    private final Map<UserRole, List<String>> roleAccess;
+    private final Map<Company, List<String>> companyAccessList;
 
     public List<ConverterFormat> getAvailableFormats(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -28,9 +35,21 @@ public class ConverterAccessService {
         }
         return companySetting.getConverters(company).stream()
                 .filter(ConvertService::isV2) //только v2 будет поддерживаться
+                .filter(e->checkAccess(userRole, e.getConverterCommand(), company))
                 .map(converter -> new ConverterFormat(converter.getConverterCommand(), converter.getConverterName()))
                 .sorted(Comparator.comparing(ConverterFormat::getLabel))
                 .collect(Collectors.toList());
+    }
+
+    public boolean checkAccess(UserRole userRole, String menuComand, Company company) {
+        if (menuComand.equals(COMMAND_START) || menuComand.equals(COMMAND_DEFAULT)) {
+            return true;
+        }
+        val isRoleAccess = roleAccess.get(userRole).contains(menuComand);
+        if(!isRoleAccess) {
+            return false;
+        }
+        return  companyAccessList.get(company).contains(menuComand);
     }
 
 

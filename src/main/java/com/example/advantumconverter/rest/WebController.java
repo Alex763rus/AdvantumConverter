@@ -6,13 +6,16 @@ import com.example.advantumconverter.security.CustomUserDetails;
 import com.example.advantumconverter.security.dto.RegistrationForm;
 import com.example.advantumconverter.service.database.UserService;
 import com.example.advantumconverter.service.excel.generate.ClientExcelGenerateService;
+import com.example.advantumconverter.service.excel.generate.ExcelGenerateService;
 import com.example.advantumconverter.service.rest.out.crm.CrmHelper;
 import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -41,9 +45,8 @@ public class WebController {
 
     private final ConverterAccessService converterAccessService;
     private final UserService userService;
-    private final ClientExcelGenerateService excelGenerateService;
     private final CrmHelper crmHelper;
-
+    private final Map<String, ExcelGenerateService> excelGenerateServiceMap;
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -107,7 +110,8 @@ public class WebController {
             }
 
             // Генерация результата
-            File resultFile = excelGenerateService.createXlsxV2(convertedFile).getNewMediaFile();
+            val excelService = excelGenerateServiceMap.get(converter.getExcelType().getExcelType());
+            File resultFile = excelService.createXlsxV2(convertedFile).getNewMediaFile();
             if (!resultFile.exists()) {
                 return ResponseEntity.status(500).body("Не удалось сгенерировать файл");
             }
