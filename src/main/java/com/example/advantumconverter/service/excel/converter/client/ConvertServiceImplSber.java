@@ -119,6 +119,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 }
 
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
+                    var temperage2Min = getTemperage2(row, 17, 0);
+                    var temperage2Max = getTemperage2(row, 17, 1);
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
@@ -134,8 +136,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnLdata(getTemperage(row, 15, 0))
                             .setColumnMdata(getTemperage(row, 15, 1))
                             .setColumnNdata(2)
-                            .setColumnOdata(null)
-                            .setColumnPdata(null)
+                            .setColumnOdata(temperage2Min)
+                            .setColumnPdata(temperage2Max)
                             .setColumnQdata(null)
                             .setColumnRdata(null)
                             .setColumnSdata(fillS(isStart, row, isStart ? dateFromFileForSt : dateFromFile))
@@ -162,8 +164,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnAnData(EMPTY)
                             .setColumnAoData(EMPTY)
                             .setColumnApData(fio)
-                            .setColumnAqData(getTemperage2(row, 17, 0))
-                            .setColumnArData(getTemperage2(row, 17, 1))
+                            .setColumnAqData(temperage2Min)
+                            .setColumnArData(temperage2Max)
                             .setTechFullFio(fio)
                             .build();
                     data.add(dataLine);
