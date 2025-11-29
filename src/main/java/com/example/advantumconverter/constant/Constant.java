@@ -48,8 +48,8 @@ public final class Constant {
     @NoArgsConstructor(access = PRIVATE)
     public static final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
-        public static final String FILE_NAME_RS_LENTA = "Лента RS";
-        public static final String FILE_NAME_RS_INNER_LENTA = "Лента RS внутренний";
+        public static final String FILE_NAME_RS_LENTA = "Лента входящий";
+        public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ";
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_SIEL = "Сиэль";
@@ -88,7 +88,7 @@ public final class Constant {
         public static final String CLIENT = "Client";
         public static final String BOOKER = "Booker";
         public static final String RS = "Rs";
-        public static final String RS_INNER_LENTA = "RsInnerLenta";
+        public static final String RS_LENTA_SPB = "RsLentaSpb";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -110,7 +110,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
         public static final String COMMAND_CONVERT_RS_LENTA = "/convert_rs_lenta";
-        public static final String COMMAND_CONVERT_RS_INNER_LENTA = "/convert_rs_inner_lenta";
+        public static final String COMMAND_CONVERT_RS_LENTA_SPB = "/convert_rs_lenta_spb";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
         public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
         public static final String COMMAND_CONVERT_SPAR = "/convert_spar";

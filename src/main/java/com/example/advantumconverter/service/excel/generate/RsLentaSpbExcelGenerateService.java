@@ -3,7 +3,7 @@ package com.example.advantumconverter.service.excel.generate;
 import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.exception.ExcelGenerationException;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsInnerLentaV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaSpbV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import lombok.val;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -21,13 +21,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.advantumconverter.constant.Constant.ExcelType.RS_INNER_LENTA;
+import static com.example.advantumconverter.constant.Constant.ExcelType.RS_LENTA_SPB;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 
-@Component(RS_INNER_LENTA)
-public class RsInnerLentaExcelGenerateService implements ExcelGenerateService {
+@Component(RS_LENTA_SPB)
+public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
     private Workbook workbook;
     private List<List<String>> data;
     private CellStyle styleDateDot;
@@ -89,7 +89,7 @@ public class RsInnerLentaExcelGenerateService implements ExcelGenerateService {
             }
 
             for (ConvertedListDataV2 convertedListDataV2 : dataV2) {
-                ConvertedListDataRsInnerLentaV2 rowData = (ConvertedListDataRsInnerLentaV2) convertedListDataV2;
+                ConvertedListDataRsLentaSpbV2 rowData = (ConvertedListDataRsLentaSpbV2) convertedListDataV2;
 
                 for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
                     row = sheet.createRow(y + 1);

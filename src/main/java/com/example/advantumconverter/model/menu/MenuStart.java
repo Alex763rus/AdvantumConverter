@@ -115,7 +115,7 @@ public class MenuStart extends Menu {
             if (BOOKER.equals(convertService.getExcelType())) {
                 continue;
             }
-            if (RS.equals(convertService.getExcelType()) || RS_INNER_LENTA.equals(convertService.getExcelType())) {
+            if (RS.equals(convertService.getExcelType()) || RS_LENTA_SPB.equals(convertService.getExcelType())) {
                 existsRsConverter = true;
                 //конвертеры RS будут добавлены отдельно ниже
                 continue;
@@ -137,7 +137,7 @@ public class MenuStart extends Menu {
         }
         menu.append(NEW_LINE).append("Обработка файлов RS:").append(NEW_LINE);
         for (val convertService : converters) {
-            if (!(RS.equals(convertService.getExcelType()) || RS_INNER_LENTA.equals(convertService.getExcelType()))) {
+            if (!(RS.equals(convertService.getExcelType()) || RS_LENTA_SPB.equals(convertService.getExcelType()))) {
                 continue;
             }
             menu.append("- ").append(convertService.getConverterName()).append(": ")

@@ -5,7 +5,7 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
-import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsInnerLentaV2;
+import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaSpbV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
@@ -15,29 +15,29 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_RS_INNER_LENTA;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_RS_LENTA_SPB;
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_LENTA;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_RS_ERROR;
-import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_RS_INNER_LENTA;
-import static com.example.advantumconverter.enums.ExcelType.RS_INNER_LENTA;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_RS_LENTA_SPB;
+import static com.example.advantumconverter.enums.ExcelType.RS_LENTA_SPB;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
-public class ConvertServiceImplRsInnerLenta extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplRsLentaSpb extends ConvertServiceBase implements ConvertService {
 
     @Override
     public ExcelType getExcelType() {
-        return RS_INNER_LENTA;
+        return RS_LENTA_SPB;
     }
 
     @Override
     public String getConverterName() {
-        return FILE_NAME_RS_INNER_LENTA;
+        return FILE_NAME_RS_LENTA_SPB;
     }
 
     @Override
     public String getConverterCommand() {
-        return COMMAND_CONVERT_RS_INNER_LENTA;
+        return COMMAND_CONVERT_RS_LENTA_SPB;
     }
 
     private List<String> warnings = new ArrayList<>();
@@ -68,13 +68,13 @@ public class ConvertServiceImplRsInnerLenta extends ConvertServiceBase implement
         return createDefaultBookV2(data, warnings, getConverterName(), Header.headersOutputRsLentaClientV2, "Шаблон для Лента");
     }
 
-    private ConvertedListDataRsInnerLentaV2 prepareData(
+    private ConvertedListDataRsLentaSpbV2 prepareData(
             ReisMain reisMain,
             Map<String, SpWindows> spWindowsData,
             Map<String, SpParams> spParamsData) {
         var window = spWindowsData.get(reisMain.getNumberYr());
         var params = spParamsData.get(reisMain.getNumberYr());
-        return ConvertedListDataRsInnerLentaV2.init()
+        return ConvertedListDataRsLentaSpbV2.init()
                 .setColumnAdata(EMPTY)
                 .setColumnBdata(reisMain.getDateDelivery())
                 .setColumnCdata("8023")

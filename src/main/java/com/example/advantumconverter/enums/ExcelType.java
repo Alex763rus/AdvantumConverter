@@ -5,7 +5,7 @@ public enum ExcelType {
     CLIENT("Client"),
     BOOKER("Booker"),
     RS("Rs"),
-    RS_INNER_LENTA("RsInnerLenta");
+    RS_LENTA_SPB("RsLentaSpb");
 
     private String excelType;
 
