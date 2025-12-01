@@ -23,10 +23,11 @@ public class ConvertedListDataRsLentaSpbV2 implements ConvertedListDataV2 {
     private String columnHdata;
     private String columnIdata;
     private String columnJdata;
-    private Integer columnKdata;
-    private String columnLdata;
-    private Integer columnMdata;
-    private String columnNdata;
+    private String columnKdata;
+    private Integer columnLdata;
+    private String columnMdata;
+    private Integer columnNdata;
+    private String columnOdata;
 
     //==Технические поля, не участвующие в формировании файла: =============================
     private Integer techCountRepeat;

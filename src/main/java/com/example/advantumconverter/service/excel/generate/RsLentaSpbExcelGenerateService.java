@@ -93,7 +93,8 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
 
                 for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
                     row = sheet.createRow(y + 1);
-                    createCell(row, 0, rowData.getColumnAdata());
+                    createCell(row, 0, convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
+                            + rowData.getColumnDdata() + "_" + (repeat + 1));
                     createCell(row, 1, styleDateDot, rowData.getColumnBdata());
                     createCell(row, 2, rowData.getColumnCdata());
                     createCell(row, 3, rowData.getColumnDdata());
@@ -107,6 +108,7 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
                     createCell(row, 11, rowData.getColumnLdata());
                     createCell(row, 12, rowData.getColumnMdata());
                     createCell(row, 13, rowData.getColumnNdata());
+                    createCell(row, 14, rowData.getColumnOdata());
                     y = y + 1;
                 }
             }
