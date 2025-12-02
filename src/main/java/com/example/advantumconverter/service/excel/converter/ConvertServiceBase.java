@@ -251,8 +251,8 @@ public class ConvertServiceBase {
         String message = DONE;
         ResultCode resultCode = OK;
         if (!CollectionUtils.isEmpty(warnings)) {
-            message = message + "Возникшие предупреждения: " + NEW_LINE +
-                    warnings.stream().distinct().collect(Collectors.joining(EMPTY));
+            message = message + NEW_LINE + "Возникшие предупреждения: " + NEW_LINE +
+                    warnings.stream().distinct().collect(Collectors.joining(NEW_LINE));
             resultCode = WARNING;
         }
         return ConvertedBookV2.init()
