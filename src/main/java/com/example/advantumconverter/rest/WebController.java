@@ -9,6 +9,7 @@ import com.example.advantumconverter.service.excel.generate.ClientExcelGenerateS
 import com.example.advantumconverter.service.excel.generate.ExcelGenerateService;
 import com.example.advantumconverter.service.rest.out.crm.CrmHelper;
 import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.util.UriUtils;
@@ -82,7 +84,8 @@ public class WebController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("converterType") String converterType,
             @RequestParam(required = false, defaultValue = "false") boolean sendToCrm,
-            Authentication authentication) {
+            Authentication authentication,
+            HttpServletRequest request) {
 
         try {
             // 1. Проверка файла
@@ -109,6 +112,14 @@ public class WebController {
                 return ResponseEntity.badRequest().body("Ошибка конвертации: " + e.getMessage());
             }
 
+            // Сохраняем сообщение в сессии
+            HttpSession session = request.getSession();
+            if (convertedFile.getMessage() != null && !convertedFile.getMessage().isEmpty()) {
+                session.setAttribute("conversionMessage", convertedFile.getMessage());
+            } else {
+                session.setAttribute("conversionMessage", "Конвертация выполнена успешно");
+            }
+
             // Генерация результата
             val excelService = excelGenerateServiceMap.get(converter.getExcelType().getExcelType());
             File resultFile = excelService.createXlsxV2(convertedFile).getNewMediaFile();
@@ -116,7 +127,7 @@ public class WebController {
                 return ResponseEntity.status(500).body("Не удалось сгенерировать файл");
             }
 
-            // ✅ Успех: отправляем в crm:
+            // ✅ Успех: отправляем в crm
             if (sendToCrm) {
                 var crmGatewayResponseDto = crmHelper.sendDocument(BookToCrmReisMapper.map(convertedFile), converter.getCrmCreds());
                 if (Objects.requireNonNullElse(crmGatewayResponseDto.getReisError(), new ArrayList<>()).isEmpty()) {
@@ -126,6 +137,7 @@ public class WebController {
                     return ResponseEntity.status(500).body("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
                 }
             }
+
             // ✅ Успех: возвращаем файл
             InputStreamResource resource = new InputStreamResource(new FileInputStream(resultFile));
 
@@ -176,5 +188,17 @@ public class WebController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .contentLength(file.length())
                 .body(stream);
+    }
+
+    @GetMapping("/conversion-message")
+    @ResponseBody
+    public String getConversionMessage(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String message = (String) session.getAttribute("conversionMessage");
+            session.removeAttribute("conversionMessage"); // Удаляем после получения
+            return message != null ? message : "";
+        }
+        return "";
     }
 }

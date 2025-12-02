@@ -53,56 +53,69 @@
         <button type="button" class="admin-button" onclick="updateDictionaries()">🔄 Обновить справочники</button>
         <a href="/admin/pending-users" class="admin-button"> 👥 Управление пользователями </a></div>
 </div>
-<script> document.getElementById('convertForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Конвертируем...";
-    try {
-        const response = await fetch('/convert', {method: 'POST', body: formData});
-        if (response.ok) {
-            const blob = await response.blob();
-            const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = 'converted.xlsx';
-            if (contentDisposition) {
-                const utf8Match = contentDisposition.match(/filename\*=UTF-8''(.+)/i);
-                if (utf8Match) {
-                    filename = decodeURIComponent(utf8Match[1]);
-                } else {
-                    const fallback = contentDisposition.match(/filename="?(.+)"?/i);
-                    if (fallback) filename = fallback[1];
-                }
-            }
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            showMessage('✅ Файл успешно обработан и скачан!', 'success');
-            this.reset();
-        } else {
-            const errorText = await response.text();
-            showMessage('❌ Ошибка: ' + errorText, 'error');
-        }
-    } catch (error) {
-        showMessage('❌ Ошибка сети: ' + (error.message || 'Проверьте соединение'), 'error');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    }
-});
+<script>
+    document.getElementById('convertForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Конвертируем...";
 
-function showMessage(text, type) {
-    const messageEl = document.getElementById('message');
-    messageEl.textContent = text;
-    messageEl.className = type;
-    messageEl.style.display = 'block';
-}
+        try {
+            const response = await fetch('/convert', {method: 'POST', body: formData});
+            if (response.ok) {
+                const blob = await response.blob();
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'converted.xlsx';
+                if (contentDisposition) {
+                    const utf8Match = contentDisposition.match(/filename\*=UTF-8''(.+)/i);
+                    if (utf8Match) {
+                        filename = decodeURIComponent(utf8Match[1]);
+                    } else {
+                        const fallback = contentDisposition.match(/filename="?(.+)"?/i);
+                        if (fallback) filename = fallback[1];
+                    }
+                }
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                // Получаем сообщение о конвертации
+                const messageResponse = await fetch('/conversion-message');
+                const conversionMessage = await messageResponse.text();
+
+                if (conversionMessage) {
+                    showMessage('✅ ' + conversionMessage, 'success');
+                } else {
+                    showMessage('✅ Файл успешно обработан и скачан!', 'success');
+                }
+
+                this.reset();
+            } else {
+                const errorText = await response.text();
+                showMessage('❌ Ошибка: ' + errorText, 'error');
+            }
+        } catch (error) {
+            showMessage('❌ Ошибка сети: ' + (error.message || 'Проверьте соединение'), 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+
+    function showMessage(text, type) {
+        const messageEl = document.getElementById('message');
+        messageEl.innerHTML = text.replace(/\n/g, '<br>'); // Поддержка переносов строк
+        messageEl.className = type;
+        messageEl.style.display = 'block';
+
+    }
 
 async function updateDictionaries() {
     const button = document.querySelector('button[onclick="updateDictionaries()"]');
