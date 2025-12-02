@@ -86,14 +86,26 @@
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
 
-                // Получаем сообщение о конвертации
-                const messageResponse = await fetch('/conversion-message');
+                // Получаем сообщение и код результата конвертации
+                const [messageResponse, codeResponse] = await Promise.all([
+                    fetch('/conversion-message'),
+                    fetch('/conversion-result-code')
+                ]);
                 const conversionMessage = await messageResponse.text();
+                const resultCode = await codeResponse.text();
+
+                // Определяем стиль в зависимости от кода результата
+                let messageClass = 'success';
+                if (resultCode === 'WARNING') {
+                    messageClass = 'warning';
+                } else if (resultCode === 'ERROR') {
+                    messageClass = 'error';
+                }
 
                 if (conversionMessage) {
-                    showMessage('✅ ' + conversionMessage, 'success');
+                    showMessage('✅ ' + conversionMessage, messageClass);
                 } else {
-                    showMessage('✅ Файл успешно обработан и скачан!', 'success');
+                    showMessage('✅ Файл успешно обработан и скачан!', messageClass);
                 }
 
                 this.reset();
@@ -111,10 +123,9 @@
 
     function showMessage(text, type) {
         const messageEl = document.getElementById('message');
-        messageEl.innerHTML = text.replace(/\n/g, '<br>'); // Поддержка переносов строк
-        messageEl.className = type;
+        messageEl.innerHTML = text.replace(/\n/g, '<br>');
+        messageEl.className = 'flash-message ' + type; // Добавляем класс flash-message и type
         messageEl.style.display = 'block';
-
     }
 
 async function updateDictionaries() {

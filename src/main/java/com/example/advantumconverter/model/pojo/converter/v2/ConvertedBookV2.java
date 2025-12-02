@@ -1,5 +1,6 @@
 package com.example.advantumconverter.model.pojo.converter.v2;
 
+import com.example.advantumconverter.enums.ResultCode;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBookDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,4 +20,6 @@ public class ConvertedBookV2 implements ConvertedBookDto {
     private List<ConvertedListV2> bookV2;
 
     private String message;
+
+    private ResultCode resultCode;
 }

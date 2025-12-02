@@ -112,13 +112,17 @@ public class WebController {
                 return ResponseEntity.badRequest().body("Ошибка конвертации: " + e.getMessage());
             }
 
-            // Сохраняем сообщение в сессии
+            // Сохраняем сообщение и код результата в сессии
             HttpSession session = request.getSession();
             if (convertedFile.getMessage() != null && !convertedFile.getMessage().isEmpty()) {
                 session.setAttribute("conversionMessage", convertedFile.getMessage());
             } else {
                 session.setAttribute("conversionMessage", "Конвертация выполнена успешно");
             }
+
+            // Сохраняем код результата
+            session.setAttribute("conversionResultCode",
+                    convertedFile.getResultCode() != null ? convertedFile.getResultCode().name() : "OK");
 
             // Генерация результата
             val excelService = excelGenerateServiceMap.get(converter.getExcelType().getExcelType());
@@ -152,6 +156,18 @@ public class WebController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Внутренняя ошибка: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/conversion-result-code")
+    @ResponseBody
+    public String getConversionResultCode(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String resultCode = (String) session.getAttribute("conversionResultCode");
+            session.removeAttribute("conversionResultCode"); // Удаляем после получения
+            return resultCode != null ? resultCode : "OK";
+        }
+        return "OK";
     }
 
     @GetMapping("/download")

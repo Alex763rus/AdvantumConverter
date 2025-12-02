@@ -2,6 +2,7 @@ package com.example.advantumconverter.service.excel.converter;
 
 import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
+import com.example.advantumconverter.enums.ResultCode;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
@@ -17,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -25,8 +27,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.advantumconverter.constant.Constant.Heap.*;
+import static com.example.advantumconverter.enums.ResultCode.OK;
+import static com.example.advantumconverter.enums.ResultCode.WARNING;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
 
@@ -242,6 +247,14 @@ public class ConvertServiceBase {
 
     protected ConvertedBookV2 createDefaultBookV2(List<ConvertedListDataV2> data, List<String> warnings, String listName, List<String> header,
                                                   String excelListName) {
+
+        String message = DONE;
+        ResultCode resultCode = OK;
+        if (!CollectionUtils.isEmpty(warnings)) {
+            message = message + "Возникшие предупреждения: " + NEW_LINE +
+                    warnings.stream().distinct().collect(Collectors.joining(EMPTY));
+            resultCode = WARNING;
+        }
         return ConvertedBookV2.init()
                 .setBookV2(List.of(
                         ConvertedListV2.init()
@@ -250,8 +263,9 @@ public class ConvertServiceBase {
                                 .setExcelListContentV2(data)
                                 .build()
                 ))
-                .setMessage(DONE + warnings.stream().distinct().collect(Collectors.joining(EMPTY)))
+                .setMessage(message)
                 .setBookName(listName + UNDERSCORE)
+                .setResultCode(resultCode)
                 .build();
     }
 
