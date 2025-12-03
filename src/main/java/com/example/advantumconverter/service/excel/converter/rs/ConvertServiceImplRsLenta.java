@@ -79,9 +79,8 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
             for (; !EMPTY.equals(reisId = getCellValue(sheetMain, rowMain, 0)); ++rowMain) {
                 reisMains.add(ReisMain.init()
                         .setReisId(reisId)
-                        .setStartDelivery(convertDateFormat(getCellValue(sheetMain, rowMain, 3), TEMPLATE_DATE_DOT))
-                        .setStartPlan(convertDateFormat(getCellValue(sheetMain, rowMain, 6), TEMPLATE_DATE_TIME_DOT_SMALL_YEAR))
                         .setGroup(getCellValue(sheetMain, rowMain, 10))
+                        .setStartDelivery(convertDateFormat(getCellValue(sheetMain, rowMain, 3), TEMPLATE_DATE_DOT))
                         .build()
                 );
             }
@@ -112,6 +111,7 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
                                 .setCargoSpace(getIntegerValue(sheetFull, rowFull, 25, 0))
                                 .setCargoWeight(getDoubleValue(sheetFull, rowFull, 26))
                                 .setCargoVolume(getDoubleValue(sheetFull, rowFull, 27))
+                                .setStartPlan(convertDateFormat(getCellValue(sheetFull, rowFull, 14), "dd.MM.yy H:mm"))
                                 .build()
                 );
             }
@@ -128,20 +128,26 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
         return createDefaultBookV2(data, warnings, getConverterName(), Header.headersOutputRsClientV2, "Шаблон для Лента");
     }
 
+    private Date lastDate = null;
+
     private ConvertedListDataRsLentaV2 prepareData(ReisMain reisMain, ReisFull reisFull) {
-        var isLoad = POINTTYPE_PD.equals(reisFull.getPointType());
+        var isUnLoad = POINTTYPE_PD.equals(reisFull.getPointType());//разгрузка
+        var isLoad = POINTTYPE_P.equals(reisFull.getPointType());  //погрузка
+        if (isLoad) {
+            lastDate = reisFull.getStartPlan();
+        }
         return ConvertedListDataRsLentaV2.init()
                 .setColumnAdata(EMPTY)
                 .setColumnBdata(reisFull.getPointNumber())
                 .setColumnCdata(reisFull.getPointName())
                 .setColumnDdata(reisFull.getPointType())
                 .setColumnEdata(reisMain.getStartDelivery())
-                .setColumnFdata(reisMain.getStartPlan())
+                .setColumnFdata(lastDate)
                 .setColumnGdata(reisMain.getGroup())
                 .setColumnHdata(STANDART_PALLET)
-                .setColumnIdata(isLoad ? reisFull.getCargoSpace() : 1)
-                .setColumnJdata(isLoad ? reisFull.getCargoWeight() : 1)
-                .setColumnKdata(isLoad ? reisFull.getCargoVolume() : 1)
+                .setColumnIdata(isUnLoad ? reisFull.getCargoSpace() : 1)
+                .setColumnJdata(isUnLoad ? reisFull.getCargoWeight() : 1)
+                .setColumnKdata(isUnLoad ? reisFull.getCargoVolume() : 1)
                 .setColumnLdata(FD)
                 .setColumnMdata(EMPTY)
                 .setColumnNdata(reisMain.getReisId())
@@ -156,9 +162,8 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
     private static class ReisMain {
         @EqualsAndHashCode.Include
         private String reisId;
-        private Date startDelivery;
-        private Date startPlan;
         private String group;
+        private Date startDelivery;
     }
 
     @Getter
@@ -176,6 +181,7 @@ public class ConvertServiceImplRsLenta extends ConvertServiceBase implements Con
         private Integer cargoSpace; //грузомест
         private Double cargoWeight; //вес груза
         private Double cargoVolume; //объем груза
+        private Date startPlan;
     }
 
 }

@@ -93,7 +93,7 @@ public class RsExcelGenerateService implements ExcelGenerateService {
                 createCell(row, 1, rowData.getColumnBdata());
                 createCell(row, 2, rowData.getColumnCdata());
                 createCell(row, 3, rowData.getColumnDdata());
-                createCell(row, 4, styleDateTimeDot, rowData.getColumnEdata());
+                createCell(row, 4, styleDateDot, rowData.getColumnEdata());
                 createCell(row, 5, styleTime, rowData.getColumnFdata());
                 createCell(row, 6, rowData.getColumnGdata());
                 createCell(row, 7, rowData.getColumnHdata());
