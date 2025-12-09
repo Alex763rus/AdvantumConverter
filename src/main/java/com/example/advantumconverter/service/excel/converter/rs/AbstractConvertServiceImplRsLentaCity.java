@@ -15,6 +15,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -57,10 +58,10 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         var data = new ArrayList<ConvertedListDataV2>();
-        var mainListData = readMainList(book);
-        var spWindowsData = readSpWindowsList(book);
-        var spParamsData = readSpParamsList(book);
-        var svodData = readSvodList(book);
+        var mainListData = readMainList(book, "Исходные данные заказов", 3);
+        var spWindowsData = readSpWindowsList(book, "Сп-к ТТ-окна", 3);
+        var spParamsData = readSpParamsList(book, "СП -параметры ТК", 2);
+        var svodData = readSvodList(book, "Свод", 1);
         try {
             mainListData.forEach(
                     reisMain -> data.add(prepareData(reisMain, spWindowsData, spParamsData, svodData))
@@ -140,12 +141,13 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     }
 
 
-    private Map<String, Svod> readSvodList(XSSFWorkbook book) {
-        int row = 1;
-        String listName = "Свод";
+    private Map<String, Svod> readSvodList(XSSFWorkbook book, String listName, int row) {
         try {
             var sheetData = new HashMap<String, Svod>();
             var sheetMain = book.getSheet(listName);
+            if (sheetMain == null) {
+                throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
+            }
             String numberYr;
             for (; !EMPTY.equals(numberYr = getCellValue(sheetMain, row, 0)); ++row) {
                 var format = getCellValue(sheetMain, row, 1);
@@ -165,12 +167,13 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         }
     }
 
-    private List<ReisMain> readMainList(XSSFWorkbook book) {
-        int row = 3;
-        String listName = "Исходные данные заказов";
+    private List<ReisMain> readMainList(XSSFWorkbook book, String listName, int row) {
         try {
             var sheetData = new ArrayList<ReisMain>();
             var sheetMain = book.getSheet(listName);
+            if (sheetMain == null) {
+                throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
+            }
             String numberYr;
             for (; !EMPTY.equals(numberYr = getCellValue(sheetMain, row, 5)); ++row) {
                 sheetData.add(
@@ -190,12 +193,13 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     }
 
 
-    private Map<String, SpWindows> readSpWindowsList(XSSFWorkbook book) {
-        int row = 3;
-        String listName = "Сп-к ТТ-окна";
+    private Map<String, SpWindows> readSpWindowsList(XSSFWorkbook book, String listName, int row) {
         try {
             var sheetData = new HashMap<String, SpWindows>();
             var sheetMain = book.getSheet(listName);
+            if (sheetMain == null) {
+                throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
+            }
             String numberYr;
             for (; !EMPTY.equals(numberYr = getCellValue(sheetMain, row, 3)); ++row) {
                 var timesFromFile1 = getCellValue(sheetMain, row, 5);
@@ -236,12 +240,13 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         }
     }
 
-    private Map<String, SpParams> readSpParamsList(XSSFWorkbook book) {
-        int row = 2;
-        String listName = "СП -параметры ТК";
+    private Map<String, SpParams> readSpParamsList(XSSFWorkbook book, String listName, int row) {
         try {
             var sheetData = new HashMap<String, SpParams>();
             var sheetMain = book.getSheet(listName);
+            if (sheetMain == null) {
+                throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
+            }
             String numberYr;
             for (; !EMPTY.equals(numberYr = getCellValue(sheetMain, row, 0)); ++row) {
                 sheetData.put(
