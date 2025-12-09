@@ -17,28 +17,28 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_FRAGRANT_WORLD;
-import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_FRAGRANT_WORLD;
+import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_FRAGRANT_WORLD_MSK;
+import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_FRAGRANT_WORLD_MSK;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_RS_ERROR;
-import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_FRAGRANT_WORLD;
+import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_FRAGRANT_WORLD_MSK;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
 
 @Component
-public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implements ConvertService {
+public class ConvertServiceImplFragrantWorldMsk extends ConvertServiceBase implements ConvertService {
 
     @Override
     public String getConverterName() {
-        return FILE_NAME_FRAGRANT_WORLD;
+        return FILE_NAME_FRAGRANT_WORLD_MSK;
     }
 
     @Override
     public String getConverterCommand() {
-        return COMMAND_CONVERT_FRAGRANT_WORLD;
+        return COMMAND_CONVERT_FRAGRANT_WORLD_MSK;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
     private List<String> warnings = new ArrayList<>();
 
     @Override
-    @LogExecutionTime(value = "Конвертация v2 " + COMPANY_NAME_FRAGRANT_WORLD, unit = LogExecutionTime.TimeUnit.SECONDS)
+    @LogExecutionTime(value = "Конвертация v2 " + COMPANY_NAME_FRAGRANT_WORLD_MSK, unit = LogExecutionTime.TimeUnit.SECONDS)
     public ConvertedBookV2 getConvertedBookV2(XSSFWorkbook book) {
         warnings = new ArrayList<>();
         val data = new ArrayList<ConvertedListDataV2>();
@@ -158,7 +158,7 @@ public class ConvertServiceImplFragrantWorld extends ConvertServiceBase implemen
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(row.getReisNumber())
                             .setColumnBdata(row.getDateOrder())
-                            .setColumnCdata(COMPANY_NAME_FRAGRANT_WORLD)
+                            .setColumnCdata(COMPANY_NAME_FRAGRANT_WORLD_MSK)
                             .setColumnDdata(row.getOrganization())
                             .setColumnEdata(null)
                             .setColumnFdata(REFRIGERATOR)
