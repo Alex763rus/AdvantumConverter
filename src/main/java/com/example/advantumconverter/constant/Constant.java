@@ -50,7 +50,7 @@ public final class Constant {
         public static final String FILE_NAME_LENTA = "Лента";
         public static final String FILE_NAME_RS_LENTA = "Лента входящий";
         public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ";
-        public static final String FILE_NAME_RS_LENTA_FISH = "Лента исходящий FISH";
+        public static final String FILE_NAME_FRAGRANT_WORLD_SPB = "Ароматный мир СПБ";
         public static final String FILE_NAME_RS_LENTA_MSK = "Лента исходящий МСК";
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
@@ -113,7 +113,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
         public static final String COMMAND_CONVERT_RS_LENTA = "/convert_rs_lenta";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB = "/convert_rs_lenta_spb";
-        public static final String COMMAND_CONVERT_RS_LENTA_FISH = "/convert_rs_lenta_fish";
+        public static final String COMMAND_CONVERT_FRAGRANT_WORLD_SPB = "/convert_fragrant_world_spb";
         public static final String COMMAND_CONVERT_RS_LENTA_MSK = "/convert_rs_lenta_msk";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
         public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
