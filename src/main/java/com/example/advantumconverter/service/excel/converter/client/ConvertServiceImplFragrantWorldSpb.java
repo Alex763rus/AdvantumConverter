@@ -224,7 +224,7 @@ public class ConvertServiceImplFragrantWorldSpb extends ConvertServiceBase imple
     }
 
     private Map<DominoDataKey, DominoData> readDomino(XSSFWorkbook book, String listName, int row) {
-        Map<DominoDataKey, DominoData> data = new HashMap<>();
+        Map<DominoDataKey, DominoData> data = new LinkedHashMap<>();
         try {
             String reisNumber;
             var sheet = book.getSheet(listName);
