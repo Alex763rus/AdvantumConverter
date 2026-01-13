@@ -3,7 +3,7 @@
 -- drop table metro_time_dictionary;
 -- select * from metro_time_dictionary;
 -- select count(*) from metro_time_dictionary;
-REPLACE INTO metro_time_dictionary(time_id, code, time_start, time_end, priority)
+INSERT INTO metro_time_dictionary(time_id, code, time_start, time_end, priority)
 select 10, 'FISH', '23:00', '03:00', 1 union all
 select 10, 'ИКРА', '14:00', '06:00', 1 union all
 select 10, 'MEAT', '23:00', '03:00', 2 union all

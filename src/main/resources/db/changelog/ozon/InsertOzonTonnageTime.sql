@@ -5,7 +5,7 @@
    truncate ozon_tonnage_time;
    select * from ozon_tonnage_time;
  */
-REPLACE INTO ozon_tonnage_time(tonnage, time)
+INSERT INTO ozon_tonnage_time(tonnage, time)
 select 20000, '1:30:00' union all
 select 10000, '1:10:00' union all
 select 5000, '1:00:00' union all

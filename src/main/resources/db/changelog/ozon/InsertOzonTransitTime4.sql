@@ -5,7 +5,7 @@
    truncate ozon_transit_time;
    select * from ozon_transit_time;
  */
-REPLACE INTO ozon_transit_time(departure, arrival, transit_time)
+INSERT INTO ozon_transit_time(departure, arrival, transit_time)
 select 'FRESH_GRC_МСК_ДМИТРОВСКИЙ','FRESH_MAX_МСК_МИТИНО','0:32:15' union all
 select 'FRESH_GRC_МСК_ДМИТРОВСКИЙ','FRESH_MAX_МСК_ЛЮБЕРЦЫ','0:58:53' union all
 select 'FRESH_GRC_МСК_ДМИТРОВСКИЙ','FRESH_MAX_МСК_МЫТИЩИ','0:33:39' union all

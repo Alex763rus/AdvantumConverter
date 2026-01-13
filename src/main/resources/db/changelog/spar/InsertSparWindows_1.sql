@@ -1,10 +1,13 @@
-REPLACE INTO spar_windows (point_name, time_start, time_end)
+ALTER TABLE spar_windows
+    ADD CONSTRAINT uk_spar_windows_point_name UNIQUE (point_name);
+
+INSERT INTO spar_windows (point_name, time_start, time_end)
 SELECT
-    TRIM(`Наименование точки отгрузки`) as point_name,
-    TIME(STR_TO_DATE(`Окно приемки с`, '%H:%i:%s')) as time_start,
-    TIME(STR_TO_DATE(`Окно приемки по`, '%H:%i:%s')) as time_end
+    TRIM("Наименование точки отгрузки") as point_name,
+    TO_CHAR(TO_TIMESTAMP("Окно приемки с", 'HH24:MI:SS'), 'HH24:MI') as time_start,
+    TO_CHAR(TO_TIMESTAMP("Окно приемки по", 'HH24:MI:SS'), 'HH24:MI') as time_end
 FROM (
-    SELECT 'Спар Миддл Волга ООО магазин №10 (НН) Евро' as `Наименование точки отгрузки`, '18:00:00' as `Окно приемки с`, '05:00:00' as `Окно приемки по` UNION ALL
+    SELECT 'Спар Миддл Волга ООО магазин №10 (НН) Евро' as "Наименование точки отгрузки", '18:00:00' as "Окно приемки с", '05:00:00' as "Окно приемки по" UNION ALL
     SELECT 'Спар Миддл Волга ООО магазин №11 (НН)', '08:00:00', '17:00:00' UNION ALL
     SELECT 'Спар Миддл Волга ООО магазин №12 (Городец)', '08:00:00', '17:00:00' UNION ALL
     SELECT 'Спар Миддл Волга ООО магазин №14 (НН) Евро', '18:00:00', '05:00:00' UNION ALL
@@ -55,4 +58,6 @@ FROM (
     SELECT 'Спар Миддл Волга ООО магазин №5(Н.Новгород)', '08:00:00', '17:00:00' UNION ALL
     SELECT 'Спар Миддл Волга ООО магазин №75(НН)', '08:00:00', '17:00:00' UNION ALL
     SELECT 'Спар Миддл Волга ООО магазин №75(Н.Новгород)', '08:00:00', '17:00:00'
-    ) as temp_table;
+    ) as temp_table
+ON CONFLICT (point_name)
+    DO NOTHING;

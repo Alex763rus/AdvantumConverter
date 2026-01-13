@@ -1,4 +1,4 @@
-REPLACE INTO siel_points(point_name, time_start, time_end)
+INSERT INTO siel_points(point_name, time_start, time_end)
 select 'Да (4630013519587)', '6:00', '7:00' union all
 select 'Да (4630013515510)', '6:00', '7:00' union all
 select 'Перекресток (4606038057977)', '6:00', '7:00' union all

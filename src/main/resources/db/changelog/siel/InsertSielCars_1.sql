@@ -1,4 +1,4 @@
-REPLACE INTO siel_cars(car_number, carrier_name)
+INSERT INTO siel_cars(car_number, carrier_name)
 select 'AB123C79', 'ТК' union all
 select 'М783ЕВ977', 'ООО СИЭЛЬ' union all
 select 'Т603НВ977', 'ООО СИЭЛЬ' union all

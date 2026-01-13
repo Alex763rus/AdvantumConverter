@@ -1,4 +1,4 @@
-# окна озона
+-- # окна озона
 /*
  0) в столбце B удалить все пробелы заменой
  1) C столбец формула: =ЛЕВСИМВ(B2;НАЙТИ("-";B2)-1)
@@ -8,8 +8,7 @@
  select * from ozon_dictionary;
  ozon_dictionary car;
  */
-REPLACE INTO ozon_dictionary(stock_brief, stock_in_time, stock_out_time)
-
+INSERT INTO ozon_dictionary(stock_brief, stock_in_time, stock_out_time)
 select 'FRESH_MAX_МСК_МОСКВА_СИТИ', '04:00', '08:00' union all
 select 'FRESH_MAX_МСК_КРАСНАЯ_ПРЕСНЯ', '04:00', '08:00' union all
 select 'FRESH_MAX_МСК_САВЕЛОВСКИЙ', '04:00', '08:00' union all

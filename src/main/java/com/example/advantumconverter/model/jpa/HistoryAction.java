@@ -12,32 +12,30 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@Entity(name = "history_action")
+@Entity
 public class HistoryAction {
 
     @Id
-    @Column(name = "history_action_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyActionId;
 
-    @Column(name = "chat_id_from", nullable = false)
+    @Column(nullable = false)
     private Long chatIdFrom;
-    @Column(name = "chat_id_to")
+    @Column
     private Long chatIdTo;
 
-    @Column(name = "messsage_text", length = 1000)
     private String messageText;
 
-    @Column(name = "callback_menu_name")
+    @Column
     private String callbackMenuName;
 
-    @Column(name = "action_date")
+    @Column
     private Timestamp actionDate;
 
-    @Column(name = "file_name")
+    @Column
     private String fileName;
 
-    @Column(name = "action_type")
+    @Column
     private HistoryActionType actionType;
 
     @Override

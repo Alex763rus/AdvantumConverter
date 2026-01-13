@@ -1,11 +1,11 @@
-# Транзитное время и нормы загрузок озон, погрузочно-разгрузочные работы
+-- # Транзитное время и нормы загрузок озон, погрузочно-разгрузочные работы
 /*
    ="select '"&A2&"',"&B2&","&C2&" union all"
    drop ozon_load_unload_time car;
    truncate ozon_load_unload_time;
    select * from ozon_load_unload_time;
  */
-REPLACE INTO ozon_load_unload_time(arrival, unload_time, load_time)
+INSERT INTO ozon_load_unload_time(arrival, unload_time, load_time)
 select 'FRESH_MAX_ВЛГ_ЗЕМЛЯЧКИ',4,15 union all
 select 'FRESH_MAX_КЗН_ГОРЬКОВСКИЙ',6,15 union all
 select 'FRESH_MAX_КЗН_ОРЕНБУРГСКИЙ',8,15 union all

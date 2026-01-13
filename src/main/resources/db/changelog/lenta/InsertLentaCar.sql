@@ -1,5 +1,5 @@
 -- ="select '"&C2&"', '"&A2&"', "&ЕСЛИ(ЕПУСТО(B2);0;B2)&", "&(D2*1000)&", '"&E2&"', "&F2&", '"&G2&"' union all"
-REPLACE INTO lenta_car(car_number, model, year_issue, tonnage, vin, ax, region)
+INSERT INTO lenta_car(car_number, model, year_issue, tonnage, vin, ax, region)
 select 'X978HK750', '6712DT MAN TGM 26.290 6x2-4 BL', 2016, 10000, 'WMAN46ZZ8HY352001', 8008, 'Новосибирск' union all
 select 'X986HK750', '6712DT MAN TGM 26.290 6x2-4 BL', 2016, 10000, 'WMAN46ZZ7HY352023', 8008, 'Новосибирск' union all
 select 'X977HK750', '6712DT MAN TGM 26.290 6x2-4 BL', 2016, 10000, 'WMAN46ZZ3HY352049', 8098, 'Екатеринбург' union all
@@ -116,4 +116,6 @@ select 'P832CO198', 'КАМАЗ Компас-12', 0, 6000, '', 8012, 'Москв
 select 'P801CO198', 'КАМАЗ Компас-12', 0, 6000, '', 8012, 'Москва' union all
 select 'P957CH198', 'КАМАЗ Компас-12', 0, 6000, '', 8012, 'Москва' union all
 select 'H086XX198', 'Форд', 0, 1500, '', 8011, 'Санкт-Петербург' union all
-select 'H102XX198', 'Форд', 0, 1500, '', 8011, 'Санкт-Петербург';
+select 'H102XX198', 'Форд', 0, 1500, '', 8011, 'Санкт-Петербург'
+ON CONFLICT (car_number)
+DO NOTHING;

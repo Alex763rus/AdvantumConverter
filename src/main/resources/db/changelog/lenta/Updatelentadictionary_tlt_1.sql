@@ -1,4 +1,17 @@
-REPLACE INTO lenta_dictionary(lenta_dictionary_key, address_name, type, time_shop, time_stock, region)
+INSERT INTO lenta_dictionary(lenta_dictionary_key, address_name, type, time_shop, time_stock, region)
+SELECT lenta_dictionary_key,
+       MIN(address_name),
+       MIN(type),
+       MIN(time_shop),
+       MIN(time_stock),
+       MIN(region)
+FROM (
+         SELECT 757                                      as lenta_dictionary_key,
+                'Большой Сампсониевский пр. 66, лит. О.' as address_name,
+                1                                        as type,
+                '04:00'                                  as time_shop,
+                '16:00'                                  as time_stock,
+                'СПБ'                                    as region union all
 -- Тольятти:
 select 101516, '4,ЛИТ.Б, ДРЕЗДЕНСКАЯ, ПОМ.13-Н', 1, '04:00', '16:00', 'Тольятти' union all
 select 102375, '3, Х-Р НОВЕНЬКИЙ, ПРИБРЕЖНАЯ', 1, '04:00', '16:00', 'Тольятти' union all
@@ -152,3 +165,11 @@ select 8123, '3,ЛИТ. Б, ТЕР. ПРОМЫШЛЕННОГО ПАРКА ВАЛ
 select 8125, 'Д.14А, УЛ. АЭРОПОРТОВСКАЯ', 1, '04:00', '16:00', 'Тольятти' union all
 select 8130, 'ЗД.32,Д/1, УЛ. 4-Я ПРОМЫШЛЕННАЯ ЗОНА', 1, '04:00', '16:00', 'Тольятти' union all
 select 8133, '3,ЛИТ. Б, ТЕР. ПРОМЫШЛЕННОГО ПАРКА ВАЛИЩЕВО', 1, '04:00', '16:00', 'Тольятти'
+     ) AS data
+GROUP BY lenta_dictionary_key ON CONFLICT (lenta_dictionary_key)
+    DO
+UPDATE SET address_name = EXCLUDED.address_name,
+    type = EXCLUDED.type,
+    time_shop = EXCLUDED.time_shop,
+    time_stock = EXCLUDED.time_stock,
+    region = EXCLUDED.region;

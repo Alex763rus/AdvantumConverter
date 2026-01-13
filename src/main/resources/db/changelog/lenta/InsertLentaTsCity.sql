@@ -1,4 +1,4 @@
-REPLACE INTO lenta_ts_city(ts, city_brief)
+INSERT INTO lenta_ts_city(ts, city_brief)
 select 'BK426978', 'Лента (НСБ)' union all
 select 'BK485878', 'Лента (НСБ)' union all
 select 'BK486078', 'Лента (НСБ)' union all

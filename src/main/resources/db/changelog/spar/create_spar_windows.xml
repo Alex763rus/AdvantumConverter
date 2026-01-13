@@ -5,13 +5,23 @@
 
     <changeSet author="Grigogiev Alexey" id="create_spar_windows">
         <sql>
-            create table if not exists spar_windows
+            CREATE TABLE IF NOT EXISTS spar_windows
             (
-                point_id          bigint auto_increment primary key,
-                point_name        varchar(255) null,
-                time_start        varchar(255) null,
-                time_end        varchar(255) null
-            );
+                point_id   BIGSERIAL PRIMARY KEY,
+                point_name VARCHAR(255),
+                time_start VARCHAR(255),
+                time_end   VARCHAR(255)
+                );
+
+            -- Опционально: индексы для улучшения производительности
+            CREATE INDEX IF NOT EXISTS idx_spar_windows_point_name ON spar_windows(point_name);
+
+            -- Опционально: комментарии
+            COMMENT ON TABLE spar_windows IS 'Окна времени для точек Spar';
+            COMMENT ON COLUMN spar_windows.point_id IS 'Уникальный идентификатор точки';
+            COMMENT ON COLUMN spar_windows.point_name IS 'Название точки';
+            COMMENT ON COLUMN spar_windows.time_start IS 'Время начала окна (формат HH:MM)';
+            COMMENT ON COLUMN spar_windows.time_end IS 'Время окончания окна (формат HH:MM)';
         </sql>
     </changeSet>
 </databaseChangeLog>

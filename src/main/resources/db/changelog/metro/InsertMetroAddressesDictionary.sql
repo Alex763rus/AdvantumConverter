@@ -3,7 +3,7 @@
 -- drop table metro_addresses_dictionary;
 -- select * from metro_addresses_dictionary;
 -- select count(*) from metro_addresses_dictionary;
-REPLACE INTO metro_addresses_dictionary(addresses_id, addresses_name)
+INSERT INTO metro_addresses_dictionary(addresses_id, addresses_name)
 select 'рынок Северный (остановка)', 'рынок Северный (остановка)' union all
 select '53', 'Ростов на Дону, ул. 40-летия Победы, 340' union all
 select '26', 'Краснодар, Ростовское шоссе, 30' union all

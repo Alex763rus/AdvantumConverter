@@ -5,173 +5,190 @@
 
     <changeSet author="Grigogiev Alexey" id="create_schema_iabs_acc_product">
         <sql>
-            UPDATE DATABASECHANGELOGLOCK SET LOCKED=0, LOCKGRANTED=null, LOCKEDBY=null where ID=1;
+            <!-- Liquibase lock update для PostgreSQL -->
+            UPDATE DATABASECHANGELOGLOCK SET LOCKED=FALSE, LOCKGRANTED=null, LOCKEDBY=null where ID=1;
 
-            create table if not exists car
+            <!-- Таблица car -->
+            CREATE TABLE IF NOT EXISTS car
             (
-                car_id          bigint auto_increment
-                primary key,
-                car_name        varchar(255) null,
-                pallet          int          null,
-                temperature_max int          null,
-                temperature_min int          null,
-                tonnage         int          null
+                car_id          BIGSERIAL PRIMARY KEY,
+                car_name        VARCHAR(255),
+                pallet          INTEGER,
+                temperature_max INTEGER,
+                temperature_min INTEGER,
+                tonnage         INTEGER
                 );
 
-            create table if not exists car_number
+            <!-- Таблица car_number -->
+            CREATE TABLE IF NOT EXISTS car_number
             (
-                car_number_id bigint auto_increment
-                primary key,
-                number        varchar(255) null
+                car_number_id BIGSERIAL PRIMARY KEY,
+                number        VARCHAR(255)
                 );
 
-            create table if not exists company
+            <!-- Таблица company -->
+            CREATE TABLE IF NOT EXISTS company
             (
-                company_id   bigint auto_increment
-                primary key,
-                company_name varchar(255) null
+                company_id   BIGSERIAL PRIMARY KEY,
+                company_name VARCHAR(255)
                 );
 
-            create table if not exists faq
+            <!-- Таблица faq -->
+            CREATE TABLE IF NOT EXISTS faq
             (
-                faq_id    bigint auto_increment
-                primary key,
-                answer    varchar(255) null,
-                file_path varchar(255) null,
-                question  varchar(255) null
+                faq_id    BIGSERIAL PRIMARY KEY,
+                answer    VARCHAR(255),
+                file_path VARCHAR(255),
+                question  VARCHAR(255)
                 );
 
-            create table if not exists history_action
+            <!-- Таблица history_action -->
+            CREATE TABLE IF NOT EXISTS history_action
             (
-                history_action_id  bigint auto_increment
-                primary key,
-                action_date        datetime(6)   null,
-                action_type        tinyint       null,
-                callback_menu_name varchar(255)  null,
-                chat_id_from       bigint        not null,
-                chat_id_to         bigint        null,
-                file_name          varchar(255)  null,
-                messsage_text      varchar(1000) null
+                history_action_id  BIGSERIAL PRIMARY KEY,
+                action_date        TIMESTAMP,
+                action_type        SMALLINT,
+                callback_menu_name VARCHAR(255),
+                chat_id_from       BIGINT NOT NULL,
+                chat_id_to         BIGINT,
+                file_name          VARCHAR(255),
+                message_text      VARCHAR(1000)
                 );
 
-            create table if not exists lenta_car
+            <!-- Таблица lenta_car -->
+            CREATE TABLE IF NOT EXISTS lenta_car
             (
-                car_number varchar(255) not null
-                primary key,
-                ax         bigint       null,
-                model      varchar(255) null,
-                region     varchar(255) null,
-                tonnage    int          null,
-                vin        varchar(255) null,
-                year_issue bigint       null
+                car_number VARCHAR(255) PRIMARY KEY,
+                ax         BIGINT,
+                model      VARCHAR(255),
+                region     VARCHAR(255),
+                tonnage    INTEGER,
+                vin        VARCHAR(255),
+                year_issue BIGINT
                 );
 
-            create table if not exists lenta_dictionary
+            <!-- Таблица lenta_dictionary -->
+            CREATE TABLE IF NOT EXISTS lenta_dictionary
             (
-                lenta_dictionary_key bigint       not null
-                primary key,
-                address_name         varchar(255) null,
-                type                 tinyint      null,
-                region               varchar(255) null,
-                time_shop            varchar(255) null,
-                time_stock           varchar(255) null
+                lenta_dictionary_key BIGINT PRIMARY KEY,
+                address_name         VARCHAR(255),
+                type                 SMALLINT,
+                region               VARCHAR(255),
+                time_shop            VARCHAR(255),
+                time_stock           VARCHAR(255)
                 );
 
-            create table if not exists metro_addresses_dictionary
+            <!-- Таблица metro_addresses_dictionary -->
+            CREATE TABLE IF NOT EXISTS metro_addresses_dictionary
             (
-                addresses_id   varchar(255) not null
-                primary key,
-                addresses_name varchar(255) null
+                addresses_id   VARCHAR(255) PRIMARY KEY,
+                addresses_name VARCHAR(255)
                 );
 
-            create table if not exists metro_dc_addresses_dictionary
+            <!-- Таблица metro_dc_addresses_dictionary -->
+            CREATE TABLE IF NOT EXISTS metro_dc_addresses_dictionary
             (
-                addresses_id    varchar(255) not null
-                primary key,
-                addresses_brief varchar(255) null,
-                addresses_name  varchar(255) null
+                addresses_id    VARCHAR(255) PRIMARY KEY,
+                addresses_brief VARCHAR(255),
+                addresses_name  VARCHAR(255)
                 );
 
-            create table if not exists metro_temperature_dictionary
+            <!-- Таблица metro_temperature_dictionary -->
+            CREATE TABLE IF NOT EXISTS metro_temperature_dictionary
             (
-                temperature_id  varchar(255) not null
-                primary key,
-                max_temperature bigint       null,
-                min_temperature bigint       null
+                temperature_id  VARCHAR(255) PRIMARY KEY,
+                max_temperature BIGINT,
+                min_temperature BIGINT
                 );
 
-            create table if not exists metro_time_dictionary
+            <!-- Таблица metro_time_dictionary -->
+            CREATE TABLE IF NOT EXISTS metro_time_dictionary
             (
-                code       varchar(255) not null,
-                priority   bigint       not null,
-                time_id    bigint       not null,
-                time_end   varchar(255) null,
-                time_start varchar(255) null,
-                primary key (code, priority, time_id)
+                code       VARCHAR(255) NOT NULL,
+                priority   BIGINT NOT NULL,
+                time_id    BIGINT NOT NULL,
+                time_end   VARCHAR(255),
+                time_start VARCHAR(255),
+                PRIMARY KEY (code, priority, time_id)
                 );
 
-            create table if not exists ozon_dictionary
+            <!-- Таблица ozon_dictionary -->
+            CREATE TABLE IF NOT EXISTS ozon_dictionary
             (
-                ozon_dictionary_id bigint auto_increment
-                primary key,
-                stock_brief        varchar(255) null,
-                stock_in_time      varchar(255) null,
-                stock_out_time     varchar(255) null
+                ozon_dictionary_id BIGSERIAL PRIMARY KEY,
+                stock_brief        VARCHAR(255),
+                stock_in_time      VARCHAR(255),
+                stock_out_time     VARCHAR(255)
                 );
 
-            create table if not exists ozon_load_unload_time
+            <!-- Таблица ozon_load_unload_time -->
+            CREATE TABLE IF NOT EXISTS ozon_load_unload_time
             (
-                arrival     varchar(255) not null
-                primary key,
-                load_time   int          null,
-                unload_time int          null
+                arrival     VARCHAR(255) PRIMARY KEY,
+                load_time   INTEGER,
+                unload_time INTEGER
                 );
 
-            create table if not exists ozon_tonnage_time
+            <!-- Таблица ozon_tonnage_time -->
+            CREATE TABLE IF NOT EXISTS ozon_tonnage_time
             (
-                tonnage bigint       not null
-                primary key,
-                time    varchar(255) null
+                tonnage BIGINT PRIMARY KEY,
+                time    VARCHAR(255)
                 );
 
-            create table if not exists ozon_transit_time
+            <!-- Таблица ozon_transit_time -->
+            CREATE TABLE IF NOT EXISTS ozon_transit_time
             (
-                arrival      varchar(255) not null,
-                departure    varchar(255) not null,
-                transit_time varchar(255) null,
-                primary key (arrival, departure)
+                arrival      VARCHAR(255) NOT NULL,
+                departure    VARCHAR(255) NOT NULL,
+                transit_time VARCHAR(255),
+                PRIMARY KEY (arrival, departure)
                 );
 
-            create table if not exists support_task
+            <!-- Таблица support_task -->
+            CREATE TABLE IF NOT EXISTS support_task
             (
-                support_task_id  bigint auto_increment
-                primary key,
-                close_at         datetime(6)  null,
-                converter_name   varchar(255) null,
-                employee_chat_id bigint       null,
-                error_text       varchar(255) null,
-                file_path        varchar(255) null,
-                message_id       int          null,
-                registered_at    datetime(6)  null,
-                result_text      varchar(255) null,
-                support_chat_id  bigint       null,
-                task_state       tinyint      null
+                support_task_id  BIGSERIAL PRIMARY KEY,
+                close_at         TIMESTAMP,
+                converter_name   VARCHAR(255),
+                employee_chat_id BIGINT,
+                error_text       VARCHAR(255),
+                file_path        VARCHAR(255),
+                message_id       INTEGER,
+                registered_at    TIMESTAMP,
+                result_text      VARCHAR(255),
+                support_chat_id  BIGINT,
+                task_state       SMALLINT
                 );
 
-            create table if not exists user_tbl
+            <!-- Таблица user_tbl -->
+            CREATE TABLE IF NOT EXISTS user_tbl
             (
-                chat_id       bigint       not null
-                primary key,
-                first_name    varchar(255) null,
-                last_name     varchar(255) null,
-                registered_at datetime(6)  null,
-                user_name     varchar(255) null,
-                user_role     tinyint      null,
-                company_id    bigint       not null,
-                constraint FKdjamlraqhakt1q9djuurocw6r
-                foreign key (company_id) references company (company_id)
+                chat_id       BIGINT PRIMARY KEY,
+                first_name    VARCHAR(255),
+                last_name     VARCHAR(255),
+                registered_at TIMESTAMP,
+                user_name     VARCHAR(255),
+                user_role     SMALLINT,
+                company_id    BIGINT NOT NULL,
+                CONSTRAINT fk_user_company
+                FOREIGN KEY (company_id)
+                REFERENCES company (company_id)
+                ON DELETE RESTRICT
                 );
 
+            <!-- Создание индексов для улучшения производительности -->
+            CREATE INDEX IF NOT EXISTS idx_user_tbl_company_id ON user_tbl(company_id);
+            CREATE INDEX IF NOT EXISTS idx_history_action_chat_id_from ON history_action(chat_id_from);
+            CREATE INDEX IF NOT EXISTS idx_history_action_action_date ON history_action(action_date);
+            CREATE INDEX IF NOT EXISTS idx_support_task_registered_at ON support_task(registered_at);
+            CREATE INDEX IF NOT EXISTS idx_support_task_task_state ON support_task(task_state);
+
+            <!-- Комментарии к таблицам -->
+            COMMENT ON TABLE user_tbl IS 'Пользователи системы';
+            COMMENT ON TABLE company IS 'Компании пользователей';
+            COMMENT ON TABLE history_action IS 'История действий пользователей';
+            COMMENT ON TABLE support_task IS 'Задачи поддержки';
         </sql>
     </changeSet>
 </databaseChangeLog>

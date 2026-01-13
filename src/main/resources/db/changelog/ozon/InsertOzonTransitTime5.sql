@@ -5,8 +5,10 @@
    truncate ozon_transit_time;
    select * from ozon_transit_time;
  */
-REPLACE INTO ozon_transit_time(departure, arrival, transit_time)
-select 'FRESH_GRC_МСК_СТАРОКАЛУЖСКОЕ','FRESH_MAX_МСК_ПАРК_ХАУС','0:32:15' union all
+INSERT INTO ozon_transit_time (departure, arrival, transit_time)
+SELECT departure, arrival, MIN(transit_time) as transit_time
+FROM (
+         SELECT 'FRESH_GRC_МСК_СТАРОКАЛУЖСКОЕ' as departure, 'FRESH_MAX_МСК_ПАРК_ХАУС' as arrival, '0:32:15' as transit_time UNION ALL
 select 'FRESH_GRC_МСК_СТАРОКАЛУЖСКОЕ','FRESH_MAX_МСК_ПОДОЛЬСК','0:49:04' union all
 select 'FRESH_GRC_МСК_СТАРОКАЛУЖСКОЕ','FRESH_MAX_МСК_ПРАВОБЕРЕЖНЫЙ','0:54:40' union all
 select 'FRESH_GRC_МСК_СТАРОКАЛУЖСКОЕ','FRESH_MAX_МСК_ПРИВОЛЬНАЯ','0:42:03' union all
@@ -1298,4 +1300,8 @@ select 'FRESH_GRC_МСК_ГЕНЕРАЛА_БЕЛОВА','Fresh_Фуд-сити',
 select 'FRESH_GRC_МСК_ГЕНЕРАЛА_БЕЛОВА','ПУШКИНО_1_РФЦ','1:40:56' union all
 select 'FRESH_GRC_МСК_ГЕНЕРАЛА_БЕЛОВА','ХОРУГВИНО_РФЦ','2:10:22' union all
 select 'FRESH_GRC_МСК_ГЕНЕРАЛА_БЕЛОВА','FRESH_DC_МСК_РЯБИНОВАЯ','0:44:52' union all
-select 'FRESH_MAX_МСК_САВЕЛОВСКИЙ','ПЕТРОВСКОЕ_РФЦ','1:14:18';
+select 'FRESH_MAX_МСК_САВЕЛОВСКИЙ','ПЕТРОВСКОЕ_РФЦ','1:14:18'
+     ) AS data
+GROUP BY departure, arrival
+    ON CONFLICT (arrival, departure)
+DO UPDATE SET transit_time = EXCLUDED.transit_time;

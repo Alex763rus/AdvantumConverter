@@ -5,12 +5,21 @@
 
     <changeSet author="Grigogiev Alexey" id="create_schema_iabs_acc_product">
         <sql>
-            create table if not exists sber_address
+            CREATE TABLE IF NOT EXISTS sber_address
             (
-                sber_address_id          bigint auto_increment primary key,
-                city            varchar(255) null,
-                address         varchar(255) null
-            );
+                sber_address_id BIGSERIAL PRIMARY KEY,
+                city            VARCHAR(255),
+                address         VARCHAR(255)
+                );
+
+            -- Опционально: добавление индексов для улучшения производительности
+            CREATE INDEX IF NOT EXISTS idx_sber_address_city ON sber_address(city);
+
+            -- Опционально: комментарии к таблице и колонкам
+            COMMENT ON TABLE sber_address IS 'Адреса СберЛогистики';
+            COMMENT ON COLUMN sber_address.sber_address_id IS 'Уникальный идентификатор адреса';
+            COMMENT ON COLUMN sber_address.city IS 'Город';
+            COMMENT ON COLUMN sber_address.address IS 'Адрес';
         </sql>
     </changeSet>
 </databaseChangeLog>

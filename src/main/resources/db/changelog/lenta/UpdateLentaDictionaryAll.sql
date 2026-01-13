@@ -1,4 +1,15 @@
 INSERT INTO lenta_dictionary(lenta_dictionary_key, address_name, type, time_shop, time_stock)
+SELECT lenta_dictionary_key,
+       MIN(address_name),
+       MIN(type),
+       MIN(time_shop),
+       MIN(time_stock)
+FROM (
+         SELECT 757                                      as lenta_dictionary_key,
+                'Большой Сампсониевский пр. 66, лит. О.' as address_name,
+                1                                        as type,
+                '04:00'                                  as time_shop,
+                '16:00'                                  as time_stock union all
 select 1, 'ООО "Лента", 195248, Санкт-Петербург, пр.Энергетиков, д. 16, лит. А', 1, '9:00', '15:00' union all
 select 2, 'ООО "Лента",197374, Санкт-Петербург, ул.Савушкина, д. 112, лит. А', 1, '23:00', '5:00' union all
 select 3, 'ООО "Лента",196210, Санкт-Петербург, ул.Шереметьевская, д. 11, лит. А', 1, '22:00', '4:00' union all
@@ -1000,8 +1011,10 @@ select 2873, 'ООО "Лента", 400112, Волгоградская обл., �
 select 2876, 'ООО"Лента", 362045, Республика Северная Осетия-Алания, г. Владикавказ, Архонское ш, 1А, стр. 1.', 1, '7:00', '13:00' union all
 select 2879, 'ООО "Лента", 305035, Курская обл., г. Курск, ул. Энгельса, д. 115, лит. Д', 1, '8:00', '14:00' union all
 select 6006, 'ООО "Лента",198205, Санкт-Петербург, д.Старо-Паново, ш.Таллинское, д. 159, лит. А', 1, '18:00', '0:00'
-ON DUPLICATE KEY UPDATE
-                     address_name = VALUES(address_name),
-                     type = VALUES(type),
-                     time_shop = VALUES(time_shop),
-                     time_stock = VALUES(time_stock);
+     ) AS data
+GROUP BY lenta_dictionary_key ON CONFLICT (lenta_dictionary_key)
+    DO
+UPDATE SET address_name = EXCLUDED.address_name,
+    type = EXCLUDED.type,
+    time_shop = EXCLUDED.time_shop,
+    time_stock = EXCLUDED.time_stock;

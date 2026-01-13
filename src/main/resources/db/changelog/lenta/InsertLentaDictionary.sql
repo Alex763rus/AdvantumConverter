@@ -1,7 +1,7 @@
 -- # 3) с листа Адреса РЦ
 -- ="select "&A2&",'"&B2&"',"&1&",'"&СЖПРОБЕЛЫ(ТЕКСТ(C2;"ЧЧ:ММ"))&"', '"&СЖПРОБЕЛЫ(ТЕКСТ(D2;"ЧЧ:ММ"))&"', '"&СЖПРОБЕЛЫ(ТЕКСТ(E2;"ЧЧ:ММ"))&"' union all"
 --     drop table lenta_dictionary;
-REPLACE INTO lenta_dictionary(lenta_dictionary_key, address_name, type, time_shop, time_stock, region)
+INSERT INTO lenta_dictionary(lenta_dictionary_key, address_name, type, time_shop, time_stock, region)
 select 3,'г.Санкт-Петербург Шереметьевская ул.,11 лит А',1,'20:00', '16:00', 'СПБ' union all
 select 4,'г.Санкт-Петербург, ул. Бухарестская, 69,',1,'21:30', '17:00', 'СПБ' union all
 select 13,'г. Санкт-Петербург, ул Вербная д. 21 лит.А',1,'22:00', '16:00', 'СПБ' union all
@@ -763,6 +763,8 @@ select 224,'ЛО, г.Всеволожск, Колтушское ш. д.305',1,'0
 select 272,'г.Санкт-Петербург Урхов пер. 7 Литер А',1,'00:01', '08:00', 'СПБ' union all
 select 273,'г.Санкт-Петербург пр. Ю.Гагарина д.34 корп.2',1,'00:01', '08:00', 'СПБ' union all
 select 319,'196634, п.Шушары, Колпинское шоссе, (тер. Славянка), 32 стр 1',1,'00:01', '16:00', 'СПБ'
+ON CONFLICT (lenta_dictionary_key)
+DO NOTHING;
 ;
 
 
