@@ -32,14 +32,17 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     private static final String COLUMN_C_8023 = "8023";
     private static final String PALLETA = "Паллета";
     private static final String ROLIKS = "ролики";
-    private static final String ALKO = "Алко";
     private static final String DOUBLE_DOT = ":";
     private static final String DOUBLE_ZERO = "00";
     private static final String ZERO = "0";
+    private static final String TARA = "тара";
 
     private static final Map<String, Integer> TYPE_GM_MAP =
             Map.of(PALLETA, 300,
                     ROLIKS, 150);
+
+    private static final Set<String> WHITE_LIST_FORMAT =
+            Set.of("СМ", "ГМ", "АЛКО", "РЦ");
 
     private List<String> warnings = new ArrayList<>();
 
@@ -111,7 +114,9 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         }
         String typeGm = EMPTY;
         String tonnageMax = EMPTY;
+        String swodFormat = EMPTY;
         var params = spParamsData.get(reisMain.getNumberYr());
+
         if (params == null) {
             warnings.add("Не найдены данные по тк на листе СП -параметры ТК, номер: " + reisMain.getNumberYr());
         } else {
@@ -119,6 +124,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             var swod = swodData.get(reisMain.getNumberYr());
             tonnageMax = params.getTonnageMax() +
                     (swod == null ? EMPTY : ("; " + swod.getFormat()));
+            swodFormat = swod == null ? EMPTY : swod.getFormat();
         }
         return ConvertedListDataRsLentaSpbV2.init()
                 .setColumnAdata(EMPTY)
@@ -136,6 +142,8 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnMdata(typeGm)
                 .setColumnNdata(TYPE_GM_MAP.getOrDefault(typeGm, 0))
                 .setColumnOdata(tonnageMax)
+                .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
+                .setColumnRdata(swodFormat)
                 .setTechCountRepeat(reisMain.getPalletCount())
                 .build();
     }
@@ -151,7 +159,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             String numberYr;
             for (; !EMPTY.equals(numberYr = getCellValue(sheetMain, row, 0)); ++row) {
                 var format = getCellValue(sheetMain, row, 1);
-                if (!format.equals(ALKO)) {
+                if (!WHITE_LIST_FORMAT.contains(format)) {
                     continue;
                 }
                 sheetData.put(numberYr,
@@ -183,6 +191,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                                 .setCity(getCellValue(sheetMain, row, 7))
                                 .setAddress(getCellValue(sheetMain, row, 8))
                                 .setPalletCount(getIntegerValue(sheetMain, row, 10, 0))
+                                .setTara(getCellValue(sheetMain, row, 13))
                                 .build()
                 );
             }
@@ -276,6 +285,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         private String city;
         private String address;
         private Integer palletCount;
+        private String tara;
     }
 
     @Getter

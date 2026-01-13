@@ -109,6 +109,8 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
                     createCell(row, 12, rowData.getColumnMdata());
                     createCell(row, 13, rowData.getColumnNdata());
                     createCell(row, 14, rowData.getColumnOdata());
+                    createCell(row, 15, rowData.getColumnPdata());
+                    createCell(row, 16, rowData.getColumnRdata());
                     y = y + 1;
                 }
             }
