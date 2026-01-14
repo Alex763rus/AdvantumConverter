@@ -36,6 +36,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     private static final String DOUBLE_ZERO = "00";
     private static final String ZERO = "0";
     private static final String TARA = "тара";
+    private static final String ALKO = "Алко";
 
     private static final Map<String, Integer> TYPE_GM_MAP =
             Map.of(PALLETA, 300,
@@ -114,7 +115,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         }
         String typeGm = EMPTY;
         String tonnageMax = EMPTY;
-        String swodFormat = EMPTY;
+        String teg = EMPTY;
         var params = spParamsData.get(reisMain.getNumberYr());
 
         if (params == null) {
@@ -122,9 +123,16 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         } else {
             typeGm = params.getTypeGm();
             var swod = swodData.get(reisMain.getNumberYr());
-            tonnageMax = params.getTonnageMax() +
-                    (swod == null ? EMPTY : ("; " + swod.getFormat()));
-            swodFormat = swod == null ? EMPTY : swod.getFormat();
+
+            if (swod == null) {
+                tonnageMax = params.getTonnageMax();
+                teg = EMPTY;
+            } else {
+                if (ALKO.equalsIgnoreCase(swod.getFormat())) {
+                    tonnageMax = params.getTonnageMax() + "; " + swod.getFormat();
+                }
+                teg = swod.getFormat();
+            }
         }
         return ConvertedListDataRsLentaSpbV2.init()
                 .setColumnAdata(EMPTY)
@@ -143,7 +151,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnNdata(TYPE_GM_MAP.getOrDefault(typeGm, 0))
                 .setColumnOdata(tonnageMax)
                 .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
-                .setColumnRdata(swodFormat)
+                .setColumnRdata(teg)
                 .setTechCountRepeat(reisMain.getPalletCount())
                 .build();
     }
@@ -152,20 +160,16 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     private Map<String, Svod> readSvodList(XSSFWorkbook book, String listName, int row) {
         try {
             var sheetData = new HashMap<String, Svod>();
-            var sheetMain = book.getSheet(listName);
-            if (sheetMain == null) {
+            var sheet = book.getSheet(listName);
+            if (sheet == null) {
                 throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
             }
             String numberYr;
-            for (; !EMPTY.equals(numberYr = getCellValue(sheetMain, row, 0)); ++row) {
-                var format = getCellValue(sheetMain, row, 1);
-                if (!WHITE_LIST_FORMAT.contains(format)) {
-                    continue;
-                }
+            for (; !EMPTY.equals(numberYr = getCellValue(sheet, row, 0)); ++row) {
                 sheetData.put(numberYr,
                         Svod.init()
                                 .setNumberYr(numberYr)
-                                .setFormat(format)
+                                .setFormat(getCellValue(sheet, row, 1))
                                 .build()
                 );
             }

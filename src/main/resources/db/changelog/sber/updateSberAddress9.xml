@@ -5,7 +5,7 @@
 
     <changeSet author="Grigogiev Alexey" id="update_sber_address8">
         <sql>
-            update sber_address set city = 'Новосибирск, Красноярск' where sber_address_id in (36, 37);
+            update sber_address set city = 'Новосибирск, Красноярск' where sber_address_id in (21, 22);
         </sql>
     </changeSet>
 </databaseChangeLog>
