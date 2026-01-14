@@ -53,6 +53,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String START_ROW_TEXT = "ТК/РЦ";
+    private static final String LENTA = "ЛЕНТА";
     private Date stockIn = null; //из файла, ожидаемая дата прибытия, дата въезда на погрузку
     private List<String> warnings = new ArrayList<>();
 
@@ -152,7 +153,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
             return convertDateFormat(stockIn, TEMPLATE_DATE_TIME_DOT);
         }
         val date = convertDateFormat(stockIn, TEMPLATE_DATE_DOT);
-        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        val lentaDictionary = dictionaryService.getLentaDictionaries(code.longValue());
         if (lentaDictionary == null) {
             return convertDateFormat(date, TEMPLATE_DATE_DOT, TEMPLATE_DATE_DOT) + " 10:00";
         }
@@ -174,7 +175,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
             val result = DateUtils.addHours(stockIn, 3);
             return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
         }
-        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        val lentaDictionary = dictionaryService.getLentaDictionaries(code.longValue());
         if (lentaDictionary == null) {
             return convertDateFormat(stockIn, TEMPLATE_DATE_DOT) + " 22:00";
         }
@@ -204,9 +205,9 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     private String fillD(int row) {
         val companyName = getCellValue(row, 13);
         val carNumber = getCarNumber(row);
-        if (companyName.toUpperCase().contains("ЛЕНТА")
+        if (companyName.toUpperCase().contains(LENTA)
                 && dictionaryService.getTsCityBrief(carNumber) == null
-                && (dictionaryService.getCarNumberOrElse(carNumber, null) == null)) {
+                && (dictionaryService.getCarNumber(carNumber).isEmpty())) {
             return COMPANY_OOO_LENTA_HIRING;
         }
         return companyName;
@@ -232,16 +233,16 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
 
     private String fillJ(int row) {
         val carNumber = getCellValue(row, 9).replaceAll(SPACE, EMPTY);
-        val lentaCar = dictionaryService.getLentaCarOrElse(carNumber, null);
-        if (lentaCar != null) {
-            return String.valueOf(lentaCar.getTonnage());
+        val lentaCar = dictionaryService.getLentaCar(carNumber);
+        if (lentaCar.isPresent()) {
+            return String.valueOf(lentaCar.get().getTonnage());
         }
         val carName = getCarName(row);
         if (carName.length() < 5) {
             val doubleValue = Double.parseDouble(carName.replaceAll(",", ".")) * 1000;
             return String.valueOf((int) doubleValue);
         }
-        val car = dictionaryService.getCar(carName);
+        val car = dictionaryService.getCarOrElseThrow(carName);
         return String.valueOf(car.getTonnage());
     }
 
@@ -255,7 +256,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         if (tsCityBrief != null) {
             return tsCityBrief;
         }
-        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        val lentaDictionary = dictionaryService.getLentaDictionaries(code.longValue());
         return lentaDictionary == null ? "Нет региона" : "Лента (" + lentaDictionary.getRegion() + ")";
     }
 
@@ -291,7 +292,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
     }
 
     private String fillU(int row, Long code) {
-        val lentaDictionary = dictionaryService.getDictionary(code.longValue());
+        val lentaDictionary = dictionaryService.getLentaDictionaries(code.longValue());
         return lentaDictionary == null ? "Код адреса не найден в справочнике: " + code : lentaDictionary.getAddressName();
     }
 

@@ -73,7 +73,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     }
 
     private String addressFromFile = EMPTY;
-    private SberAddressDictionary cityFromDictionary = null;
+    private Optional<SberAddressDictionary> cityFromDictionary = Optional.empty();
     private Map<String, Integer> uniqReisNumbers;
 
     @Override
@@ -102,7 +102,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
             addressFromFile = getCellValue(0, 0).trim();
             cityFromDictionary = dictionaryService.getSberCity(addressFromFile);
-            if (cityFromDictionary == null) {
+            if (cityFromDictionary.isEmpty()) {
                 throw new SberAddressNotFoundException();
             }
             for (; row <= LAST_ROW; ++row) {
@@ -124,7 +124,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
-                            .setColumnCdata(cityFromDictionary.getCity().trim())
+                            .setColumnCdata(cityFromDictionary.get().getCity().trim())
                             .setColumnDdata(organization)
                             .setColumnEdata(null)
                             .setColumnFdata(REFRIGERATOR)
@@ -273,7 +273,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     }
 
     private String fillU(boolean isStart, int row) {
-        return isStart ? cityFromDictionary.getCityAndRegion().trim() : getCellValue(row, 5)
+        return isStart ? cityFromDictionary.get().getCityAndRegion().trim() : getCellValue(row, 5)
                 .replace(TWO_SPACE, SPACE)
                 .trim();
     }

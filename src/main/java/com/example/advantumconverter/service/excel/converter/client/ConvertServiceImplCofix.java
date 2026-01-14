@@ -138,7 +138,7 @@ public class ConvertServiceImplCofix extends ConvertServiceBase implements Conve
         val next1 = getValueOrDefault(row, 1, 9);
         val next2 = getValueOrDefault(row, 2, 9);
         val carName = next1.equals(next2) && !next1.equals(EMPTY) ? next1 : cur;
-        return dictionaryService.getCar(carName);
+        return dictionaryService.getCarOrElseThrow(carName);
     }
 
     private Date fillS(int row) throws ParseException {

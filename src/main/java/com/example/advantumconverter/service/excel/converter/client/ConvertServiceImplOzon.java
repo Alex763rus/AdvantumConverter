@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_OZON;
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_OZON;
+import static com.example.advantumconverter.constant.Constant.Heap.*;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.utils.DateConverterUtils.*;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
 
 @Component
 public class ConvertServiceImplOzon extends ConvertServiceBase implements ConvertService {
@@ -190,10 +190,10 @@ public class ConvertServiceImplOzon extends ConvertServiceBase implements Conver
             dateResult = getMinimalDate(currentFlights);
             val tonnage = calcTonnage(currentFlights.get(iFlight).getExcelRow());
             val time = dictionaryService.getOzonTonnageTime((long) tonnage);
-            if (time == null) {
+            if (time.isEmpty()) {
                 throw new DictionaryException("Не найдено время в справочнике тоннажа по запросу: " + tonnage);
             }
-            val dateSplit = time.split(":");
+            val dateSplit = time.get().split(":");
             dateResult = DateUtils.addHours(dateResult, Integer.parseInt(dateSplit[0]));
             dateResult = DateUtils.addMinutes(dateResult, Integer.parseInt(dateSplit[1]));
             dateResult = DateUtils.addSeconds(dateResult, Integer.parseInt(dateSplit[2]));
@@ -205,10 +205,10 @@ public class ConvertServiceImplOzon extends ConvertServiceBase implements Conver
             val countPallet = Integer.parseInt(getCellValue(currentFlight.getExcelRow(), 11));
             val placeFinish = getCellValue(currentFlight.getExcelRow(), 23);
             val ozonLoadUnloadTime = dictionaryService.getOzonLoadUnloadTime(placeFinish);
-            if (ozonLoadUnloadTime == null) {
+            if (ozonLoadUnloadTime.isEmpty()) {
                 throw new DictionaryException("Не найдено время в справочнике загрузки разгрузки по запросу: " + placeFinish);
             }
-            val addedTime = countPallet * ozonLoadUnloadTime + 20;
+            val addedTime = countPallet * ozonLoadUnloadTime.get() + 20;
             dateResult = DateUtils.addMinutes(dateResult, addedTime);
         }
         currentFlight.setDateOutcome(dateResult);

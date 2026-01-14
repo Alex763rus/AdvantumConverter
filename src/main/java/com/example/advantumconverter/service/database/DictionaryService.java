@@ -20,14 +20,15 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.text.ParseException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.advantumconverter.service.excel.converter.client.ConvertServiceImplSiel.SIEL_COMPANY_NAME;
 import static org.example.tgcommons.utils.DateConverterUtils.TEMPLATE_TIME;
 import static org.example.tgcommons.utils.DateConverterUtils.convertDateFormat;
 
@@ -54,24 +55,24 @@ public class DictionaryService {
     private final LentaTsCityRepository lentaTsCityRepository;
     private final SparWindowsRepository sparWindowsRepository;
 
-    private HashSet<LentaDictionary> dictionary;
-    private Set<Car> cars;
-    private Set<CarNumber> carNumbers;
-    private Set<LentaCar> lentaCars;
+    private Map<Long, LentaDictionary> lentaDictionaries;
+    private Map<String, Car> cars;
+    private Map<String, CarNumber> carNumbers;
+    private Map<String, LentaCar> lentaCars;
     private Set<OzonDictionary> ozonDictionaries;
     private Set<OzonTransitTime> ozonTransitTimes;
-    private Set<OzonLoadUnloadTime> ozonLoadUnloadTime;
-    private Set<OzonTonnageTime> ozonTonnageTime;
-    private Set<SielPoints> sielPoints;
-    private Set<SielCars> sielCars;
-    private Set<SparWindows> sparWindows;
+    private Map<String, OzonLoadUnloadTime> ozonLoadUnloadTime;
+    private Map<Long, OzonTonnageTime> ozonTonnageTime;
+    private Map<String, SielPoints> sielPoints;
+    private Map<String, SielCars> sielCars;
+    private Map<String, SparWindows> sparWindows;
 
-    private Set<MetroAddressesDictionary> metroAddressesDictionaries;
-    private Set<MetroTemperatureDictionary> metroTemperatureDictionaries;
+    private Map<String, MetroAddressesDictionary> metroAddressesDictionaries;
+    private Map<String, MetroTemperatureDictionary> metroTemperatureDictionaries;
     private Set<MetroTimeDictionary> metroTimeDictionaries;
-    private Set<MetroDcAddressesDictionary> metroDcAddressesDictionaries;
-    private Set<SberAddressDictionary> sberAddressDictionaries;
-    private Set<LentaTsCity> lentaTsCitiesDictionaries;
+    private Map<String, MetroDcAddressesDictionary> metroDcAddressesDictionaries;
+    private Map<String, SberAddressDictionary> sberAddressDictionaries;
+    private Map<String, LentaTsCity> lentaTsCitiesDictionaries;
 
     @PostConstruct
     public void init() {
@@ -80,32 +81,32 @@ public class DictionaryService {
 
     public void reloadDictionary() {
         val addressesIter = lentaDictionaryRepository.findAll();
-        dictionary = new HashSet<>();
-        addressesIter.forEach(dictionary::add);
+        lentaDictionaries = new HashMap<>();
+        addressesIter.forEach(e -> lentaDictionaries.put(e.getLentaDictionaryKey(), e));
 
         val carsIter = carRepository.findAll();
-        cars = new HashSet<>();
-        carsIter.forEach(cars::add);
+        cars = new HashMap<>();
+        carsIter.forEach(e -> cars.put(e.getCarName(), e));
 
         val carNumbersIter = carNumberRepository.findAll();
-        carNumbers = new HashSet<>();
-        carNumbersIter.forEach(carNumbers::add);
+        carNumbers = new HashMap<>();
+        carNumbersIter.forEach(e -> carNumbers.put(e.getNumber(), e));
 
         val lentaCarIter = lentaCarRepository.findAll();
-        lentaCars = new HashSet<>();
-        lentaCarIter.forEach(lentaCars::add);
+        lentaCars = new HashMap<>();
+        lentaCarIter.forEach(e -> lentaCars.put(e.getCarNumber(), e));
 
         val sielPointsIter = sielPointsRepository.findAll();
-        sielPoints = new HashSet<>();
-        sielPointsIter.forEach(sielPoints::add);
+        sielPoints = new HashMap<>();
+        sielPointsIter.forEach(e -> sielPoints.put(e.getPointName(), e));
 
         val sielCarsIter = sielCarsRepository.findAll();
-        sielCars = new HashSet<>();
-        sielCarsIter.forEach(sielCars::add);
+        sielCars = new LinkedCaseInsensitiveMap<>();
+        sielCarsIter.forEach(e -> sielCars.put(e.getCarNumber(), e));
 
         val sparWindowsIter = sparWindowsRepository.findAll();
-        sparWindows = new HashSet<>();
-        sparWindowsIter.forEach(sparWindows::add);
+        sparWindows = new HashMap<>();
+        sparWindowsIter.forEach(e -> sparWindows.put(e.getPointName(), e));
 
         val ozonDictionaryIter = ozonDictionaryRepository.findAll();
         ozonDictionaries = new HashSet<>();
@@ -116,83 +117,77 @@ public class DictionaryService {
         ozonTransitTimeIter.forEach(ozonTransitTimes::add);
 
         val ozonLoadUnloadTimeIter = ozonLoadUnloadTimeRepository.findAll();
-        ozonLoadUnloadTime = new HashSet<>();
-        ozonLoadUnloadTimeIter.forEach(ozonLoadUnloadTime::add);
+        ozonLoadUnloadTime = new HashMap<>();
+        ozonLoadUnloadTimeIter.forEach(e -> ozonLoadUnloadTime.put(e.getArrival(), e));
 
         val ozonTonnageTimeIter = ozonTonnageTimeRepository.findAll();
-        ozonTonnageTime = new HashSet<>();
-        ozonTonnageTimeIter.forEach(ozonTonnageTime::add);
+        ozonTonnageTime = new HashMap<>();
+        ozonTonnageTimeIter.forEach(e -> ozonTonnageTime.put(e.getTonnage(), e));
 
-        metroAddressesDictionaries = new HashSet<>();
+        metroAddressesDictionaries = new HashMap<>();
         metroAddressesDictionaryRepository.findAll()
-                .forEach(metroAddressesDictionaries::add);
+                .forEach(e -> metroAddressesDictionaries.put(e.getAddressesId(), e));
 
-        metroDcAddressesDictionaries = new HashSet<>();
+        metroDcAddressesDictionaries = new HashMap<>();
         metroDcAddressesDictionaryRepository.findAll()
-                .forEach(metroDcAddressesDictionaries::add);
+                .forEach(e -> metroDcAddressesDictionaries.put(e.getAddressesId(), e));
 
-        sberAddressDictionaries = new HashSet<>();
+        sberAddressDictionaries = new HashMap<>();
         sberAddressDictionaryRepository.findAll()
-                .forEach(sberAddressDictionaries::add);
+                .forEach(e -> sberAddressDictionaries.put(e.getAddress(), e));
 
-        metroTemperatureDictionaries = new HashSet<>();
+        metroTemperatureDictionaries = new HashMap<>();
         metroTemperatureDictionaryRepository.findAll()
-                .forEach(metroTemperatureDictionaries::add);
+                .forEach(e -> metroTemperatureDictionaries.put(e.getTemperatureId(), e));
 
         metroTimeDictionaries = new HashSet<>();
         metroTimeDictionaryRepository.findAll()
                 .forEach(metroTimeDictionaries::add);
 
-        lentaTsCitiesDictionaries = new HashSet<>();
+        lentaTsCitiesDictionaries = new HashMap<>();
         lentaTsCityRepository.findAll()
-                .forEach(lentaTsCitiesDictionaries::add);
+                .forEach(e -> lentaTsCitiesDictionaries.put(e.getTs(), e));
     }
 
-    public Car getCar(final String carName) {
-        return cars.stream().filter(e -> e.getCarName().equals(carName))
-                .findFirst().orElseThrow(() -> new CarNotFoundException(carName));
+
+    private Optional<Car> getCar(final String carName) {
+        return Optional.ofNullable(cars.get(carName));
+    }
+
+    public Car getCarOrElseThrow(final String carName) {
+        return getCar(carName)
+                .orElseThrow(() -> new CarNotFoundException(carName));
     }
 
     public Car getCarOrElse(final String carName, final Car car) {
-        return cars.stream().filter(e -> e.getCarName().equals(carName))
-                .findFirst().orElse(car);
+        return getCar(carName).orElse(car);
     }
 
-    public CarNumber getCarNumberOrElse(final String carNumberName, final CarNumber carNumber) {
-        return carNumbers.stream().filter(e -> e.getNumber().equals(carNumberName))
-                .findFirst().orElse(carNumber);
+    public Optional<CarNumber> getCarNumber(final String carNumberName) {
+        return Optional.ofNullable(carNumbers.get(carNumberName));
     }
 
-    public LentaCar getLentaCarOrElse(final String carNumberName, final LentaCar lentaCar) {
-        return lentaCars.stream().filter(e -> e.getCarNumber().equals(carNumberName))
-                .findFirst().orElse(lentaCar);
+    public Optional<LentaCar> getLentaCar(final String carNumberName) {
+        return Optional.ofNullable(lentaCars.get(carNumberName));
     }
 
-    public LentaDictionary getDictionary(final long lentaDictionaryKey) {
-        return dictionary.stream()
-                .filter(e -> e.getLentaDictionaryKey() == lentaDictionaryKey)
-                .findFirst().orElse(null);
+    @Cacheable("getLentaDictionaries")
+    public LentaDictionary getLentaDictionaries(final long lentaDictionaryKey) {
+        return lentaDictionaries.get(lentaDictionaryKey);
     }
 
-    public SielPoints getSielPoint(final String pointName) {
-        return sielPoints.stream()
-                .filter(e -> e.getPointName().equals(pointName))
-                .findFirst().orElse(null);
+    public Optional<SielPoints> getSielPoint(final String pointName) {
+        return Optional.ofNullable(sielPoints.get(pointName));
     }
 
-    public SparWindows getSparWindows(final String pointName) {
-        return sparWindows.stream()
-                .filter(e -> e.getPointName().equals(pointName))
-                .findFirst()
-                .orElse(null);
+    public Optional<SparWindows> getSparWindows(final String pointName) {
+        return Optional.ofNullable(sparWindows.get(pointName));
     }
 
     public String getSielCarrierName(final String carNumber) {
-        return sielCars.stream()
-                .filter(e -> e.getCarNumber().equalsIgnoreCase(carNumber))
-                .findFirst()
+        return Optional.ofNullable(sielCars.get(carNumber))
                 .map(SielCars::getCarrierName)
-                .orElse("ООО СИЭЛЬ");
+                .orElse(SIEL_COMPANY_NAME);
     }
 
     public OzonDictionary getBestDictionary(final String stockBrief, int hTime) {
@@ -213,11 +208,9 @@ public class DictionaryService {
                 .findFirst().orElse(null);
     }
 
-    public String getOzonTonnageTime(Long tonnage) {
-        val timeFind = ozonTonnageTime.stream()
-                .filter(key -> key.getTonnage().equals(tonnage))
-                .findFirst().orElse(null);
-        return timeFind == null ? null : timeFind.getTime();
+    public Optional<String> getOzonTonnageTime(Long tonnage) {
+        return Optional.ofNullable(ozonTonnageTime.get(tonnage))
+                .map(OzonTonnageTime::getTime);
     }
 
     public String getOzonTransitTime(String departure, String arrival) {
@@ -230,35 +223,32 @@ public class DictionaryService {
         return timeFind == null ? null : timeFind.getTransitTime();
     }
 
-    public Integer getOzonLoadUnloadTime(String arrival) {
-        val timeFind = ozonLoadUnloadTime.stream()
-                .filter(key -> key.getArrival().equals(arrival))
-                .findFirst().orElse(null);
-        return timeFind == null ? null : timeFind.getUnloadTime();
+    public Optional<Integer> getOzonLoadUnloadTime(String arrival) {
+        return Optional.ofNullable(ozonLoadUnloadTime.get(arrival))
+                .map(OzonLoadUnloadTime::getUnloadTime);
     }
 
 
-    private MetroTemperatureDictionary getMetroTemperatureDictionary(String code) {
-        return metroTemperatureDictionaries.stream()
-                .filter(key -> key.getTemperatureId().equals(code))
-                .findFirst().orElse(null);
+    private Optional<MetroTemperatureDictionary> getMetroTemperatureDictionary(String code) {
+        return Optional.ofNullable(metroTemperatureDictionaries.get(code));
     }
 
     public String getTsCityBrief(String ts) {
-        var tsCityBrief = lentaTsCitiesDictionaries.stream()
-                .filter(key -> key.getTs().equals(ts))
-                .findFirst().orElse(null);
-        return tsCityBrief == null ? null : tsCityBrief.getCityBrief();
+        return Optional.ofNullable(lentaTsCitiesDictionaries.get(ts))
+                .map(LentaTsCity::getCityBrief)
+                .orElse(null);
     }
 
     public Long getMetroMinTemperature(String code) {
-        val dictionary = getMetroTemperatureDictionary(code);
-        return dictionary == null ? null : dictionary.getMinTemperature();
+        return getMetroTemperatureDictionary(code)
+                .map(MetroTemperatureDictionary::getMinTemperature)
+                .orElse(null);
     }
 
     public Long getMetroMaxTemperature(String code) {
-        val dictionary = getMetroTemperatureDictionary(code);
-        return dictionary == null ? null : dictionary.getMaxTemperature();
+        return getMetroTemperatureDictionary(code)
+                .map(MetroTemperatureDictionary::getMaxTemperature)
+                .orElse(null);
     }
 
     private MetroTimeDictionary getMetroTimeDictionary(Long timeId, Set<String> codes) {
@@ -275,11 +265,8 @@ public class DictionaryService {
         return dictionary == null ? null : dictionary.getTimeStart();
     }
 
-    public SberAddressDictionary getSberCity(String address) {
-        return sberAddressDictionaries.stream()
-                .filter(sberAddressDictionary -> sberAddressDictionary.getAddress()
-                        .equals(address))
-                .findFirst().orElse(null);
+    public Optional<SberAddressDictionary> getSberCity(String address) {
+        return Optional.ofNullable(sberAddressDictionaries.get(address));
     }
 
 
@@ -289,26 +276,25 @@ public class DictionaryService {
     }
 
     public String getMetroTimeDictionary(String code) {
-        val dictionary = metroAddressesDictionaries.stream()
-                .filter(key -> key.getAddressesId().equals(code))
-                .findFirst().orElse(null);
-        return dictionary == null ? null : dictionary.getAddressesName();
+        return Optional.ofNullable(metroAddressesDictionaries.get(code))
+                .map(MetroAddressesDictionary::getAddressesName)
+                .orElse(null);
     }
 
     public String getMetroDcAddressName(String addressesId, String defaultValue) {
-        val dictionary = getMetroDcAddressDictionary(addressesId);
-        return dictionary == null ? defaultValue : dictionary.getAddressesName();
+        return getMetroDcAddressDictionary(addressesId)
+                .map(MetroDcAddressesDictionary::getAddressesName)
+                .orElse(defaultValue);
     }
 
     public String getMetroDcAddressBrief(String addressesId, String defaultValue) {
-        val dictionary = getMetroDcAddressDictionary(addressesId);
-        return dictionary == null ? defaultValue : dictionary.getAddressesBrief();
+        return getMetroDcAddressDictionary(addressesId)
+                .map(MetroDcAddressesDictionary::getAddressesBrief)
+                .orElse(defaultValue);
     }
 
-    private MetroDcAddressesDictionary getMetroDcAddressDictionary(String addressesId) {
-        return metroDcAddressesDictionaries.stream()
-                .filter(key -> key.getAddressesId().equals(addressesId))
-                .findFirst().orElse(null);
+    private Optional<MetroDcAddressesDictionary> getMetroDcAddressDictionary(String addressesId) {
+        return Optional.ofNullable(metroDcAddressesDictionaries.get(addressesId));
     }
 
     private int getHour(String time) {

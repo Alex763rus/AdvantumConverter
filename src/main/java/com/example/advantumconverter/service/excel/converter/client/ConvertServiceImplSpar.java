@@ -207,8 +207,8 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
             time = "04:00";
         } else {
             var sparDbWindows = dictionaryService.getSparWindows(rowData.companyName);
-            if (sparDbWindows != null) {
-                time = sparDbWindows.getTimeStart();
+            if (sparDbWindows.isPresent()) {
+                time = sparDbWindows.get().getTimeStart();
             } else if (!rowData.getTimeFrom().isEmpty() && !rowData.getTimeFrom().equals("#NULL!")
             ) {
                 time = rowData.getTimeFrom();
@@ -226,8 +226,8 @@ public class ConvertServiceImplSpar extends ConvertServiceBase implements Conver
             time = "09:00";
         } else {
             var sparDbWindows = dictionaryService.getSparWindows(rowData.companyName);
-            if (sparDbWindows != null) {
-                time = sparDbWindows.getTimeEnd();
+            if (sparDbWindows.isPresent()) {
+                time = sparDbWindows.get().getTimeEnd();
             }
             if (!rowData.getTimeTo().isEmpty() && !rowData.getTimeTo().equals("#NULL!")) {
                 time = rowData.getTimeTo();

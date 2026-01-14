@@ -11,7 +11,6 @@ import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.val;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -120,7 +119,7 @@ public class ConvertServiceImplDominos extends ConvertServiceBase implements Con
         val next1 = getValueOrDefault(row, 1, 9);
         val next2 = getValueOrDefault(row, 2, 9);
         val carName = next1.equals(next2) && !next1.equals(EMPTY) ? next1 : cur;
-        return dictionaryService.getCar(carName);
+        return dictionaryService.getCarOrElseThrow(carName);
     }
 
     private String fillS(int row) throws ParseException {

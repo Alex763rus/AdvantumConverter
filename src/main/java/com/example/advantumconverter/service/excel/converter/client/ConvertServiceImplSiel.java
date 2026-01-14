@@ -6,6 +6,7 @@ import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
 import com.example.advantumconverter.exception.SberAddressNotFoundException;
 import com.example.advantumconverter.exception.TemperatureNodValidException;
+import com.example.advantumconverter.model.jpa.siel.SielPoints;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataClientsV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2;
@@ -36,7 +37,7 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
 
     private final int START_ROW = 6;
     private final CrmConfigProperties crmConfigProperties;
-    private final String COMPANY_NAME = "ООО СИЭЛЬ";
+    public static final String SIEL_COMPANY_NAME = "ООО СИЭЛЬ";
     private final String S_TIME_START_2H = "2:00:00";
     private final String S_TIME_END_9H = "9:00:00";
     private final String T_TIME_START_7H = "7:00:00";
@@ -105,7 +106,7 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(uniqReisCounter)
                             .setColumnBdata(dateFromFile)
-                            .setColumnCdata(COMPANY_NAME)
+                            .setColumnCdata(SIEL_COMPANY_NAME)
                             .setColumnDdata(dictionaryService.getSielCarrierName(carNumber))
                             .setColumnEdata(null)
                             .setColumnFdata(PROM_TOVAR)
@@ -186,22 +187,20 @@ public class ConvertServiceImplSiel extends ConvertServiceBase implements Conver
         if (isStart) {
             return S_TIME_START_2H;
         }
-        var sielPoint = dictionaryService.getSielPoint(getPointName(row));
-        if (sielPoint == null) {
-            return S_TIME_END_9H;
-        }
-        return sielPoint.getTimeStart();
+        String pointName = getPointName(row);
+        return dictionaryService.getSielPoint(pointName)
+                .map(SielPoints::getTimeStart)
+                .orElse(S_TIME_END_9H);
     }
 
     private String getTTime(boolean isStart, int row) {
         if (isStart) {
             return T_TIME_START_7H;
         }
-        var sielPoint = dictionaryService.getSielPoint(getPointName(row));
-        if (sielPoint == null) {
-            return T_TIME_END_14H;
-        }
-        return sielPoint.getTimeEnd();
+        String pointName = getPointName(row);
+        return dictionaryService.getSielPoint(pointName)
+                .map(SielPoints::getTimeEnd)
+                .orElse(T_TIME_END_14H);
     }
 
     private Date fillT(boolean isStart, int row, String dateFromFileString) throws ParseException {
