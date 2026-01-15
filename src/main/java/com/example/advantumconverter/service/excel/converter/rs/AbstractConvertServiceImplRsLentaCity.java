@@ -36,7 +36,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     private static final String DOUBLE_ZERO = "00";
     private static final String ZERO = "0";
     private static final String TARA = "тара";
-    private static final String ALKO = "Алко";
+    private static final String ALKO = "АЛКО";
 
     private static final Map<String, Integer> TYPE_GM_MAP =
             Map.of(PALLETA, 300,
@@ -129,7 +129,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             } else {
                 tonnageMax = tonnageMax
                         + (ALKO.equalsIgnoreCase(swod.getFormat()) ?
-                        "; " + swod.getFormat()
+                        "; АЛКО"
                         : EMPTY);
                 teg = swod.getFormat();
             }
