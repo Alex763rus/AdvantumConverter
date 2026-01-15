@@ -123,14 +123,14 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         } else {
             typeGm = params.getTypeGm();
             var swod = swodData.get(reisMain.getNumberYr());
-
+            tonnageMax = params.getTonnageMax();
             if (swod == null) {
-                tonnageMax = params.getTonnageMax();
                 teg = EMPTY;
             } else {
-                if (ALKO.equalsIgnoreCase(swod.getFormat())) {
-                    tonnageMax = params.getTonnageMax() + "; " + swod.getFormat();
-                }
+                tonnageMax = tonnageMax
+                        + (ALKO.equalsIgnoreCase(swod.getFormat()) ?
+                        "; " + swod.getFormat()
+                        : EMPTY);
                 teg = swod.getFormat();
             }
         }
