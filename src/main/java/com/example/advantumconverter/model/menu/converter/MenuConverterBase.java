@@ -33,6 +33,7 @@ import static com.example.advantumconverter.enums.State.CONVERTER_WAIT_UNLOAD_IN
 import static com.example.advantumconverter.enums.State.FREE;
 import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 import static org.example.tgcommons.utils.ButtonUtils.createVerticalColumnMenu;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @MappedSuperclass
 @Log4j2
@@ -122,8 +123,10 @@ public abstract class MenuConverterBase extends Menu {
         } catch (Exception ex) {
             log.error(String.format("Во время обработки файла пользователь: %s, конвертер: %s возникла ошибка: %s",
                     user.getChatId(), convertService.getConverterName(), ex.getMessage()));
+            return SendMessageWrap.init().setChatIdLong(user.getChatId())
+                    .setText(prepareShield(ex.getMessage()))
+                    .build().createMessageList();
         }
-        return errorMessageDefault(update);
     }
 
     protected List<PartialBotApiMethod> freeLogic(User user, Update update, State state, String fileName) {
