@@ -3,9 +3,11 @@ package com.example.advantumconverter.service;
 import com.example.advantumconverter.model.jpa.HistoryAction;
 import com.example.advantumconverter.model.jpa.HistoryActionRepository;
 import com.example.advantumconverter.model.jpa.User;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -22,23 +24,24 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HistoryActionService {
 
     private static final int MAX_MESSAGE_LENGTH = 999;
 
-    private String prepareMessageText(String messageText) {
-        if(messageText == null){
-            return EMPTY;
-        }
-        return messageText.length() > MAX_MESSAGE_LENGTH ?
-                messageText.substring(0, MAX_MESSAGE_LENGTH) :
-                messageText;
+    private final HistoryActionRepository historyActionRepository;
+
+    @Value("${history-action-service.enabled:true}")
+    private Boolean enabled;
+
+    public void disabled() {
+        enabled = false;
     }
 
-    @Autowired
-    private HistoryActionRepository historyActionRepository;
-
     public void saveHistoryAction(User user, Update update) {
+        if (Boolean.FALSE.equals(enabled)) {
+            return;
+        }
         val historyAction = new HistoryAction();
         historyAction.setActionDate(new Timestamp(System.currentTimeMillis()));
         historyAction.setChatIdFrom(user.getChatId());
@@ -66,6 +69,9 @@ public class HistoryActionService {
     }
 
     public void saveHistoryAnswerAction(User user, List<PartialBotApiMethod> answers) {
+        if (Boolean.FALSE.equals(enabled)) {
+            return;
+        }
         for (PartialBotApiMethod answer : answers) {
             saveHistoryAnswerAction(user, answer);
         }
@@ -102,4 +108,14 @@ public class HistoryActionService {
         }
         historyActionRepository.save(historyAction);
     }
+
+    private String prepareMessageText(String messageText) {
+        if (messageText == null) {
+            return EMPTY;
+        }
+        return messageText.length() > MAX_MESSAGE_LENGTH ?
+                messageText.substring(0, MAX_MESSAGE_LENGTH) :
+                messageText;
+    }
+
 }

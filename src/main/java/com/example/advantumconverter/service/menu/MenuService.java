@@ -2,6 +2,7 @@ package com.example.advantumconverter.service.menu;
 
 import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.config.BotConfig;
+import com.example.advantumconverter.model.jpa.HistoryActionRepository;
 import com.example.advantumconverter.model.menu.MenuActivity;
 import com.example.advantumconverter.model.menu.MenuDefault;
 import com.example.advantumconverter.model.menu.MenuStart;
@@ -95,6 +96,7 @@ public class MenuService {
         } catch (Exception ex) {
             var errorMessage = "Ошибка во время сохранения HistoryAction:" + ex.getMessage();
             log.error(errorMessage);
+            historyActionService.disabled();
             answer.add(SendMessageWrap.init()
                             .setChatIdString(botConfig.getAdminChatId())
                             .setText(errorMessage)

@@ -79,9 +79,9 @@ public abstract class MenuConverterBase extends Menu {
             val message = isV2 ? convertedBookV2.getMessage() : convertedBook.getMessage();
 
             String caption;
-            if(message!= null && message.length() > CAPTION_LEN_LIMIT) {
+            if (message != null && message.length() > CAPTION_LEN_LIMIT) {
                 caption = message.substring(0, CAPTION_LEN_LIMIT) + NEW_LINE + NEW_LINE + "Весь текст не уместился .....";
-            } else{
+            } else {
                 caption = message;
             }
             var answer = SendDocumentWrap.init()
@@ -120,14 +120,8 @@ public abstract class MenuConverterBase extends Menu {
             }
             return answer.createMessageList();
         } catch (Exception ex) {
-            try {
-                log.error(String.format("Во время обработки файла пользователь: %s, конвертер: %s возникла ошибка: %s",
-                        user.getChatId(), convertService.getConverterName(), ex.getMessage()));
-                return supportService.processNewTask(user, update, convertService, updateMessage.getText(), ex);
-            } catch (Exception e) {
-                log.error(String.format("Во время задачи на обработку ошибки возникла другая ошибка пользователь: %s, конвертер: %s возникла ошибка: %s",
-                        user.getChatId(), convertService.getConverterName(), ex.getMessage()));
-            }
+            log.error(String.format("Во время обработки файла пользователь: %s, конвертер: %s возникла ошибка: %s",
+                    user.getChatId(), convertService.getConverterName(), ex.getMessage()));
         }
         return errorMessageDefault(update);
     }

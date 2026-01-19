@@ -7,7 +7,6 @@ import com.example.advantumconverter.service.database.UserService;
 import com.example.advantumconverter.service.excel.FileUploadService;
 import com.example.advantumconverter.service.menu.StateService;
 import com.example.advantumconverter.service.rest.out.crm.CrmHelper;
-import com.example.advantumconverter.service.support.SupportService;
 import jakarta.persistence.MappedSuperclass;
 import org.example.tgcommons.model.button.ButtonsDescription;
 import org.example.tgcommons.model.wrapper.DeleteMessageWrap;
@@ -37,9 +36,6 @@ public abstract class Menu implements MenuActivity {
 
     @Autowired
     protected UserService userService;
-
-    @Autowired
-    protected SupportService supportService;
 
     @Autowired
     protected CrmHelper crmHelper;
