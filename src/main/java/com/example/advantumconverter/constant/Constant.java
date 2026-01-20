@@ -49,6 +49,7 @@ public final class Constant {
     public static final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
         public static final String FILE_NAME_RS_LENTA = "Лента входящий";
+        public static final String FILE_NAME_RS_LENTA_YR = "Лента ур входящий";
         public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ";
         public static final String FILE_NAME_FRAGRANT_WORLD_SPB = "Ароматный мир СПБ";
         public static final String FILE_NAME_RS_LENTA_MSK = "Лента исходящий МСК";
@@ -112,6 +113,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
         public static final String COMMAND_CONVERT_RS_LENTA = "/convert_rs_lenta";
+        public static final String COMMAND_CONVERT_RS_LENTA_YR = "/convert_rs_lenta_yr";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB = "/convert_rs_lenta_spb";
         public static final String COMMAND_CONVERT_FRAGRANT_WORLD_SPB = "/convert_fragrant_world_spb";
         public static final String COMMAND_CONVERT_RS_LENTA_MSK = "/convert_rs_lenta_msk";

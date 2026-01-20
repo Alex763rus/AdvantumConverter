@@ -13,6 +13,7 @@ import com.example.advantumconverter.service.excel.converter.client.ConvertServi
 import com.example.advantumconverter.service.excel.converter.rs.ConvertServiceImplRsLentaMsk;
 import com.example.advantumconverter.service.excel.converter.rs.ConvertServiceImplRsLentaSpb;
 import com.example.advantumconverter.service.excel.converter.rs.ConvertServiceImplRsLenta;
+import com.example.advantumconverter.service.excel.converter.rs.ConvertServiceImplRsLentaYr;
 import lombok.Data;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,18 +76,19 @@ public class BotConfig {
             ConvertServiceImplFragrantWorldMsk convertServiceImplFragrantWorldMsk,
             CompanyRepository companyRepository,
             ConvertServiceImplRsLenta convertServiceImplRsLenta,
+            ConvertServiceImplRsLentaYr convertServiceImplRsLentaYr,
             ConvertServiceImplRsLentaSpb convertServiceImplRsLentaSpb,
             ConvertServiceImplRsLentaMsk convertServiceImplRsLentaMsk,
             ConvertServiceImplFragrantWorldSpb convertServiceImplFragrantWorldSpb
     ) {
         val companySetting = new CompanySetting();
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
-        val lentaConverter = List.of(convertServiceImplLenta, convertServiceImplRsLenta, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk);
+        val lentaConverter = List.of(convertServiceImplLenta, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk);
         val bushConverter = List.of(convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb);
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb);
         val ozonConverter = List.of(convertServiceImplOzon);
         val metroConverter = List.of(convertServiceImplMetro);
         val sberConverter = List.of(convertServiceImplSber);
@@ -137,6 +139,7 @@ public class BotConfig {
 
         var rsConverters = new ArrayList<String>(defaultCommands);
         rsConverters.add(COMMAND_CONVERT_RS_LENTA);
+        rsConverters.add(COMMAND_CONVERT_RS_LENTA_YR);
         rsConverters.add(COMMAND_CONVERT_RS_LENTA_SPB);
         rsConverters.add(COMMAND_CONVERT_RS_LENTA_MSK);
 
@@ -188,6 +191,7 @@ public class BotConfig {
                         /*Буш автопром:*/, COMMAND_CONVERT_BOGORODSK, COMMAND_CONVERT_COFIX, COMMAND_CONVERT_SAMOKAT, COMMAND_CONVERT_DOMINOS, COMMAND_CONVERT_AGROPROM, COMMAND_CONVERT_AGROPROM_DETAIL
                         /*Лента:*/, COMMAND_CONVERT_LENTA
                         /*RS Лента:*/, COMMAND_CONVERT_RS_LENTA
+                        /*RS Лента УР:*/, COMMAND_CONVERT_RS_LENTA_YR
                         /*RS Лента СПБ:*/, COMMAND_CONVERT_RS_LENTA_SPB
                         /*RS Лента МСК:*/, COMMAND_CONVERT_RS_LENTA_MSK
                         /*Озон:*/, COMMAND_CONVERT_OZON
@@ -206,7 +210,7 @@ public class BotConfig {
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        , COMMAND_CONVERT_LENTA, COMMAND_CONVERT_RS_LENTA, COMMAND_CONVERT_RS_LENTA_SPB, COMMAND_CONVERT_RS_LENTA_MSK, COMMAND_CONVERT_FRAGRANT_WORLD_SPB
+                        , COMMAND_CONVERT_LENTA, COMMAND_CONVERT_RS_LENTA, COMMAND_CONVERT_RS_LENTA_YR, COMMAND_CONVERT_RS_LENTA_SPB, COMMAND_CONVERT_RS_LENTA_MSK, COMMAND_CONVERT_FRAGRANT_WORLD_SPB
                 )
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BUSH_AVTOPROM)
