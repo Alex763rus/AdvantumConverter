@@ -42,9 +42,6 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             Map.of(PALLETA, 300,
                     ROLIKS, 150);
 
-    private static final Set<String> WHITE_LIST_FORMAT =
-            Set.of("СМ", "ГМ", "АЛКО", "РЦ");
-
     private List<String> warnings = new ArrayList<>();
 
     @Override
@@ -113,6 +110,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 warnings.add("не смогли собрать дату для строки: " + reisMain.getNumberYr());
             }
         }
+        //Если  для точки есть скилл или тег "Алко" то "время на разгрузку" 1800 сек
         String typeGm = EMPTY;
         String tonnageMax = EMPTY;
         String teg = EMPTY;
@@ -134,6 +132,9 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 teg = swod.getFormat();
             }
         }
+        var timeToUnload = (ALKO.equalsIgnoreCase(tonnageMax) || ALKO.equalsIgnoreCase(teg)) ?
+                1800 : TYPE_GM_MAP.getOrDefault(typeGm, 0);
+
         return ConvertedListDataRsLentaSpbV2.init()
                 .setColumnAdata(EMPTY)
                 .setColumnBdata(reisMain.getDateDelivery())
@@ -148,10 +149,11 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnKdata(time3.getSecond())
                 .setColumnLdata(1)
                 .setColumnMdata(typeGm)
-                .setColumnNdata(TYPE_GM_MAP.getOrDefault(typeGm, 0))
+                .setColumnNdata(timeToUnload)
                 .setColumnOdata(tonnageMax)
                 .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
                 .setColumnRdata(teg)
+                //========================
                 .setTechCountRepeat(reisMain.getPalletCount())
                 .build();
     }
