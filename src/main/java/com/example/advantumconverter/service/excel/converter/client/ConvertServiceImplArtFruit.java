@@ -193,7 +193,7 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnAgData(EMPTY)
                         .setColumnAhData(getCellValue(row, 39))
                         .setColumnAiData(getIntegerValue(isStart ? row + 1 : row, 40))
-                        .setColumnAjData(getCellValue(row, 6))
+                        .setColumnAjData(EMPTY)
                         .setColumnAkData(getCellValue(row, 24))
                         .setColumnAlData(getCellValue(row, 25))
                         .setColumnAmData(getCellValue(row, 36))
