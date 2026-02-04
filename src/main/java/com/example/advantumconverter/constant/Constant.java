@@ -48,6 +48,7 @@ public final class Constant {
     @NoArgsConstructor(access = PRIVATE)
     public static final class FileOutputName {
         public static final String FILE_NAME_LENTA = "Лента";
+        public static final String FILE_NAME_METRO_PRIMARY = "Metro Primary";
         public static final String FILE_NAME_RS_LENTA = "Лента входящий";
         public static final String FILE_NAME_RS_LENTA_YR = "Лента ур входящий";
         public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ";
@@ -112,6 +113,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_BOGORODSK = "/convert_bogorodsk";
         public static final String COMMAND_CONVERT_COFIX = "/convert_cofix";
         public static final String COMMAND_CONVERT_LENTA = "/convert_lenta";
+        public static final String COMMAND_CONVERT_METRO_PRIMARY = "/metro_primary";
         public static final String COMMAND_CONVERT_RS_LENTA = "/convert_rs_lenta";
         public static final String COMMAND_CONVERT_RS_LENTA_YR = "/convert_rs_lenta_yr";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB = "/convert_rs_lenta_spb";
