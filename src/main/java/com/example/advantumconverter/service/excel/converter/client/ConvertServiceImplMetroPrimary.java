@@ -10,6 +10,7 @@ import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.*;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.tgcommons.constant.Constant;
 import org.springframework.stereotype.Component;
@@ -180,7 +181,7 @@ public class ConvertServiceImplMetroPrimary extends ConvertServiceBase implement
                                 .setCarrier(getCellValue(sheetMain, row, 3))
                                 .setNumberYr(numberYr)
                                 .setCarNumber(getCellValue(sheetMain, row, 6))
-                                .setCarDriver(getCellValue(sheetMain, row, 7))
+                                .setCarDriver(WordUtils.capitalizeFully(getCellValue(sheetMain, row, 7), ' ', '.', '-'))
                                 .setCarTrailer(getCellValue(sheetMain, row, 8))
                                 .setDateIncome(convertDateFormat(dateIncome, TEMPLATE_DATE_TIME_DOT))
                                 .build()
