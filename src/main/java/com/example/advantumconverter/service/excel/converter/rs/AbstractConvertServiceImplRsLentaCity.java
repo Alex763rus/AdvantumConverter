@@ -126,6 +126,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             Map<String, Svod> swodData) {
         var window = spWindowsData.get(reisMain.getNumberYr());
         var dateString = EMPTY;
+        var date4 = EMPTY;
         Pair<String, String> time1 = Pair.of(EMPTY, EMPTY);
         Pair<String, String> time2 = Pair.of(EMPTY, EMPTY);
         Pair<String, String> time3 = Pair.of(EMPTY, EMPTY);
@@ -155,6 +156,9 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             var swod = swodData.get(reisMain.getNumberYr());
             try {
                 time4 = prepareDateStartEnd(dateString, swod.getTimeStart4(), swod.getTimeEnd4(), TIME_18);
+                if (!EMPTY.equalsIgnoreCase(time4.getFirst()) && !EMPTY.equalsIgnoreCase(time4.getSecond())) {
+                    date4 = time4.getFirst() + "/" + time4.getSecond();
+                }
             } catch (Exception ex) {
                 warnings.add("не смогли собрать дату для строки: " + reisMain.getNumberYr());
             }
@@ -190,7 +194,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnOdata(tonnageMax)
                 .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
                 .setColumnRdata(teg)
-                .setColumnSdata(time4.getFirst() + "/" + time4.getSecond())
+                .setColumnSdata(date4)
                 //========================
                 .setTechCountRepeat(reisMain.getPalletCount())
                 .build();
