@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 
 import javax.xml.bind.ValidationException;
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_LENTA;
@@ -73,17 +76,45 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         return createDefaultBookV2(data, warnings, getConverterName(), Header.headersOutputRsLentaClientV2, "Orders");
     }
 
-    private Pair<String, String> prepareDateStartEnd(String date, String timeStart, String timeEnd) throws ParseException {
+    private LocalTime TIME_19 = LocalTime.of(19, 0);
+    private LocalTime TIME_18 = LocalTime.of(18, 0);
+
+    private LocalTime getTime(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime().toLocalTime();
+    }
+
+    private Pair<String, String> prepareDateStartEnd(String date,
+                                                     String timeStart,
+                                                     String timeEnd,
+                                                     LocalTime windowStart) throws ParseException {
         if (EMPTY.equals(timeStart) || EMPTY.equals(timeEnd)) {
             return Pair.of(EMPTY, EMPTY);
         }
         var dateTime1 = convertDateFormat(date + " " + timeStart, TEMPLATE_DATE_TIME_DOT);
         var dateTime2 = convertDateFormat(date + " " + timeEnd, TEMPLATE_DATE_TIME_DOT);
 
-        var dateStart = dateTime1.before(dateTime2) ? dateTime1 : DateUtils.addDays(dateTime1, -1);
+        // Первое время: Если больше windowStart (18 или 19), то вычесть 1 день для первого времени
+        // Второе время: Если время первого больше времени второго, И если первое время меньше 19 то прибавить 1 день
+        var time1 = getTime(dateTime1);
+        if (!time1.isBefore(windowStart)) {
+            dateTime1 = DateUtils.addDays(dateTime1, -1);
+        } else {
+            var time2 = getTime(dateTime2);
+            if (time1.isAfter(time2)) {
+                dateTime2 = DateUtils.addDays(dateTime2, 1);
+            }
+        }
+
+        // Если дата+время второго больше даты времени первого более чем на 24 часа, то из второго 1 день вычесть
+        long hours = Duration.between(dateTime1.toInstant(), dateTime2.toInstant()).abs().toHours();
+        if (hours >= 24) {
+            dateTime2 = DateUtils.addDays(dateTime2, -1);
+        }
 
         return Pair.of(
-                convertDateFormat(dateStart, TEMPLATE_DATE_TIME_DOT),
+                convertDateFormat(dateTime1, TEMPLATE_DATE_TIME_DOT),
                 convertDateFormat(dateTime2, TEMPLATE_DATE_TIME_DOT)
         );
     }
@@ -94,18 +125,19 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             Map<String, SpParams> spParamsData,
             Map<String, Svod> swodData) {
         var window = spWindowsData.get(reisMain.getNumberYr());
-
+        var dateString = EMPTY;
         Pair<String, String> time1 = Pair.of(EMPTY, EMPTY);
         Pair<String, String> time2 = Pair.of(EMPTY, EMPTY);
         Pair<String, String> time3 = Pair.of(EMPTY, EMPTY);
+        Pair<String, String> time4 = Pair.of(EMPTY, EMPTY);
         if (window == null) {
             warnings.add("Не найдены данные по тк на листе Сп-к ТТ-окна, номер: " + reisMain.getNumberYr());
         } else {
             try {
-                var dateString = convertDateFormat(reisMain.getDateDelivery(), TEMPLATE_DATE_DOT);
-                time1 = prepareDateStartEnd(dateString, window.getTimeStart1(), window.getTimeEnd1());
-                time2 = prepareDateStartEnd(dateString, window.getTimeStart2(), window.getTimeEnd2());
-                time3 = prepareDateStartEnd(dateString, window.getTimeStart3(), window.getTimeEnd3());
+                dateString = convertDateFormat(reisMain.getDateDelivery(), TEMPLATE_DATE_DOT);
+                time1 = prepareDateStartEnd(dateString, window.getTimeStart1(), window.getTimeEnd1(), TIME_19);
+                time2 = prepareDateStartEnd(dateString, window.getTimeStart2(), window.getTimeEnd2(), TIME_19);
+                time3 = prepareDateStartEnd(dateString, window.getTimeStart3(), window.getTimeEnd3(), TIME_19);
             } catch (Exception ex) {
                 warnings.add("не смогли собрать дату для строки: " + reisMain.getNumberYr());
             }
@@ -121,6 +153,11 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         } else {
             typeGm = params.getTypeGm();
             var swod = swodData.get(reisMain.getNumberYr());
+            try {
+                time4 = prepareDateStartEnd(dateString, swod.getTimeStart4(), swod.getTimeEnd4(), TIME_18);
+            } catch (Exception ex) {
+                warnings.add("не смогли собрать дату для строки: " + reisMain.getNumberYr());
+            }
             tonnageMax = params.getTonnageMax();
             if (swod == null) {
                 teg = EMPTY;
@@ -153,6 +190,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnOdata(tonnageMax)
                 .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
                 .setColumnRdata(teg)
+                .setColumnSdata(time4.getFirst() + "/" + time4.getSecond())
                 //========================
                 .setTechCountRepeat(reisMain.getPalletCount())
                 .build();
@@ -172,6 +210,8 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                         Svod.init()
                                 .setNumberYr(numberYr)
                                 .setFormat(getCellValue(sheet, row, 1))
+                                .setTimeStart4(getCellValue(sheet, row, 6))
+                                .setTimeEnd4(getCellValue(sheet, row, 7))
                                 .build()
                 );
             }
@@ -330,6 +370,8 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         @EqualsAndHashCode.Include
         private String numberYr;
         private String format;
+        private String timeStart4;
+        private String timeEnd4;
     }
 
 }

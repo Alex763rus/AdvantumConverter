@@ -30,6 +30,7 @@ public class ConvertedListDataRsLentaSpbV2 implements ConvertedListDataV2 {
     private String columnOdata;
     private Integer columnPdata;
     private String columnRdata;
+    private String columnSdata;
 
     //==Технические поля, не участвующие в формировании файла: =============================
     private Integer techCountRepeat;
