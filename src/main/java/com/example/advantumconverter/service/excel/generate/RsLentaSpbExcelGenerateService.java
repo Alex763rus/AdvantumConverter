@@ -94,7 +94,7 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
                 for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
                     row = sheet.createRow(y + 1);
                     createCell(row, 0, convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
-                            + rowData.getColumnDdata() + "_" + (repeat + 1));
+                            + rowData.getColumnDdata() + "_" + (repeat + 1) + "_" + rowData.getTechProductGroup());
                     createCell(row, 1, styleDateDot, rowData.getColumnBdata());
                     createCell(row, 2, rowData.getColumnCdata());
                     createCell(row, 3, rowData.getColumnDdata());

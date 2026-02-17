@@ -197,6 +197,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnSdata(date4)
                 //========================
                 .setTechCountRepeat(reisMain.getPalletCount())
+                .setTechProductGroup(reisMain.getProductGroup())
                 .build();
     }
 
@@ -242,6 +243,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                                 .setAddress(getCellValue(sheetMain, row, 8))
                                 .setPalletCount(getIntegerValue(sheetMain, row, 10, 0))
                                 .setTara(getCellValue(sheetMain, row, 13))
+                                .setProductGroup(getCellValue(sheetMain, row, 14))
                                 .build()
                 );
             }
@@ -336,6 +338,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         private String address;
         private Integer palletCount;
         private String tara;
+        private String productGroup;
     }
 
     @Getter

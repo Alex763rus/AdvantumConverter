@@ -34,5 +34,6 @@ public class ConvertedListDataRsLentaSpbV2 implements ConvertedListDataV2 {
 
     //==Технические поля, не участвующие в формировании файла: =============================
     private Integer techCountRepeat;
+    private String techProductGroup;
 
 }
