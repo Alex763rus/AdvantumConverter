@@ -41,6 +41,9 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     private static final String TARA = "тара";
     private static final String ALKO = "АЛКО";
 
+    private static final LocalTime TIME_19 = LocalTime.of(19, 0);
+    private static final LocalTime TIME_18 = LocalTime.of(18, 0);
+
     private static final Map<String, Integer> TYPE_GM_MAP =
             Map.of(PALLETA, 300,
                     ROLIKS, 150);
@@ -76,8 +79,6 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         return createDefaultBookV2(data, warnings, getConverterName(), Header.headersOutputRsLentaClientV2, "Orders");
     }
 
-    private LocalTime TIME_19 = LocalTime.of(19, 0);
-    private LocalTime TIME_18 = LocalTime.of(18, 0);
 
     private LocalTime getTime(Date date) {
         return date.toInstant()
