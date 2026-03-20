@@ -45,6 +45,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     public static final String ALLIANCE_LOGISTIC_2 = "ООО «Альянс-Логистика»";
     public static final String IP_SIMONYAN = "ИП Симонян Тигран Арсенович";
     public static final String OOO_EVOKA = "ООО \"ЭВОКА\"";
+    public static final String CITY_NAME_EKB = "Екатеринбург";
     private static final Map<String, String> TK_NAME_NUMBER_MAP = Map.of(
             BUSH_AUTOPROM_ORGANIZATION_NAME, "7723663718",
             SBER_BUSH_AUTOPROM_ORGANIZATION_NAME_1, "7723663718",
@@ -105,22 +106,26 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             if (cityFromDictionary.isEmpty()) {
                 throw new SberAddressNotFoundException();
             }
+            var cityName = cityFromDictionary.get().getCity().trim();
+            var cityIsEkb = CITY_NAME_EKB.equals(cityName);
             for (; row <= LAST_ROW; ++row) {
                 val dateFromFile = getDateFromFile(row);
-                var dateFromFileForSt = dateFromFile;
+                var dateStartFromFileForSt = dateFromFile;
                 val numberUnloading = getIntegerValue(row, 8);
                 isStart = numberUnloading == 1;
                 if (isStart) {
                     carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
-                    dateFromFileForSt = DateUtils.isSameDay(convertDateFormat(fillT(true, row, dateFromFile), TEMPLATE_DATE_TIME_DOT), dateFromFile) ?
+                    var dateStartT = fillT(true, row, dateFromFile, cityIsEkb);
+                    dateStartFromFileForSt = DateUtils.isSameDay(dateStartT, dateFromFile) ?
                             dateFromFile : DateUtils.addDays(dateFromFile, -1);
                     fio = prepareFio(getCellValue(row, 4));
                     organization = deleteSpace(getCellValue(row, 10));
                 }
-
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
                     var temperage2Min = getTemperage2(row, 17, 0);
                     var temperage2Max = getTemperage2(row, 17, 1);
+                    var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile);
+                    var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb);
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
@@ -140,8 +145,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnPdata(temperage2Max)
                             .setColumnQdata(null)
                             .setColumnRdata(null)
-                            .setColumnSdata(fillS(isStart, row, isStart ? dateFromFileForSt : dateFromFile))
-                            .setColumnTdata(convertDateFormat(fillT(isStart, row, isStart ? dateFromFileForSt : dateFromFile), TEMPLATE_DATE_TIME_DOT))
+                            .setColumnSdata(dateS)
+                            .setColumnTdata(dateT)
                             .setColumnUdata(fillU(isStart, row))
                             .setColumnVdata(fillV(isStart, row))
                             .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
@@ -184,11 +189,51 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         return createDefaultBookV2(data, warnings, getConverterName());
     }
 
-    private String prepareReisNumber(String carNumber, String dateString) {
-        var reisNumberTmp = carNumber.toUpperCase() + UNDERSCORE + dateString;
-        var reisCount = uniqReisNumbers.getOrDefault(reisNumberTmp, 0) + 1;
-        uniqReisNumbers.put(reisNumberTmp, reisCount);
-        return reisNumberTmp + UNDERSCORE + reisCount;
+    /*
+        TODO: Конкретно для рейсов, где заказчик указан ЕКБ, надо  убытие с первой точки расчитать не +2 часа как сейчас, а +1 час
+       1) Дата Время прибытия на базу:
+       - берется дата из 17 колонки, далее "дата из файла"
+       - рассчитывается день:
+           - берется время из 1 столбца, склеивается с датой из файла, плюсуется 2 часа
+           Если рассчитанная дата осталась в том же дне что и дата из файла, то берется дата из файла, иначе дата из файла минус 1 день.
+        Результат: Берется время из 1 столбца, склеивается с полученным днем выше
+        2) Дата Время убытия с базы:
+       Результат: Берется пункт 1 (время прибытия на разгрузку), Если компания ЕКБ то прибавляется 1 час, иноаче 2 часа
+
+        3) Дата Время прибытия а точку разгрузки:
+        - берется дата из 17 колонки, далее "дата из файла"
+        - берется время из первой части 15 столбца
+        Результат:  дата из 17 колонки + время из первой части 15 столбца
+        4) Дата Время убытия с точки разгрузки:
+        - берется дата из 17 колонки, далее "дата из файла"
+        - берется время из второй части 15 столбца
+        Результат: дата из 17 колонки + время из второй части 15 столбца
+    */
+
+    private Date fillS(boolean isStart, int row, Date dateFromFile) throws ParseException {
+        //для погрузки лдя времени первого столбца точки. убытие 6 часов. Обытие Прибытие минус 2 от прибытия.
+        //разгрузки:
+        var time = isStart
+                ? getCellValue(row, 0)
+                : getCellValue(row, 14).split(MINUS)[0];
+        var resultString = convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
+        return convertDateFormat(resultString, TEMPLATE_DATE_TIME_DOT);
+    }
+
+    private Date fillT(boolean isStart, int row, Date dateFromFile, boolean isEkb) throws ParseException {
+        var dateResult = calculateT(isStart, row, dateFromFile, isEkb);
+        return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_DOT);
+    }
+
+    private String calculateT(boolean isStart, int row, Date dateFromFile, boolean isEkb) throws ParseException {
+        if (isStart) {
+            var dateS = fillS(isStart, row, dateFromFile);
+            var addedHours = isEkb ? 1 : 2;
+            var result = DateUtils.addHours(dateS, addedHours);
+            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
+        }
+        var time = getCellValue(row, 14).split(MINUS)[1];
+        return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
     }
 
     private String prepareFio(String value) {
@@ -226,7 +271,6 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         return Integer.parseInt(temperature[index]);
     }
 
-
     @Override
     public ExcelType getExcelType() {
         return CLIENT;
@@ -237,39 +281,9 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         return convertDateFormat(getCellValue(row, 16), TEMPLATE_DATE_SLASH);
     }
 
-    private Date fillS(boolean isStart, int row, Date dateFromFile) throws ParseException {
-        //для погрузки лдя времени первого столбца точки. убытие 6 часов. Обытие Прибытие минус 2 от прибытия.
-        //разгрузки:
-        val timeIsStart = getCellValue(row, 0);
-        val timeIsNotStart = getCellValue(row, 14).split(MINUS)[0];
-        var dateStart = convertDateFormat(convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + timeIsStart, TEMPLATE_DATE_TIME_DOT);
-        var dateNotStart = convertDateFormat(convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + timeIsNotStart, TEMPLATE_DATE_TIME_DOT);
-        return isStart ? dateStart : dateNotStart;
-        /*
-        if (isStart) {
-            if (dateNotStart.before(dateStart)) {
-                return DateUtils.addDays(dateStart, -1);
-            }
-            return dateStart;
-        }
-        return dateNotStart;
-         */
-    }
-
     @Override
     public CrmConfigProperties.CrmCreds getCrmCreds() {
         return crmConfigProperties.getSber();
-    }
-
-    private String fillT(boolean isStart, int row, Date dateFromFile) throws ParseException {
-        if (isStart) {
-            val dateS = fillS(isStart, row, dateFromFile);
-            val result = DateUtils.addHours(dateS, 2);
-            return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
-        } else {
-            val time = getCellValue(row, 14).split(MINUS)[1];
-            return convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
-        }
     }
 
     private String fillU(boolean isStart, int row) {
