@@ -25,4 +25,5 @@ select 941511135,
        4,
        9,
        'SUPPORT'
+ON CONFLICT (chat_id) DO NOTHING;
 ;
