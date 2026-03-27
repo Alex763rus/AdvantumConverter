@@ -1,11 +1,13 @@
 package com.example.advantumconverter.rest;
 
+import com.example.advantumconverter.exception.WebConvertProcessingException;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.security.ConverterAccessService;
 import com.example.advantumconverter.security.CustomUserDetails;
 import com.example.advantumconverter.security.dto.RegistrationForm;
+import com.example.advantumconverter.service.HistoryActionService;
 import com.example.advantumconverter.service.database.UserService;
-import com.example.advantumconverter.service.excel.generate.ClientExcelGenerateService;
+import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.generate.ExcelGenerateService;
 import com.example.advantumconverter.service.rest.out.crm.CrmHelper;
 import com.example.advantumconverter.service.rest.out.mapper.BookToCrmReisMapper;
@@ -16,9 +18,9 @@ import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 @Controller
 @AllArgsConstructor
 @Log4j2
@@ -49,6 +53,7 @@ public class WebController {
     private final UserService userService;
     private final CrmHelper crmHelper;
     private final Map<String, ExcelGenerateService> excelGenerateServiceMap;
+    private final HistoryActionService historyActionService;
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -86,8 +91,10 @@ public class WebController {
             @RequestParam(required = false, defaultValue = "false") boolean sendToCrm,
             Authentication authentication,
             HttpServletRequest request) {
-
+        CustomUserDetails userDetails = null;
+        ConvertService converter = null;
         try {
+            userDetails = (CustomUserDetails) authentication.getPrincipal();
             // 1. Проверка файла
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Файл не выбран");
@@ -96,9 +103,9 @@ public class WebController {
             // 2. Проверка доступа к конвертеру
             var converterOpt = converterAccessService.getConverter(converterType);
             if (converterOpt.isEmpty()) {
-                return ResponseEntity.badRequest().body("Недопустимый тип конвертации: " + converterType);
+                throw new WebConvertProcessingException(HttpStatus.BAD_REQUEST, "Недопустимый тип конвертации: " + converterType);
             }
-            var converter = converterOpt.get();
+            converter = converterOpt.get();
             XSSFWorkbook inputFile;
             try (InputStream is = file.getInputStream()) {
                 inputFile = (XSSFWorkbook) WorkbookFactory.create(is);
@@ -109,7 +116,7 @@ public class WebController {
             try {
                 convertedFile = converter.getConvertedBookV2(inputFile);
             } catch (Exception e) {
-                return ResponseEntity.badRequest().body("Ошибка конвертации: " + e.getMessage());
+                throw new WebConvertProcessingException(HttpStatus.BAD_REQUEST, "Ошибка конвертации: " + e.getMessage());
             }
 
             // Сохраняем сообщение и код результата в сессии
@@ -128,7 +135,7 @@ public class WebController {
             val excelService = excelGenerateServiceMap.get(converter.getExcelType().getExcelType());
             File resultFile = excelService.createXlsxV2(convertedFile).getNewMediaFile();
             if (!resultFile.exists()) {
-                return ResponseEntity.status(500).body("Не удалось сгенерировать файл");
+                throw new WebConvertProcessingException(HttpStatus.INTERNAL_SERVER_ERROR, "Не удалось сгенерировать файл");
             }
 
             // ✅ Успех: отправляем в crm
@@ -138,11 +145,12 @@ public class WebController {
                     return ResponseEntity.ok().body(crmGatewayResponseDto.getMessage());
                 } else {
                     log.error("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
-                    return ResponseEntity.status(500).body("Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
+                    throw new WebConvertProcessingException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка во время загрузки рейсов. " + crmGatewayResponseDto.getMessage());
                 }
             }
-
             // ✅ Успех: возвращаем файл
+
+            historyActionService.saveWebHistoryActionProtect(userDetails, file.getOriginalFilename(), converter.getConverterCommand());
             InputStreamResource resource = new InputStreamResource(new FileInputStream(resultFile));
 
             String encodedFilename = "filename*=UTF-8''" + UriUtils.encode(resultFile.getName(), StandardCharsets.UTF_8);
@@ -153,7 +161,13 @@ public class WebController {
                     .contentLength(resultFile.length())
                     .body(resource);
 
+        } catch (WebConvertProcessingException e) {
+            log.error(e);
+            historyActionService.saveWebHistoryActionProtect(userDetails, file.getOriginalFilename(), converter == null ? EMPTY : e.getMessage());
+            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
         } catch (Exception e) {
+            log.error(e);
+            historyActionService.saveWebHistoryActionProtect(userDetails, file.getOriginalFilename(), converter == null ? EMPTY : e.getMessage());
             return ResponseEntity.status(500).body("Внутренняя ошибка: " + e.getMessage());
         }
     }

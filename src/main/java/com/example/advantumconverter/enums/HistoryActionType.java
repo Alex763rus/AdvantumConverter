@@ -4,6 +4,8 @@ public enum HistoryActionType {
 
     USER_ACTION,
 
-    SYSTEM_ACTION
+    SYSTEM_ACTION,
+
+    WEB_ACTION
 
 }

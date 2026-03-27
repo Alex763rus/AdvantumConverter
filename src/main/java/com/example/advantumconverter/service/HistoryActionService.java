@@ -3,7 +3,8 @@ package com.example.advantumconverter.service;
 import com.example.advantumconverter.model.jpa.HistoryAction;
 import com.example.advantumconverter.model.jpa.HistoryActionRepository;
 import com.example.advantumconverter.model.jpa.User;
-import lombok.AllArgsConstructor;
+import com.example.advantumconverter.security.CustomUserDetails;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -18,8 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.sql.Timestamp;
 import java.util.List;
 
-import static com.example.advantumconverter.enums.HistoryActionType.SYSTEM_ACTION;
-import static com.example.advantumconverter.enums.HistoryActionType.USER_ACTION;
+import static com.example.advantumconverter.enums.HistoryActionType.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Slf4j
@@ -106,6 +106,35 @@ public class HistoryActionService {
                 historyAction.setFileName(answer.getDocument().getAttachName());
             }
         }
+        historyActionRepository.save(historyAction);
+    }
+
+    public void saveWebHistoryActionProtect(@Nullable CustomUserDetails user, String fileName, String messageText) {
+        if (Boolean.FALSE.equals(enabled)) {
+            return;
+        }
+        try {
+            saveWebHistoryAction(user, fileName, messageText);
+        } catch (Exception ex) {
+            var errorMessage = "Ошибка во время сохранения HistoryAction:" + ex.getMessage();
+            log.error(errorMessage);
+            this.disabled();
+        }
+    }
+
+    private void saveWebHistoryAction(@Nullable CustomUserDetails user, String fileName, String messageText) {
+        if (user == null) {
+            log.warn("Не будет сохранен HistoryAction, user = null");
+            return;
+        }
+        val historyAction = new HistoryAction();
+        var chatId = Long.parseLong(user.getUsername());
+        historyAction.setActionDate(new Timestamp(System.currentTimeMillis()));
+        historyAction.setChatIdFrom(chatId);
+        historyAction.setActionType(WEB_ACTION);
+        historyAction.setMessageText(prepareMessageText(messageText));
+        historyAction.setChatIdTo(chatId);
+        historyAction.setFileName(fileName);
         historyActionRepository.save(historyAction);
     }
 
