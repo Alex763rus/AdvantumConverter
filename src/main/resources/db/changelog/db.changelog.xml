@@ -91,4 +91,6 @@
     <include file="/db/changelog/users/InsertUser6.sql"/>
     <include file="/db/changelog/sber/InsertSberAddress5.sql"/>
     <include file="/db/changelog/sber/updateSberAddress13.xml"/>
+    <include file="/db/changelog/siel/update_siel_cars1.sql"/>
+    <include file="/db/changelog/siel/update_siel_points1.sql"/>
 </databaseChangeLog>
