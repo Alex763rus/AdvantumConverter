@@ -16,6 +16,7 @@ public class ConvertServiceImplSielMilk extends AbstractConvertServiceImplSiel i
     private final String S_TIME_END_9H = "9:00:00";
     private final String T_TIME_START_7H_30M = "7:30:00";
     private final String T_TIME_END_18H = "18:00:00";
+    private final String AREA_NAME_MILK = "Склад РЦ Тула Молоко";
 
     @Override
     protected Integer getStartRow() {
@@ -72,6 +73,11 @@ public class ConvertServiceImplSielMilk extends AbstractConvertServiceImplSiel i
         return dictionaryService.getSielMilkPoint(pointName)
                 .map(SielMilkPoints::getTimeEnd)
                 .orElse(T_TIME_END_18H);
+    }
+
+    @Override
+    protected String getPointName() {
+        return AREA_NAME_MILK;
     }
 
     @Override

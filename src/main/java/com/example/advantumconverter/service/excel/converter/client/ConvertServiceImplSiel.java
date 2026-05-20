@@ -14,6 +14,7 @@ public class ConvertServiceImplSiel extends AbstractConvertServiceImplSiel imple
     private final String S_TIME_END_9H = "9:00:00";
     private final String T_TIME_START_7H = "7:00:00";
     private final String T_TIME_END_14H = "14:00:00";
+    private final String AREA_NAME = "Склад РЦ Тула Хлеб";
 
     @Override
     protected Integer getStartRow() {
@@ -70,6 +71,11 @@ public class ConvertServiceImplSiel extends AbstractConvertServiceImplSiel imple
         return dictionaryService.getSielPoint(pointName)
                 .map(SielPoints::getTimeEnd)
                 .orElse(T_TIME_END_14H);
+    }
+
+    @Override
+    protected String getPointName() {
+        return AREA_NAME;
     }
 
     @Override

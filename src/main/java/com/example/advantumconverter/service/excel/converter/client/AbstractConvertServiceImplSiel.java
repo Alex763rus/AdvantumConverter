@@ -32,7 +32,6 @@ import static org.springdoc.core.utils.Constants.DOT;
 public abstract class AbstractConvertServiceImplSiel extends ConvertServiceBase implements ConvertService {
 
     public static final String SIEL_COMPANY_NAME = "ООО СИЭЛЬ";
-    private final String AREA_NAME = "Склад РЦ Тула Хлеб";
 
     private int LAST_ROW;
     private int LAST_COLUMN_NUMBER;
@@ -45,8 +44,6 @@ public abstract class AbstractConvertServiceImplSiel extends ConvertServiceBase 
     @Override
     public boolean isV2() {
         return true;
-
-
     }
 
     @Override
@@ -183,6 +180,8 @@ public abstract class AbstractConvertServiceImplSiel extends ConvertServiceBase 
 
     protected abstract String getTTime(boolean isStart, int row);
 
+    protected abstract String getPointName();
+
     private Date fillT(boolean isStart, int row, String dateFromFileString) throws ParseException {
         return convertDateFormat(dateFromFileString + SPACE + getTTime(isStart, row), TEMPLATE_DATE_TIME_DOT);
     }
@@ -196,11 +195,11 @@ public abstract class AbstractConvertServiceImplSiel extends ConvertServiceBase 
     }
 
     private String fillU(boolean isStart, int row) {
-        return isStart ? AREA_NAME : getPointName(row);
+        return isStart ? getPointName() : getPointName(row);
     }
 
     private String fillV(boolean isStart, int row) {
-        return isStart ? AREA_NAME : getPointAddress(row);
+        return isStart ? getPointName() : getPointAddress(row);
     }
 
     protected int getLastRow(int startRow, int col) {
