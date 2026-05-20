@@ -14,6 +14,8 @@ import com.example.advantumconverter.model.jpa.siel.SielCars;
 import com.example.advantumconverter.model.jpa.siel.SielCarsRepository;
 import com.example.advantumconverter.model.jpa.siel.SielPoints;
 import com.example.advantumconverter.model.jpa.siel.SielPointsRepository;
+import com.example.advantumconverter.model.jpa.sielmilk.SielMilkPoints;
+import com.example.advantumconverter.model.jpa.sielmilk.SielMilkPointsRepository;
 import com.example.advantumconverter.model.jpa.spar.SparWindows;
 import com.example.advantumconverter.model.jpa.spar.SparWindowsRepository;
 import jakarta.annotation.PostConstruct;
@@ -42,6 +44,7 @@ public class DictionaryService {
     private final CarNumberRepository carNumberRepository;
     private final LentaCarRepository lentaCarRepository;
     private final SielPointsRepository sielPointsRepository;
+    private final SielMilkPointsRepository sielMilkPointsRepository;
     private final SielCarsRepository sielCarsRepository;
     private final OzonDictionaryRepository ozonDictionaryRepository;
     private final OzonTransitTimeRepository ozonTransitTimeRepository;
@@ -64,6 +67,7 @@ public class DictionaryService {
     private Map<String, OzonLoadUnloadTime> ozonLoadUnloadTime;
     private Map<Long, OzonTonnageTime> ozonTonnageTime;
     private Map<String, SielPoints> sielPoints;
+    private Map<String, SielMilkPoints> sielMilkPoints;
     private Map<String, SielCars> sielCars;
     private Map<String, SparWindows> sparWindows;
 
@@ -103,6 +107,10 @@ public class DictionaryService {
         val sielCarsIter = sielCarsRepository.findAll();
         sielCars = new LinkedCaseInsensitiveMap<>();
         sielCarsIter.forEach(e -> sielCars.put(e.getCarNumber(), e));
+
+        val sielMilkPointsIter = sielMilkPointsRepository.findAll();
+        sielMilkPoints = new HashMap<>();
+        sielMilkPointsIter.forEach(e -> sielMilkPoints.put(e.getPointName(), e));
 
         val sparWindowsIter = sparWindowsRepository.findAll();
         sparWindows = new HashMap<>();
@@ -178,6 +186,10 @@ public class DictionaryService {
 
     public Optional<SielPoints> getSielPoint(final String pointName) {
         return Optional.ofNullable(sielPoints.get(pointName));
+    }
+
+    public Optional<SielMilkPoints> getSielMilkPoint(final String pointName) {
+        return Optional.ofNullable(sielMilkPoints.get(pointName));
     }
 
     public Optional<SparWindows> getSparWindows(final String pointName) {

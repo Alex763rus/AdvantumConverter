@@ -80,7 +80,8 @@ public class BotConfig {
             ConvertServiceImplRsLentaSpb convertServiceImplRsLentaSpb,
             ConvertServiceImplRsLentaMsk convertServiceImplRsLentaMsk,
             ConvertServiceImplFragrantWorldSpb convertServiceImplFragrantWorldSpb,
-            ConvertServiceImplMetroPrimary convertServiceImplMetroPrimary
+            ConvertServiceImplMetroPrimary convertServiceImplMetroPrimary,
+            ConvertServiceImplSielMilk convertServiceImplSielMilk
     ) {
         val companySetting = new CompanySetting();
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
@@ -89,12 +90,12 @@ public class BotConfig {
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb, convertServiceImplMetroPrimary);
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSielMilk, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb, convertServiceImplMetroPrimary);
         val ozonConverter = List.of(convertServiceImplOzon);
         val metroConverter = List.of(convertServiceImplMetro, convertServiceImplMetroPrimary);
         val sberConverter = List.of(convertServiceImplSber);
         val artFruitConverter = List.of(convertServiceImplArtFruit);
-        val sielConverter = List.of(convertServiceImplSiel);
+        val sielConverter = List.of(convertServiceImplSiel, convertServiceImplSielMilk);
         val sparConverter = List.of(convertServiceImplSpar);
         val snikaConverter = List.of(convertServiceImplNika);
         val fragrantWorldConverter = List.of(convertServiceImplFragrantWorldMsk, convertServiceImplFragrantWorldSpb);
@@ -129,6 +130,7 @@ public class BotConfig {
         allConverters.add(COMMAND_CONVERT_AGROPROM_DETAIL);
         allConverters.add(COMMAND_CONVERT_OZON);
         allConverters.add(COMMAND_CONVERT_SIEL);
+        allConverters.add(COMMAND_CONVERT_SIEL_MILK);
         allConverters.add(COMMAND_CONVERT_SPAR);
         allConverters.add(COMMAND_CONVERT_FRAGRANT_WORLD_MSK);
         allConverters.add(COMMAND_CONVERT_FRAGRANT_WORLD_SPB);
@@ -202,6 +204,7 @@ public class BotConfig {
                         /*Сбер логистик:*/, COMMAND_CONVERT_SBER
                         /*Арт Фрут:*/, COMMAND_CONVERT_ART_FRUIT
                         /*Сиэль:*/, COMMAND_CONVERT_SIEL
+                        /*Сиэль Молоко:*/, COMMAND_CONVERT_SIEL_MILK
                         /*Спар:*/, COMMAND_CONVERT_SPAR
                         /*Ника Транс:*/, COMMAND_CONVERT_NIKA
                         /*Ароматный мир МСК:*/, COMMAND_CONVERT_FRAGRANT_WORLD_MSK
@@ -243,7 +246,7 @@ public class BotConfig {
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SIEL)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        , COMMAND_CONVERT_SIEL
+                        , COMMAND_CONVERT_SIEL, COMMAND_CONVERT_SIEL_MILK
                 )
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SPAR)

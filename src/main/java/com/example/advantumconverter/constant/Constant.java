@@ -57,6 +57,7 @@ public final class Constant {
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
         public static final String FILE_NAME_SIEL = "Сиэль";
+        public static final String FILE_NAME_SIEL_MILK = "Сиэль Молоко";
         public static final String FILE_NAME_SPAR = "Спар";
         public static final String FILE_NAME_FRAGRANT_WORLD_MSK = "Ароматный мир МСК";
         public static final String FILE_NAME_NIKA = "Ника Транс";
@@ -121,6 +122,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_RS_LENTA_MSK = "/convert_rs_lenta_msk";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
         public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
+        public static final String COMMAND_CONVERT_SIEL_MILK = "/convert_siel_milk";
         public static final String COMMAND_CONVERT_SPAR = "/convert_spar";
         public static final String COMMAND_CONVERT_FRAGRANT_WORLD_MSK = "/convert_fragrant_world_msk";
         public static final String COMMAND_CONVERT_NIKA = "/convert_nika";
