@@ -21,14 +21,14 @@ public class BotInitializer {
 
     private final TelegramBot telegramBot;
 
-    @EventListener({ContextRefreshedEvent.class})
-    public void init() throws TelegramApiException {
-        val telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        try {
-            telegramBotsApi.registerBot(telegramBot);
-            log.info("APPNAME: " + APP_NAME);
-        } catch (TelegramApiException e) {
-            log.error("Error occurred: " + e.getMessage());
-        }
-    }
+//    @EventListener({ContextRefreshedEvent.class})
+//    public void init() throws TelegramApiException {
+//        val telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+//        try {
+//            telegramBotsApi.registerBot(telegramBot);
+//            log.info("APPNAME: " + APP_NAME);
+//        } catch (TelegramApiException e) {
+//            log.error("Error occurred: " + e.getMessage());
+//        }
+//    }
 }

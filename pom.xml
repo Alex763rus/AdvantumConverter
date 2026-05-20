@@ -216,6 +216,12 @@
                                         <include>Dockerfile</include>
                                     </includes>
                                 </resource>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>advantumconverter-${git.commit.id.abbrev}.jar</include>
+                                    </includes>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
