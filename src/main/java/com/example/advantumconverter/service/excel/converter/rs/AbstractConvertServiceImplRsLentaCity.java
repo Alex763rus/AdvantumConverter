@@ -198,8 +198,8 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                 .setColumnNdata(timeToUnload)
                 .setColumnOdata(tonnageMax)
                 .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
-                .setColumnRdata(teg)
-                .setColumnSdata(date4)
+                .setColumnQdata(teg)
+                .setColumnRdata(date4)
                 //========================
                 .setTechCountRepeat(reisMain.getPalletCount())
                 .setTechProductGroup(reisMain.getProductGroup())

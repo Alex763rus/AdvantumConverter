@@ -90,29 +90,28 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
 
             for (ConvertedListDataV2 convertedListDataV2 : dataV2) {
                 ConvertedListDataRsLentaSpbV2 rowData = (ConvertedListDataRsLentaSpbV2) convertedListDataV2;
+                if (rowData.getTechCountRepeat() != null) {
+                    for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
+                        row = sheet.createRow(y + 1);
+                        createCell(row, 0, convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
+                                + rowData.getColumnDdata() + "_" + (repeat + 1) + "_" + rowData.getTechProductGroup());
+                        createMainCells(row, rowData);
+                        y = y + 1;
+                    }
+                } else {
+                    var techRepeats = rowData.getTechRepeats();
+                    for (ConvertedListDataRsLentaSpbV2.Repeat techRepeat : techRepeats) {
+                        for (int repeat = 0; repeat < techRepeat.getRepeat(); ++repeat) {
+                            row = sheet.createRow(y + 1);
+                            createCell(row, 0, convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
+                                    + rowData.getColumnDdata() + "_" + (repeat + 1) + "_" + techRepeat.getColumnName());
+                            createMainCells(row, rowData);
+                            //дополнительные поля, отсутстующие в другой реализации:
+                            createCell(row, 18, techRepeat.getGroupName());
+                            y = y + 1;
+                        }
 
-                for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
-                    row = sheet.createRow(y + 1);
-                    createCell(row, 0, convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
-                            + rowData.getColumnDdata() + "_" + (repeat + 1) + "_" + rowData.getTechProductGroup());
-                    createCell(row, 1, styleDateDot, rowData.getColumnBdata());
-                    createCell(row, 2, rowData.getColumnCdata());
-                    createCell(row, 3, rowData.getColumnDdata());
-                    createCell(row, 4, rowData.getColumnEdata());
-                    createCell(row, 5, rowData.getColumnFdata());
-                    createCell(row, 6, rowData.getColumnGdata());
-                    createCell(row, 7, rowData.getColumnHdata());
-                    createCell(row, 8, rowData.getColumnIdata());
-                    createCell(row, 9, rowData.getColumnJdata());
-                    createCell(row, 10, rowData.getColumnKdata());
-                    createCell(row, 11, rowData.getColumnLdata());
-                    createCell(row, 12, rowData.getColumnMdata());
-                    createCell(row, 13, rowData.getColumnNdata());
-                    createCell(row, 14, rowData.getColumnOdata());
-                    createCell(row, 15, rowData.getColumnPdata());
-                    createCell(row, 16, rowData.getColumnRdata());
-                    createCell(row, 17, rowData.getColumnSdata());
-                    y = y + 1;
+                    }
                 }
             }
             val tmpFile = Files.createTempFile(convertedBook.getBookName(), ".xlsx").toFile();
@@ -122,6 +121,26 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
         } catch (Exception e) {
             throw new ExcelGenerationException("Строка:" + y + ", " + "Столбец:" + x + ". " + e.getMessage());
         }
+    }
+
+    private void createMainCells(Row row, ConvertedListDataRsLentaSpbV2 rowData) throws ParseException {
+        createCell(row, 1, styleDateDot, rowData.getColumnBdata());
+        createCell(row, 2, rowData.getColumnCdata());
+        createCell(row, 3, rowData.getColumnDdata());
+        createCell(row, 4, rowData.getColumnEdata());
+        createCell(row, 5, rowData.getColumnFdata());
+        createCell(row, 6, rowData.getColumnGdata());
+        createCell(row, 7, rowData.getColumnHdata());
+        createCell(row, 8, rowData.getColumnIdata());
+        createCell(row, 9, rowData.getColumnJdata());
+        createCell(row, 10, rowData.getColumnKdata());
+        createCell(row, 11, rowData.getColumnLdata());
+        createCell(row, 12, rowData.getColumnMdata());
+        createCell(row, 13, rowData.getColumnNdata());
+        createCell(row, 14, rowData.getColumnOdata());
+        createCell(row, 15, rowData.getColumnPdata());
+        createCell(row, 16, rowData.getColumnQdata());
+        createCell(row, 17, rowData.getColumnRdata());
     }
 
     private CellStyle getStyle(String format) {

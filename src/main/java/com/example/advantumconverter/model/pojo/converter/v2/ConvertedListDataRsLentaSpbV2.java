@@ -1,11 +1,10 @@
 package com.example.advantumconverter.model.pojo.converter.v2;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,11 +28,20 @@ public class ConvertedListDataRsLentaSpbV2 implements ConvertedListDataV2 {
     private Integer columnNdata;
     private String columnOdata;
     private Integer columnPdata;
+    private String columnQdata;
     private String columnRdata;
-    private String columnSdata;
 
     //==Технические поля, не участвующие в формировании файла: =============================
     private Integer techCountRepeat;
     private String techProductGroup;
 
+    private List<Repeat> techRepeats;
+
+    @Getter
+    @AllArgsConstructor
+    public static class Repeat {
+        private Integer repeat;
+        private String groupName;
+        private String columnName;
+    }
 }
