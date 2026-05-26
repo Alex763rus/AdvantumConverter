@@ -89,7 +89,8 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
     private Pair<String, String> prepareDateStartEnd(String date,
                                                      String timeStart,
                                                      String timeEnd,
-                                                     LocalTime windowStart) throws ParseException {
+                                                     LocalTime windowStart,
+                                                     Integer squize) throws ParseException {
         if (EMPTY.equals(timeStart) || EMPTY.equals(timeEnd)) {
             return Pair.of(EMPTY, EMPTY);
         }
@@ -114,6 +115,9 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             dateTime2 = DateUtils.addDays(dateTime2, -1);
         }
 
+        dateTime1 = DateUtils.addDays(dateTime1, squize);
+        dateTime2 = DateUtils.addDays(dateTime2, squize);
+
         return Pair.of(
                 convertDateFormat(dateTime1, TEMPLATE_DATE_TIME_DOT),
                 convertDateFormat(dateTime2, TEMPLATE_DATE_TIME_DOT)
@@ -137,9 +141,9 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         } else {
             try {
                 dateString = convertDateFormat(reisMain.getDateDelivery(), TEMPLATE_DATE_DOT);
-                time1 = prepareDateStartEnd(dateString, window.getTimeStart1(), window.getTimeEnd1(), TIME_19);
-                time2 = prepareDateStartEnd(dateString, window.getTimeStart2(), window.getTimeEnd2(), TIME_19);
-                time3 = prepareDateStartEnd(dateString, window.getTimeStart3(), window.getTimeEnd3(), TIME_19);
+                time1 = prepareDateStartEnd(dateString, window.getTimeStart1(), window.getTimeEnd1(), TIME_19, window.getSquiz());
+                time2 = prepareDateStartEnd(dateString, window.getTimeStart2(), window.getTimeEnd2(), TIME_19, window.getSquiz());
+                time3 = prepareDateStartEnd(dateString, window.getTimeStart3(), window.getTimeEnd3(), TIME_19, window.getSquiz());
             } catch (Exception ex) {
                 warnings.add("не смогли собрать дату для строки: " + reisMain.getNumberYr());
             }
@@ -156,7 +160,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
             typeGm = params.getTypeGm();
             var swod = swodData.get(reisMain.getNumberYr());
             try {
-                time4 = prepareDateStartEnd(dateString, swod.getTimeStart4(), swod.getTimeEnd4(), TIME_18);
+                time4 = prepareDateStartEnd(dateString, swod.getTimeStart4(), swod.getTimeEnd4(), TIME_18, 0);
                 if (!EMPTY.equalsIgnoreCase(time4.getFirst()) && !EMPTY.equalsIgnoreCase(time4.getSecond())) {
                     date4 = time4.getFirst() + "/" + time4.getSecond();
                 }
@@ -278,6 +282,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                                 .setTimeEnd2(getTime(numberYr, timesFromFile2, 1))
                                 .setTimeStart3(getTime(numberYr, timesFromFile3, 0))
                                 .setTimeEnd3(getTime(numberYr, timesFromFile3, 1))
+                                .setSquiz(getIntegerValue(sheetMain, row, 8, 0))
                                 .build()
                 );
             }
@@ -356,6 +361,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         private String timeEnd2;
         private String timeStart3;
         private String timeEnd3;
+        private Integer squiz;
     }
 
     @Getter
