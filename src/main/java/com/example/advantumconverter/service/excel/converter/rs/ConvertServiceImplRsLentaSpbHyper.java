@@ -210,7 +210,7 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                 .setColumnOdata(svod.getTonnage())
                 .setColumnPdata(TARA.equalsIgnoreCase(reisMain.getTara()) ? 1 : 0)
                 .setColumnQdata(svod.getFormat())
-                .setColumnRdata(time4.getFirst() + "/" + time4.getSecond())
+                .setColumnRdata(EMPTY.equals(time4.getFirst()) ? EMPTY : time4.getFirst() + "/" + time4.getSecond())
                 //========================
                 .setTechRepeats(techRepeats)
                 .build();
