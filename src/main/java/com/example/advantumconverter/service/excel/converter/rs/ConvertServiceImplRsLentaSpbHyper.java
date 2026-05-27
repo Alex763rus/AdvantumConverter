@@ -170,7 +170,7 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                 time1 = prepareDateStartEnd(dateString, svod.getTimeStart1(), svod.getTimeEnd1(), TIME_18, svod.getSquiz());
                 time2 = prepareDateStartEnd(dateString, svod.getTimeStart2(), svod.getTimeEnd2(), TIME_18, svod.getSquiz());
                 time3 = prepareDateStartEnd(dateString, svod.getTimeStart3(), svod.getTimeEnd3(), TIME_18, svod.getSquiz());
-                time4 = prepareDateStartEnd(dateString, svod.getTime4Start(), svod.getTime4End(), TIME_18, svod.getSquiz());
+                time4 = prepareDateStartEnd(dateString, svod.getTime4Start(), svod.getTime4End(), TIME_18, 0);
             } catch (Exception ex) {
                 warnings.add("не смогли собрать дату для строки: " + reisMain.getTk());
             }
@@ -270,7 +270,7 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                                 .setTime4Start(getCellValue(sheet, row, 8))
                                 .setTime4End(getCellValue(sheet, row, 9))
                                 .setUnloadingMinuts(getIntegerValue(sheet, row, 10, 0))
-                                .setSquiz(getIntegerValue(sheet, row, 10, 0))
+                                .setSquiz(getIntegerValue(sheet, row, 11, 0))
                                 .build()
                 );
             }

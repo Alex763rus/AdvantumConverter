@@ -52,7 +52,7 @@ public final class Constant {
         public static final String FILE_NAME_RS_LENTA = "Лента входящий";
         public static final String FILE_NAME_RS_LENTA_YR = "Лента ур входящий";
         public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ мини";
-        public static final String FILE_NAME_RS_LENTA_SPB_HYPER = "Лента исходящий СПБ гипер";
+        public static final String FILE_NAME_RS_LENTA_SPB_HYPER = "Лента исходящий гипер";
         public static final String FILE_NAME_FRAGRANT_WORLD_SPB = "Ароматный мир СПБ";
         public static final String FILE_NAME_RS_LENTA_MSK = "Лента исходящий МСК";
         public static final String FILE_NAME_METRO = "METRO";
