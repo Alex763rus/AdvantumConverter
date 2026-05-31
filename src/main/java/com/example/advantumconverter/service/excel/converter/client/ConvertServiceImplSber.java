@@ -140,7 +140,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                             .setColumnKdata(12)
                             .setColumnLdata(getTemperage(row, 15, 0))
                             .setColumnMdata(getTemperage(row, 15, 1))
-                            .setColumnNdata(2)
+                            .setColumnNdata(4)
                             .setColumnOdata(temperage2Min)
                             .setColumnPdata(temperage2Max)
                             .setColumnQdata(null)
