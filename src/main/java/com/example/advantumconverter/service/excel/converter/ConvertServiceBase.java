@@ -4,6 +4,7 @@ import com.example.advantumconverter.config.properties.ConverterProperties;
 import com.example.advantumconverter.config.properties.CrmConfigProperties;
 import com.example.advantumconverter.enums.ResultCode;
 import com.example.advantumconverter.exception.ExcelListNotFoundException;
+import com.example.advantumconverter.exception.ExcelValidationException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.ConvertedBook;
 import com.example.advantumconverter.model.pojo.converter.ConvertedList;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.xml.bind.ValidationException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -59,71 +61,39 @@ public class ConvertServiceBase {
                 .orElseThrow(() -> new ExcelListNotFoundException(listName));
     }
 
+    protected String getCellValueOrError(XSSFSheet sheet, int row, int col) {
+        return getCellValue(sheet, row, col, true);
+    }
+
     protected String getCellValue(XSSFSheet sheet, int row, int col) {
-        if (sheet.getRow(row) == null) {
-            return EMPTY;
-        }
-        var cell = sheet.getRow(row).getCell(col);
-        if (cell == null) {
-            return EMPTY;
-        }
-        return getCellValue(cell);
+        return getCellValue(sheet, row, col, false);
     }
 
     protected String getCellValue(int row, int col) {
-        if (sheet.getRow(row) == null) {
-            return EMPTY;
-        }
-        if (sheet.getRow(row).getCell(col) == null) {
-            return EMPTY;
-        }
-        return getCellValue(sheet.getRow(row).getCell(col));
+        return getCellValue(sheet, row, col, false);
     }
 
-    protected String getFormulaCellValue(XSSFSheet sheet, int row, int col) {
+    private String getCellValue(XSSFSheet sheet, int row, int col, boolean throwIfFormula) throws ExcelValidationException {
         if (sheet.getRow(row) == null) {
-            return EMPTY;
-        }
-        if (sheet.getRow(row).getCell(col) == null) {
             return EMPTY;
         }
         var xssfCell = sheet.getRow(row).getCell(col);
-
-        DataFormatter formatter = new DataFormatter();
-        // Если ячейка содержит формулу, вычисляем ее значение
-        if (xssfCell != null && xssfCell.getCellType() == CELL_TYPE_FORMULA) {
-            Workbook workbook = xssfCell.getSheet().getWorkbook();
-            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-
-            // Вычисляем значение формулы
-            CellValue cellValue = evaluator.evaluate(xssfCell);
-
-            int i = 0;
-            // Форматируем вычисленное значение
-            return switch (cellValue.getCellType()) {
-                case Cell.CELL_TYPE_NUMERIC -> String.valueOf(cellValue.getNumberValue());
-                case Cell.CELL_TYPE_STRING -> cellValue.getStringValue();
-                case Cell.CELL_TYPE_BOOLEAN -> String.valueOf(cellValue.getBooleanValue());
-                case Cell.CELL_TYPE_ERROR -> "ERROR";
-                default -> "";
-            };
-        } else {
-            // Для обычных ячеек используем стандартный форматтер
-            return formatter.formatCellValue(xssfCell);
+        if (xssfCell == null) {
+            return EMPTY;
         }
-    }
 
-    protected String getCellValue(XSSFCell xssfCell) {
         DataFormatter formatter = new DataFormatter();
         // Если ячейка содержит формулу, вычисляем ее значение
-        if (xssfCell != null && xssfCell.getCellType() == CELL_TYPE_FORMULA) {
+        if (xssfCell.getCellType() == CELL_TYPE_FORMULA) {
+            if (throwIfFormula) {
+                throw new ExcelValidationException(row, col);
+            }
             Workbook workbook = xssfCell.getSheet().getWorkbook();
             FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
             // Вычисляем значение формулы
             CellValue cellValue = evaluator.evaluate(xssfCell);
 
-            int i = 0;
             // Форматируем вычисленное значение
             return switch (cellValue.getCellType()) {
                 case Cell.CELL_TYPE_NUMERIC -> String.valueOf(cellValue.getNumberValue());
@@ -173,17 +143,25 @@ public class ConvertServiceBase {
         return convertDateFormat(new Date(), format);
     }
 
-    protected Long getLongValue(int row, int col) {
-        val cellValue = getCellValue(row, col);
-        return cellValue.equals(EMPTY) ? null : Long.parseLong(cellValue);
-    }
-
     protected Integer getIntegerValue(int row, int col) {
         return convertToIntegerOrNull(getCellValue(row, col));
     }
 
+    protected Integer getIntegerValueOrErrorIfFormula(XSSFSheet sheet, int row, int col, int defaultValue) throws ExcelValidationException {
+        return Optional.ofNullable(
+                        convertToIntegerOrNull(
+                                getCellValueOrError(sheet, row, col)
+                        )
+                )
+                .orElse(defaultValue);
+    }
+
     protected Integer getIntegerValue(XSSFSheet sheet, int row, int col, int defaultValue) {
-        return Optional.ofNullable(convertToIntegerOrNull(getCellValue(sheet, row, col)))
+        return Optional.ofNullable(
+                        convertToIntegerOrNull(
+                                getCellValue(sheet, row, col)
+                        )
+                )
                 .orElse(defaultValue);
     }
 

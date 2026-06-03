@@ -3,6 +3,7 @@ package com.example.advantumconverter.service.excel.converter.rs;
 import com.example.advantumconverter.aspect.LogExecutionTime;
 import com.example.advantumconverter.enums.ExcelType;
 import com.example.advantumconverter.exception.ConvertProcessingException;
+import com.example.advantumconverter.exception.ExcelValidationException;
 import com.example.advantumconverter.model.dictionary.excel.Header;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedBookV2;
 import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataRsLentaSpbV2;
@@ -224,15 +225,19 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                 throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
             }
             Integer tk;
-            for (; (tk = getIntegerValue(sheet, row, 0, 0)) > 0; ++row) {
-                sheetData.put(tk,
-                        Order.init()
-                                .setTk(tk)
-                                .setBaseAcol(getIntegerValue(sheet, row, 1, 0))
-                                .setBaseBcol(getIntegerValue(sheet, row, 2, 0))
-                                .setBaseCcol(getIntegerValue(sheet, row, 3, 0))
-                                .build()
-                );
+            for (; (tk = getIntegerValueOrErrorIfFormula(sheet, row, 0, 0)) > 0; ++row) {
+                try {
+                    sheetData.put(tk,
+                            Order.init()
+                                    .setTk(tk)
+                                    .setBaseAcol(getIntegerValueOrErrorIfFormula(sheet, row, 1, 0))
+                                    .setBaseBcol(getIntegerValueOrErrorIfFormula(sheet, row, 2, 0))
+                                    .setBaseCcol(getIntegerValueOrErrorIfFormula(sheet, row, 3, 0))
+                                    .build()
+                    );
+                } catch (ExcelValidationException e) {
+                    warnings.add("Лист: [" + listName + "], " + e.getMessage());
+                }
             }
             return sheetData;
         } catch (Exception e) {
@@ -249,30 +254,33 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                 throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
             }
             Integer tk;
-            for (; (tk = getIntegerValue(sheet, row, 0, 0)) > 0; ++row) {
+            for (; (tk = getIntegerValueOrErrorIfFormula(sheet, row, 0, 0)) > 0; ++row) {
                 var timesFromFile1 = getCellValue(sheet, row, 5);
                 var timesFromFile2 = getCellValue(sheet, row, 6);
                 var timesFromFile3 = getCellValue(sheet, row, 7);
-
-                sheetData.put(tk,
-                        Svod.init()
-                                .setTk(tk)
-                                .setFormat(getCellValue(sheet, row, 1))
-                                .setAddress(getCellValue(sheet, row, 2))
-                                .setTara(getCellValue(sheet, row, 3))
-                                .setTonnage(getCellValue(sheet, row, 4))
-                                .setTimeStart1(getTime(tk.toString(), timesFromFile1, 0))
-                                .setTimeEnd1(getTime(tk.toString(), timesFromFile1, 1))
-                                .setTimeStart2(getTime(tk.toString(), timesFromFile2, 0))
-                                .setTimeEnd2(getTime(tk.toString(), timesFromFile2, 1))
-                                .setTimeStart3(getTime(tk.toString(), timesFromFile3, 0))
-                                .setTimeEnd3(getTime(tk.toString(), timesFromFile3, 1))
-                                .setTime4Start(getCellValue(sheet, row, 8))
-                                .setTime4End(getCellValue(sheet, row, 9))
-                                .setUnloadingMinuts(getIntegerValue(sheet, row, 10, 0))
-                                .setSquiz(getIntegerValue(sheet, row, 11, 0))
-                                .build()
-                );
+                try {
+                    sheetData.put(tk,
+                            Svod.init()
+                                    .setTk(tk)
+                                    .setFormat(getCellValue(sheet, row, 1))
+                                    .setAddress(getCellValue(sheet, row, 2))
+                                    .setTara(getCellValue(sheet, row, 3))
+                                    .setTonnage(getCellValue(sheet, row, 4))
+                                    .setTimeStart1(getTime(tk.toString(), timesFromFile1, 0))
+                                    .setTimeEnd1(getTime(tk.toString(), timesFromFile1, 1))
+                                    .setTimeStart2(getTime(tk.toString(), timesFromFile2, 0))
+                                    .setTimeEnd2(getTime(tk.toString(), timesFromFile2, 1))
+                                    .setTimeStart3(getTime(tk.toString(), timesFromFile3, 0))
+                                    .setTimeEnd3(getTime(tk.toString(), timesFromFile3, 1))
+                                    .setTime4Start(getCellValue(sheet, row, 8))
+                                    .setTime4End(getCellValue(sheet, row, 9))
+                                    .setUnloadingMinuts(getIntegerValueOrErrorIfFormula(sheet, row, 10, 0))
+                                    .setSquiz(getIntegerValueOrErrorIfFormula(sheet, row, 11, 0))
+                                    .build()
+                    );
+                } catch (ExcelValidationException e) {
+                    warnings.add("Лист: [" + listName + "], " + e.getMessage());
+                }
             }
             return sheetData;
         } catch (Exception e) {
@@ -288,22 +296,26 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                 throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
             }
             Integer tk;
-            for (; (tk = getIntegerValue(sheetMain, row, 2, 0)) > 0; ++row) {
-                sheetData.add(
-                        ReisMain.init()
-                                .setTk(tk)
-                                .setDateDelivery(getCellDate(sheetMain, row, 0))
-                                .setRcComplectation(getCellValue(sheetMain, row, 1))
-                                .setBaseEcolCold(getIntegerValue(sheetMain, row, 7, 0))
-                                .setBaseEcolGen(getIntegerValue(sheetMain, row, 8, 0))
-                                .setBaseDcol(getIntegerValue(sheetMain, row, 9, 0))
-                                .setBaseTransit(getIntegerValue(sheetMain, row, 10, 0))
-                                .setTara(getCellValue(sheetMain, row, 11))
-                                .setBaseOstatokSof(getIntegerValue(sheetMain, row, 13, 0))
-                                .setBaseOstatokSx(getIntegerValue(sheetMain, row, 14, 0))
-                                .setBaseOstatokCold(getIntegerValue(sheetMain, row, 15, 0))
-                                .build()
-                );
+            for (; (tk = getIntegerValueOrErrorIfFormula(sheetMain, row, 2, 0)) > 0; ++row) {
+                try {
+                    sheetData.add(
+                            ReisMain.init()
+                                    .setTk(tk)
+                                    .setDateDelivery(getCellDate(sheetMain, row, 0))
+                                    .setRcComplectation(getCellValue(sheetMain, row, 1))
+                                    .setBaseEcolCold(getIntegerValueOrErrorIfFormula(sheetMain, row, 7, 0))
+                                    .setBaseEcolGen(getIntegerValueOrErrorIfFormula(sheetMain, row, 8, 0))
+                                    .setBaseDcol(getIntegerValueOrErrorIfFormula(sheetMain, row, 9, 0))
+                                    .setBaseTransit(getIntegerValueOrErrorIfFormula(sheetMain, row, 10, 0))
+                                    .setTara(getCellValue(sheetMain, row, 11))
+                                    .setBaseOstatokSof(getIntegerValueOrErrorIfFormula(sheetMain, row, 13, 0))
+                                    .setBaseOstatokSx(getIntegerValueOrErrorIfFormula(sheetMain, row, 14, 0))
+                                    .setBaseOstatokCold(getIntegerValueOrErrorIfFormula(sheetMain, row, 15, 0))
+                                    .build()
+                    );
+                } catch (ExcelValidationException e) {
+                    warnings.add("Лист: [" + listName + "], " + e.getMessage());
+                }
             }
             return sheetData;
         } catch (Exception e) {

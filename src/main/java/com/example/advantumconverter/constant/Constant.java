@@ -156,6 +156,8 @@ public final class Constant {
 
         public static final String EXCEL_GENERATION_ERROR = "Ошибка формирования файла: ";
 
+        public static final String EXCEL_VALIDATION_ERROR = "В файле обнаружена формула. Строка: [%d], столбец: [%d]";
+
         public static final String EXCEL_LIST_NOT_FOUND_WARNING = "Не найден лист: %s";
 
         public static final String EXCEL_LIST_CONVERT_ERROR =

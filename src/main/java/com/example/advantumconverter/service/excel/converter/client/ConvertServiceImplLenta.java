@@ -304,7 +304,7 @@ public class ConvertServiceImplLenta extends ConvertServiceBase implements Conve
         if (col < 0 || col > LAST_COLUMN_NUMBER || sheet.getRow(row) == null) {
             return EMPTY;
         }
-        return getCellValue(sheet.getRow(row).getCell(col));
+        return getCellValue(sheet, row, col);
     }
 
     private boolean isStart(int row) {
