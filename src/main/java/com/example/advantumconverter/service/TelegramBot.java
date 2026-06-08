@@ -33,12 +33,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @PostConstruct
     public void init() {
-//        try {
-//            execute(new SetMyCommands(menuService.getMainMenuComands(), new BotCommandScopeDefault(), null));
-//        } catch (TelegramApiException e) {
-//            log.error("Error setting bot's command list: " + e.getMessage());
-//        }
-//        log.info("==" + "Server was starded. Version: " + botConfig.getBotVersion() + "==================================================================================================");
+        try {
+            execute(new SetMyCommands(menuService.getMainMenuComands(), new BotCommandScopeDefault(), null));
+        } catch (TelegramApiException e) {
+            log.error("Error setting bot's command list (non-blocking): " + e.getMessage());
+        }
+        log.info("==" + "Server was starded. Version: " + botConfig.getBotVersion() + "==================================================================================================");
     }
 
     @Override

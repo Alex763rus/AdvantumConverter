@@ -5,7 +5,7 @@ services:
     platform: linux/x86_64
     image: postgres:15-alpine
     volumes:
-      - /path/to/postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     ports:
       - "5432:5432"
@@ -63,6 +63,9 @@ services:
       "
     networks:
       - mysql-phpmyadmin
+
+volumes:
+  postgres_data:
 
 networks:
   mysql-phpmyadmin:

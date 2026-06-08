@@ -32,14 +32,14 @@ public class HistoryActionService {
     private final HistoryActionRepository historyActionRepository;
 
     @Value("${history-action-service.enabled:true}")
-    private Boolean enabled;
+    private volatile boolean enabled;
 
     public void disabled() {
         enabled = false;
     }
 
     public void saveHistoryAction(User user, Update update) {
-        if (Boolean.FALSE.equals(enabled)) {
+        if (!enabled) {
             return;
         }
         val historyAction = new HistoryAction();
@@ -69,7 +69,7 @@ public class HistoryActionService {
     }
 
     public void saveHistoryAnswerAction(User user, List<PartialBotApiMethod> answers) {
-        if (Boolean.FALSE.equals(enabled)) {
+        if (!enabled) {
             return;
         }
         for (PartialBotApiMethod answer : answers) {
@@ -110,7 +110,7 @@ public class HistoryActionService {
     }
 
     public void saveWebHistoryActionProtect(@Nullable CustomUserDetails user, String fileName, String messageText) {
-        if (Boolean.FALSE.equals(enabled)) {
+        if (!enabled) {
             return;
         }
         try {

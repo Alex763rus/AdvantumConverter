@@ -14,9 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.example.advantumconverter.enums.State.FREE;
 import static com.example.advantumconverter.enums.State.SUPPORT_WAIT_CHOOSE_TASK;
@@ -32,7 +32,7 @@ public abstract class MenuTaskBase extends Menu {
 
     @Autowired
     protected SupportTaskRepository supportTaskRepository;
-    protected Map<User, SupportTask> userTmp = new HashMap();
+    protected Map<User, SupportTask> userTmp = new ConcurrentHashMap<>();
 
     protected String getTaskInfo(SupportTask supportTask) throws ParseException {
         val taskInfo = new StringBuilder();

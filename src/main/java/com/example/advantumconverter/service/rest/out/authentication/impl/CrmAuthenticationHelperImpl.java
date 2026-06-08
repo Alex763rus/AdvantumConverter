@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
@@ -20,45 +20,41 @@ public class CrmAuthenticationHelperImpl implements CrmAuthenticationHelper {
     @Autowired
     private CrmAuthenticationService crmAuthenticationService;
 
-    private Map<CrmConfigProperties.CrmCreds, CrmAuthenticationResponseDto> tokens = new HashMap<>();
+    private Map<CrmConfigProperties.CrmCreds, CrmAuthenticationResponseDto> tokens = new ConcurrentHashMap<>();
 
     @Override
     public CrmAuthenticationResponseDto getOrCreateAccessToken(CrmConfigProperties.CrmCreds crmCreds) {
-        var token = tokens.get(crmCreds);
-        if (token != null) {
-            log.info("Успех: Токен найден среди существующих");
-            return token;
-        }
-        log.info("Токен не найден среди существующих, будет попытка завести новый");
-        tokens.remove(crmCreds);
-        return createAndSaveNewToken(crmCreds);
+        return tokens.computeIfAbsent(crmCreds, creds -> {
+            log.info("Токен не найден среди существующих, будет попытка завести новый");
+            return createAndSaveNewToken(creds);
+        });
     }
     @Override
     public CrmAuthenticationResponseDto refreshAndGetAccessToken(CrmConfigProperties.CrmCreds crmCreds) {
-        var token = tokens.get(crmCreds);
-        //токена не было, надо создать:
-        if (token == null) {
-            log.info(String.format("Обновление токена. Токена не было, пробуем создать. token: %s", token));
-            return createAndSaveNewToken(crmCreds);
-        }
-        var refresh1 = refreshToken(token.getRefreshToken());
-
-        if (refresh1.isSuccess()) {
-            //токен обновлен
-            tokens.put(crmCreds, refresh1);
-            return refresh1;
-        }
-        //Токен обновить не получилось, получили 400 ошибку. Пробуем заново авторизоваться:
-        if(refresh1.getCode() == 400){
-            log.info(String.format("Обновление токена. Токен обновить не получилось получили 400 ошибку, пробуем создать еще раз. token: %s", token));
-            var newToken = createNewToken(crmCreds);
-            if(newToken.isSuccess()) {
-                tokens.put(crmCreds, newToken);
+        return tokens.compute(crmCreds, (creds, token) -> {
+            //токена не было, надо создать:
+            if (token == null) {
+                log.info(String.format("Обновление токена. Токена не было, пробуем создать. token: %s", token));
+                return createAndSaveNewToken(creds);
             }
-            //Ошибка после попытки повторной авторизации:
-            return newToken;
-        }
-        return refresh1;
+            var refresh1 = refreshToken(token.getRefreshToken());
+
+            if (refresh1.isSuccess()) {
+                //токен обновлен
+                return refresh1;
+            }
+            //Токен обновить не получилось, получили 400 ошибку. Пробуем заново авторизоваться:
+            if(refresh1.getCode() == 400){
+                log.info(String.format("Обновление токена. Токен обновить не получилось получили 400 ошибку, пробуем создать еще раз. token: %s", token));
+                var newToken = createNewToken(creds);
+                if(newToken.isSuccess()) {
+                    return newToken;
+                }
+                //Ошибка после попытки повторной авторизации:
+                return newToken;
+            }
+            return refresh1;
+        });
     }
 
     private CrmAuthenticationResponseDto createAndSaveNewToken(CrmConfigProperties.CrmCreds crmCreds){

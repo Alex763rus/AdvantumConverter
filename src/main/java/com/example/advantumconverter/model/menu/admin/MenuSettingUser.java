@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import lombok.val;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.example.advantumconverter.constant.Constant.Command.*;
 import static com.example.advantumconverter.enums.State.*;
@@ -35,7 +36,7 @@ public class MenuSettingUser extends Menu {
     @Autowired
     private UserRepository userRepository;
 
-    private Map<User, User> userTmp = new HashMap();
+    private Map<User, User> userTmp = new ConcurrentHashMap<>();
 
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {

@@ -24,12 +24,16 @@ public class DistributionService {
     @Autowired
     private BotConfig botConfig;
 
-//    @PostConstruct
-//    public void init() {
-//        StringBuilder message = new StringBuilder(EmojiParser.parseToUnicode(Emoji.ROBOT_FACE.getCode())).append(" telegramm bot was started!\n");
-//        message.append("Version: ").append(botConfig.getBotVersion());
-//        sendMessage(botConfig.getAdminChatId(), message.toString());
-//    }
+    @PostConstruct
+    public void init() {
+        try {
+            StringBuilder message = new StringBuilder(EmojiParser.parseToUnicode(Emoji.ROBOT_FACE.getCode())).append(" telegramm bot was started!\n");
+            message.append("Version: ").append(botConfig.getBotVersion());
+            sendMessage(botConfig.getAdminChatId(), message.toString());
+        } catch (Exception e) {
+            log.error("Failed to send startup message (non-blocking): " + e.getMessage());
+        }
+    }
 
     @PreDestroy
     public void squeezyExit() {

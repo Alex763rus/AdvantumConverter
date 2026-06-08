@@ -27,6 +27,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.example.advantumconverter.enums.FileType.USER_IN;
 import static com.example.advantumconverter.enums.State.CONVERTER_WAIT_UNLOAD_IN_CRM;
@@ -47,8 +48,8 @@ public abstract class MenuConverterBase extends Menu {
     @Autowired
     private Map<String, ExcelGenerateService> excelGenerateServiceMap;
 
-    private Map<User, ConvertedBook> convertedBooks = new HashMap<>();
-    private Map<User, ConvertedBookV2> convertedBooksV2 = new HashMap<>();
+    private Map<User, ConvertedBook> convertedBooks = new ConcurrentHashMap<>();
+    private Map<User, ConvertedBookV2> convertedBooksV2 = new ConcurrentHashMap<>();
 
     @LogExecutionTime(value = "Полная обработка файла", unit = LogExecutionTime.TimeUnit.SECONDS)
     protected List<PartialBotApiMethod> convertFileLogic(User user, Update update, ConvertService convertService) {

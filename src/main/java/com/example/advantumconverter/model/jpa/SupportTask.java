@@ -47,4 +47,8 @@ public class SupportTask {
 
     @Column(name = "file_path")
     private String filePath;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
 }

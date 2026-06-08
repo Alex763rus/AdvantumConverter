@@ -58,25 +58,25 @@ public class DictionaryService {
     private final LentaTsCityRepository lentaTsCityRepository;
     private final SparWindowsRepository sparWindowsRepository;
 
-    private Map<Long, LentaDictionary> lentaDictionaries;
-    private Map<String, Car> cars;
-    private Map<String, CarNumber> carNumbers;
-    private Map<String, LentaCar> lentaCars;
-    private Set<OzonDictionary> ozonDictionaries;
-    private Set<OzonTransitTime> ozonTransitTimes;
-    private Map<String, OzonLoadUnloadTime> ozonLoadUnloadTime;
-    private Map<Long, OzonTonnageTime> ozonTonnageTime;
-    private Map<String, SielPoints> sielPoints;
-    private Map<String, SielMilkPoints> sielMilkPoints;
-    private Map<String, SielCars> sielCars;
-    private Map<String, SparWindows> sparWindows;
+    private volatile Map<Long, LentaDictionary> lentaDictionaries;
+    private volatile Map<String, Car> cars;
+    private volatile Map<String, CarNumber> carNumbers;
+    private volatile Map<String, LentaCar> lentaCars;
+    private volatile Set<OzonDictionary> ozonDictionaries;
+    private volatile Set<OzonTransitTime> ozonTransitTimes;
+    private volatile Map<String, OzonLoadUnloadTime> ozonLoadUnloadTime;
+    private volatile Map<Long, OzonTonnageTime> ozonTonnageTime;
+    private volatile Map<String, SielPoints> sielPoints;
+    private volatile Map<String, SielMilkPoints> sielMilkPoints;
+    private volatile Map<String, SielCars> sielCars;
+    private volatile Map<String, SparWindows> sparWindows;
 
-    private Map<String, MetroAddressesDictionary> metroAddressesDictionaries;
-    private Map<String, MetroTemperatureDictionary> metroTemperatureDictionaries;
-    private Set<MetroTimeDictionary> metroTimeDictionaries;
-    private Map<String, MetroDcAddressesDictionary> metroDcAddressesDictionaries;
-    private Map<String, SberAddressDictionary> sberAddressDictionaries;
-    private Map<String, LentaTsCity> lentaTsCitiesDictionaries;
+    private volatile Map<String, MetroAddressesDictionary> metroAddressesDictionaries;
+    private volatile Map<String, MetroTemperatureDictionary> metroTemperatureDictionaries;
+    private volatile Set<MetroTimeDictionary> metroTimeDictionaries;
+    private volatile Map<String, MetroDcAddressesDictionary> metroDcAddressesDictionaries;
+    private volatile Map<String, SberAddressDictionary> sberAddressDictionaries;
+    private volatile Map<String, LentaTsCity> lentaTsCitiesDictionaries;
 
     @PostConstruct
     public void init() {
