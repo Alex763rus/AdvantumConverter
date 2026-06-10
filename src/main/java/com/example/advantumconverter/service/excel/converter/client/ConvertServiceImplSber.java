@@ -45,6 +45,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     public static final String ALLIANCE_LOGISTIC_2 = "ООО «Альянс-Логистика»";
     public static final String IP_SIMONYAN = "ИП Симонян Тигран Арсенович";
     public static final String OOO_EVOKA = "ООО \"ЭВОКА\"";
+    public static final String OOO_ALMA = "ТК АЛМА";
     public static final String CITY_NAME_EKB = "Екатеринбург";
     private static final Map<String, String> TK_NAME_NUMBER_MAP = Map.of(
             BUSH_AUTOPROM_ORGANIZATION_NAME, "7723663718",
@@ -54,7 +55,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
             ALLIANCE_LOGISTIC_1, "7706421853",
             ALLIANCE_LOGISTIC_2, "7706421853",
             IP_SIMONYAN, "4",
-            OOO_EVOKA, "4"
+            OOO_EVOKA, "4",
+            OOO_ALMA, "14"
     );
     private List<String> warnings = new ArrayList<>();
 
