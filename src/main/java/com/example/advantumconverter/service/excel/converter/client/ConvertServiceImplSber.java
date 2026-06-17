@@ -38,14 +38,11 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
     private final int START_ROW = 2;
     private final CrmConfigProperties crmConfigProperties;
     private int LAST_ROW;
-    private int LAST_COLUMN_NUMBER;
-    private static final String YAROSLAVSKOE_HIGHWAY = "Ярославское шоссе 222";
-    private static final String EXPECTED_TIME_FORMULA = "CHOOSE(1+(B2>=12)+(B2>=23)+(B2>=34)+(B2>=45)+(B2>=56)+(B2>=67)+(B2>=78)+(B2>=89),\"4:00\",\"5:00\",\"6:00\",\"7:00\",\"8:00\",\"9:00\",\"10:00\",\"11:00\")";
     public static final String ALLIANCE_LOGISTIC_1 = "ООО \"Альянс-Логистика\"";
     public static final String ALLIANCE_LOGISTIC_2 = "ООО «Альянс-Логистика»";
     public static final String IP_SIMONYAN = "ИП Симонян Тигран Арсенович";
     public static final String OOO_EVOKA = "ООО \"ЭВОКА\"";
-    public static final String OOO_ALMA = "ТК АЛМА";
+    public static final String OOO_ALMA = "ООО \"АЛМА\"";
     public static final String CITY_NAME_EKB = "Екатеринбург";
     private static final Map<String, String> TK_NAME_NUMBER_MAP = Map.of(
             BUSH_AUTOPROM_ORGANIZATION_NAME, "7723663718",
