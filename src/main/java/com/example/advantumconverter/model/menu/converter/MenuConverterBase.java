@@ -98,8 +98,12 @@ public abstract class MenuConverterBase extends Menu {
                     && isV2/* только для api v2*/
                     && convertService.getCrmCreds() != null /* креды заполнены */
             ) {
-                convertedBooks.put(user, convertedBook);
-                convertedBooksV2.put(user, convertedBookV2);
+                if(convertedBook != null){
+                    convertedBooks.put(user, convertedBook);
+                }
+                if(convertedBookV2 != null){
+                    convertedBooksV2.put(user, convertedBookV2);
+                }
 
                 stateService.setState(user, FREE);
                 val buttons = new ArrayList<Button>();
