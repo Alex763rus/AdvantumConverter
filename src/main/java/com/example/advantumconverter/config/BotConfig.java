@@ -76,7 +76,8 @@ public class BotConfig {
             ConvertServiceImplFragrantWorldSpb convertServiceImplFragrantWorldSpb,
             ConvertServiceImplMetroPrimary convertServiceImplMetroPrimary,
             ConvertServiceImplSielMilk convertServiceImplSielMilk,
-            ConvertServiceImplRsLentaSpbHyper convertServiceImplRsLentaSpbHyper
+            ConvertServiceImplRsLentaSpbHyper convertServiceImplRsLentaSpbHyper,
+            ConvertServiceImplKznFatOil convertServiceImplKznFatOil
     ) {
         val companySetting = new CompanySetting();
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
@@ -85,8 +86,11 @@ public class BotConfig {
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSielMilk, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb, convertServiceImplMetroPrimary, convertServiceImplRsLentaSpbHyper);
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSielMilk, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb, convertServiceImplMetroPrimary, convertServiceImplRsLentaSpbHyper
+                , convertServiceImplKznFatOil
+        );
         val ozonConverter = List.of(convertServiceImplOzon);
+        val kznFatOilConverter = List.of(convertServiceImplKznFatOil);
         val metroConverter = List.of(convertServiceImplMetro, convertServiceImplMetroPrimary);
         val sberConverter = List.of(convertServiceImplSber);
         val artFruitConverter = List.of(convertServiceImplArtFruit);
@@ -99,6 +103,7 @@ public class BotConfig {
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA), lentaConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BUSH_AVTOPROM), bushConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_OZON), ozonConverter);
+        companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_KZN_FAT_OIL), kznFatOilConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_METRO), metroConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_SBER), sberConverter);
         companyConverter.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_ART_FRUIT), artFruitConverter);
@@ -124,6 +129,7 @@ public class BotConfig {
         allConverters.add(COMMAND_CONVERT_AGROPROM);
         allConverters.add(COMMAND_CONVERT_AGROPROM_DETAIL);
         allConverters.add(COMMAND_CONVERT_OZON);
+        allConverters.add(COMMAND_CONVERT_KZN_FAT_OIL);
         allConverters.add(COMMAND_CONVERT_SIEL);
         allConverters.add(COMMAND_CONVERT_SIEL_MILK);
         allConverters.add(COMMAND_CONVERT_SPAR);
@@ -196,6 +202,7 @@ public class BotConfig {
                         /*RS Лента СПБ гипер:*/, COMMAND_CONVERT_RS_LENTA_SPB_HYPER
                         /*RS Лента МСК:*/, COMMAND_CONVERT_RS_LENTA_MSK
                         /*Озон:*/, COMMAND_CONVERT_OZON
+                        /*Казанский жировой комбинат:*/, COMMAND_CONVERT_KZN_FAT_OIL
                         /*Метро:*/, COMMAND_CONVERT_METRO
                         /*Метро:*/, COMMAND_CONVERT_METRO_PRIMARY
                         /*Сбер логистик:*/, COMMAND_CONVERT_SBER
@@ -224,6 +231,11 @@ public class BotConfig {
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_OZON)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
                         , COMMAND_CONVERT_OZON
+                )
+        );
+        commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_KZN_FAT_OIL)
+                , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
+                        , COMMAND_CONVERT_KZN_FAT_OIL
                 )
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_METRO)

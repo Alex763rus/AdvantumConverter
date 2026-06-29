@@ -57,6 +57,7 @@ public final class Constant {
         public static final String FILE_NAME_RS_LENTA_MSK = "Лента исходящий МСК";
         public static final String FILE_NAME_METRO = "METRO";
         public static final String FILE_NAME_OZON = "Озон";
+        public static final String FILE_NAME_KZN_FAT_OIL = "Казанский жир комбинат";
         public static final String FILE_NAME_SIEL = "Сиэль";
         public static final String FILE_NAME_SIEL_MILK = "Сиэль Молоко";
         public static final String FILE_NAME_SPAR = "Спар";
@@ -78,6 +79,7 @@ public final class Constant {
         public static final String COMPANY_NOT_FOUND = "Компания отсутствует";
         public static final String COMPANY_ADVANTUM = "Адвантум";
         public static final String COMPANY_NAME_LENTA = "Лента";
+        public static final String COMPANY_NAME_KZN_FAT_OIL = "Казанский жировой комбинат";
         public static final String COMPANY_NAME_BUSH_AVTOPROM = "Буш-Автопром";
         public static final String COMPANY_NAME_OZON = "Озон";
         public static final String COMPANY_NAME_METRO = "Метро";
@@ -123,6 +125,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_FRAGRANT_WORLD_SPB = "/convert_fragrant_world_spb";
         public static final String COMMAND_CONVERT_RS_LENTA_MSK = "/convert_rs_lenta_msk";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
+        public static final String COMMAND_CONVERT_KZN_FAT_OIL = "/convert_kzn_fat_oil";
         public static final String COMMAND_CONVERT_SIEL = "/convert_siel";
         public static final String COMMAND_CONVERT_SIEL_MILK = "/convert_siel_milk";
         public static final String COMMAND_CONVERT_SPAR = "/convert_spar";

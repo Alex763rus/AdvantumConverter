@@ -95,4 +95,5 @@
     <include file="/db/changelog/siel/update_siel_points1.sql"/>
     <include file="/db/changelog/sielmilk/create_siel_milk_points.xml"/>
     <include file="/db/changelog/sielmilk/InsertSielMilkPoints_1.sql"/>
+    <include file="/db/changelog/company/InsertCompany_6.sql"/>
 </databaseChangeLog>
