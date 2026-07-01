@@ -1,0 +1,11 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Grigogiev Alexey" id="update_sber_address_14">
+        <sql>
+            update sber_address set address = 'г. Саратов, Буровая д. 26 к. 1' where sber_address_id = 20;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

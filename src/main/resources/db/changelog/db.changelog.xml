@@ -96,4 +96,5 @@
     <include file="/db/changelog/sielmilk/create_siel_milk_points.xml"/>
     <include file="/db/changelog/sielmilk/InsertSielMilkPoints_1.sql"/>
     <include file="/db/changelog/company/InsertCompany_6.sql"/>
+    <include file="/db/changelog/sber/updateSberAddress14.xml"/>
 </databaseChangeLog>
