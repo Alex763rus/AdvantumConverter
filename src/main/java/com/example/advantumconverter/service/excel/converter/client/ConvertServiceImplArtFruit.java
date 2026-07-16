@@ -93,8 +93,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setAddress(address)
                         .setStartAddress(startAddress)
                         .setNumbers(numbersTmp)
-                        .setManager(getCellValue(rowTmp, 41))
-                        .setOrderNumber(getCellValue(rowTmp, 42))
+                        .setManager(getCellValueWithoutNull(rowTmp, 41))
+                        .setOrderNumber(getCellValueWithoutNull(rowTmp, 42))
                         .build();
                 var addressInReisTmpSearch = uniqReisAndAddress.stream()
                         .filter(e -> e.equals(addressInReisTmp))
@@ -207,6 +207,11 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_ERROR, row, dataLine, e.getMessage()));
         }
         return createDefaultBookV2(data, warnings, getConverterName());
+    }
+
+    private String getCellValueWithoutNull(int row, int col) {
+        var cellValue = getCellValue(row, col);
+        return cellValue.equals("#NULL!") ? EMPTY : cellValue;
     }
 
     @Override
