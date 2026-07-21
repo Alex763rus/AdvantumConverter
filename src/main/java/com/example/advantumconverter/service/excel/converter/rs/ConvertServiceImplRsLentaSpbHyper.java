@@ -99,10 +99,9 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
         var data = new ArrayList<ConvertedListDataV2>();
         var mainListData = readMainList(book, "Исходные данные заказов", 3);
         var svodData = readSvodList(book, "Сводная", 1);
-        var orderData = readOrderList(book, "Заказ-РЦ", 1);
         try {
             mainListData.forEach(
-                    reisMain -> data.add(prepareData(reisMain, svodData, orderData))
+                    reisMain -> data.add(prepareData(reisMain, svodData))
             );
         } catch (Exception e) {
             throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_RS_ERROR, "Обработка всех листов", -1, e.getMessage()));
@@ -155,7 +154,7 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
         );
     }
 
-    private ConvertedListDataRsLentaSpbV2 prepareData(ReisMain reisMain, Map<Integer, Svod> swodData, Map<Integer, Order> orderData) {
+    private ConvertedListDataRsLentaSpbV2 prepareData(ReisMain reisMain, Map<Integer, Svod> swodData) {
         var dateString = EMPTY;
         Pair<String, String> time1 = Pair.of(EMPTY, EMPTY);
         Pair<String, String> time2 = Pair.of(EMPTY, EMPTY);
@@ -177,14 +176,10 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
             }
         }
 
-        var order = orderData.get(reisMain.getTk());
-        if (order == null) {
-            warnings.add("Не найдены данные по тк на листе Заказ-РЦ, номер: " + reisMain.getTk());
-        }
         var techRepeats = new ArrayList<>(List.of(
-                new ConvertedListDataRsLentaSpbV2.Repeat(order.getBaseAcol(), "СОФ", "Склад A"),
-                new ConvertedListDataRsLentaSpbV2.Repeat(order.getBaseBcol(), "СХ", "Склад B"),
-                new ConvertedListDataRsLentaSpbV2.Repeat(order.getBaseCcol(), "СХ", "Склад C"),
+                new ConvertedListDataRsLentaSpbV2.Repeat(reisMain.getBaseAcol(), "СОФ", "Склад A"),
+                new ConvertedListDataRsLentaSpbV2.Repeat(reisMain.getBaseBcol(), "СХ", "Склад B"),
+                new ConvertedListDataRsLentaSpbV2.Repeat(reisMain.getBaseCcol(), "СХ", "Склад C"),
                 new ConvertedListDataRsLentaSpbV2.Repeat(reisMain.getBaseEcolCold(), "Заморозка", "Склад E Заморозка"),
                 new ConvertedListDataRsLentaSpbV2.Repeat(reisMain.getBaseEcolGen(), "СОФ", "Склад E Производство"),
                 new ConvertedListDataRsLentaSpbV2.Repeat(reisMain.getBaseDcol(), "СХ", "Склад D"),
@@ -216,35 +211,6 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                 .setTechRepeats(techRepeats)
                 .build();
     }
-
-    private Map<Integer, Order> readOrderList(XSSFWorkbook book, String listName, int row) {
-        try {
-            var sheetData = new HashMap<Integer, Order>();
-            var sheet = book.getSheet(listName);
-            if (sheet == null) {
-                throw new ValidationException(String.format("Не найден лист с названием: [%s], обработка невозможна.", listName));
-            }
-            Integer tk;
-            for (; (tk = getIntegerValueOrErrorIfFormula(sheet, row, 0, 0)) > 0; ++row) {
-                try {
-                    sheetData.put(tk,
-                            Order.init()
-                                    .setTk(tk)
-                                    .setBaseAcol(getIntegerValueOrErrorIfFormula(sheet, row, 1, 0))
-                                    .setBaseBcol(getIntegerValueOrErrorIfFormula(sheet, row, 2, 0))
-                                    .setBaseCcol(getIntegerValueOrErrorIfFormula(sheet, row, 3, 0))
-                                    .build()
-                    );
-                } catch (ExcelValidationException e) {
-                    warnings.add("Лист: [" + listName + "], " + e.getMessage());
-                }
-            }
-            return sheetData;
-        } catch (Exception e) {
-            throw new ConvertProcessingException(String.format(EXCEL_LINE_CONVERT_RS_ERROR, listName, row, e.getMessage()));
-        }
-    }
-
 
     private Map<Integer, Svod> readSvodList(XSSFWorkbook book, String listName, int row) {
         try {
@@ -311,6 +277,10 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
                                     .setBaseOstatokSof(getIntegerValueOrErrorIfFormula(sheetMain, row, 13, 0))
                                     .setBaseOstatokSx(getIntegerValueOrErrorIfFormula(sheetMain, row, 14, 0))
                                     .setBaseOstatokCold(getIntegerValueOrErrorIfFormula(sheetMain, row, 15, 0))
+
+                                    .setBaseAcol(getIntegerValueOrErrorIfFormula(sheetMain, row, 4, 0))
+                                    .setBaseBcol(getIntegerValueOrErrorIfFormula(sheetMain, row, 5, 0))
+                                    .setBaseCcol(getIntegerValueOrErrorIfFormula(sheetMain, row, 6, 0))
                                     .build()
                     );
                 } catch (ExcelValidationException e) {
@@ -356,21 +326,11 @@ public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implem
         private Integer baseOstatokSof;     // Остаток СОФ
         private Integer baseOstatokSx;      // Остаток СХ
         private Integer baseOstatokCold;    // Остаток Заморозка
-    }
 
-    @Getter
-    @Setter
-    @Builder(toBuilder = true, builderMethodName = "init", setterPrefix = "set")
-    @ToString
-    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    private static class Order {
-        @EqualsAndHashCode.Include
-        private Integer tk;
         private Integer baseAcol;
         private Integer baseBcol;
         private Integer baseCcol;
     }
-
 
     @Getter
     @Setter
