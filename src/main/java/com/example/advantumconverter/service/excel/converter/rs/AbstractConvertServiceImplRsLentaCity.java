@@ -184,7 +184,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         return ConvertedListDataRsLentaSpbV2.init()
                 .setColumnAdata(EMPTY)
                 .setColumnBdata(reisMain.getDateDelivery())
-                .setColumnCdata(COLUMN_C_8023)
+                .setColumnCdata(reisMain.getComplectation())
                 .setColumnDdata(reisMain.getNumberYr())
                 .setColumnEdata(reisMain.getCity() + " " + reisMain.getAddress())
                 .setColumnFdata(time1.getFirst())
@@ -246,6 +246,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
                                 .setNumberYr(numberYr)
                                 .setCity(getCellValue(sheetMain, row, 7))
                                 .setAddress(getCellValue(sheetMain, row, 8))
+                                .setComplectation(getCellValue(sheetMain, row, 9))
                                 .setPalletCount(getIntegerValue(sheetMain, row, 10, 0))
                                 .setTara(getCellValue(sheetMain, row, 13))
                                 .setProductGroup(getCellValue(sheetMain, row, 14))
@@ -342,6 +343,7 @@ public abstract class AbstractConvertServiceImplRsLentaCity extends ConvertServi
         private Date dateDelivery;
         private String city;
         private String address;
+        private String complectation;
         private Integer palletCount;
         private String tara;
         private String productGroup;
