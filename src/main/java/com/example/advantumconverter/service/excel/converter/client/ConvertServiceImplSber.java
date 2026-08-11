@@ -277,7 +277,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
 
     @SneakyThrows
     private Date getDateFromFile(int row) {
-        return convertDateFormat(getCellValue(row, 16), TEMPLATE_DATE_SLASH);
+        return convertDateFormat(getCellValue(row, 16).replaceAll("\\.", "/"), TEMPLATE_DATE_SLASH);
     }
 
     @Override
