@@ -155,7 +155,9 @@ public abstract class AbstractConvertServiceImplSiel extends ConvertServiceBase 
     }
 
     private String getCarNumber(int row) {
-        return getCellValue(row, 2).replaceAll(REGEX_NUMBER_AND_SIMBOL, EMPTY);
+        var cellValue = getCellValue(row, 2);
+        var carNumber = cellValue.contains(SPACE) ? cellValue.split(SPACE)[0] : cellValue;
+        return carNumber.replaceAll(REGEX_NUMBER_AND_SIMBOL, EMPTY);
     }
 
     private Date fillS(boolean isStart, int row, String dateFromFileString) throws ParseException {
