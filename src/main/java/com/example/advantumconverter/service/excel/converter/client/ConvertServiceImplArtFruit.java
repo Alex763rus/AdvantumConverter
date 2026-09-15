@@ -10,6 +10,7 @@ import com.example.advantumconverter.model.pojo.converter.v2.ConvertedListDataV2
 import com.example.advantumconverter.service.excel.converter.ConvertService;
 import com.example.advantumconverter.service.excel.converter.ConvertServiceBase;
 import lombok.*;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
@@ -149,6 +150,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                 }
                 addressesAndPontNameInReis.add(addressAndPointName);
 
+                var dateT = fillT(row);
+
                 dataLine = ConvertedListDataClientsV2.init()
                         .setColumnAdata(numberOrderStart)
                         .setColumnBdata(convertDateFormat(getDateFromFile(row), TEMPLATE_DATE_DOT))
@@ -170,8 +173,8 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
                         .setColumnPdata(null)
                         .setColumnQdata(null)
                         .setColumnRdata(getIntegerValue(row, 20))
-                        .setColumnSdata(fillS(row))
-                        .setColumnTdata(fillT(row))
+                        .setColumnSdata(fillS(row, dateT))
+                        .setColumnTdata(dateT)
                         .setColumnUdata(getPointName(row))
                         .setColumnVdata(address)
                         .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
@@ -245,16 +248,17 @@ public class ConvertServiceImplArtFruit extends ConvertServiceBase implements Co
         }
     }
 
-    private Date fillS(int row) throws ParseException {
+    private Date fillS(int row, Date dateT) throws ParseException {
         int colNumber = 21;
         if (getCellValue(row, colNumber).equals(EMPTY)) {
             warnings.add(String.format("\n- Строка: %d, столбец: %d, %s", row + 1, colNumber + 1, "отсутствует дата"));
             return null;
         }
-        return convertDateFormat(
+        var dateS = convertDateFormat(
                 convertDateFormat(getCellValue(row, colNumber), TEMPLATE_DATE_TIME_DOT, TEMPLATE_DATE_TIME_DOT)
                 , TEMPLATE_DATE_TIME_DOT
         );
+        return dateT.before(dateS) ? DateUtils.addDays(dateS, -1) : dateS;
     }
 
     private Date fillT(int row) throws ParseException {

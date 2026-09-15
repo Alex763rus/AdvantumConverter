@@ -125,6 +125,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                     var temperage2Max = getTemperage2(row, 17, 1);
                     var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile);
                     var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb);
+                    dateS = dateT.before(dateS) ? DateUtils.addDays(dateS, -1) : dateS;
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
