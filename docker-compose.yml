@@ -40,24 +40,15 @@ services:
       sh -c "
         sleep 5 &&
         psql -c \"
-          CREATE SCHEMA IF NOT EXISTS advantum_dev;
-          CREATE SCHEMA IF NOT EXISTS advantum_test;
+          CREATE SCHEMA IF NOT EXISTS joker_prom;
           CREATE SCHEMA IF NOT EXISTS advantum_prom;
-          CREATE SCHEMA IF NOT EXISTS warpoint_dev;
-          CREATE SCHEMA IF NOT EXISTS warpoint_prom;
 
-          GRANT ALL PRIVILEGES ON SCHEMA advantum_dev TO postgres;
-          GRANT ALL PRIVILEGES ON SCHEMA advantum_test TO postgres;
+          GRANT ALL PRIVILEGES ON SCHEMA joker_prom TO postgres;
           GRANT ALL PRIVILEGES ON SCHEMA advantum_prom TO postgres;
-          GRANT ALL PRIVILEGES ON SCHEMA warpoint_dev TO postgres;
-          GRANT ALL PRIVILEGES ON SCHEMA warpoint_prom TO postgres;
-      
-          GRANT CREATE ON SCHEMA advantum_dev TO postgres;
-          GRANT CREATE ON SCHEMA advantum_test TO postgres;
+
+          GRANT CREATE ON SCHEMA joker_prom TO postgres;
           GRANT CREATE ON SCHEMA advantum_prom TO postgres;
-          GRANT CREATE ON SCHEMA warpoint_dev TO postgres;
-          GRANT CREATE ON SCHEMA warpoint_prom TO postgres;
-      
+
           SELECT '5 schemas created successfully!' as Status;
         \"
       "
