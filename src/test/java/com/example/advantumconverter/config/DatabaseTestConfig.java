@@ -1,47 +1,36 @@
 package com.example.advantumconverter.config;
 
-import lombok.experimental.UtilityClass;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
-import javax.sql.DataSource;
-import java.util.Map;
+public final class DatabaseTestConfig {
 
-@TestConfiguration
-public class DatabaseTestConfig {
+    private static final String IMAGE = "postgres:15-alpine";
 
-    @UtilityClass
-    public static class MySql {
+    private static PostgreSQLContainer<?> container;
 
-        public final String IMAGE = "mysql:8.0";
-
-        public final String ROOT_USERNAME = "root";
-        public final String USERNAME = "user";
-        public final String PASSWORD = "test";
-        public final String DATABASE = "advantum";
+    private DatabaseTestConfig() {
     }
 
-    private static final MySQLContainer<?> DATABASE_CONTAINER = new MySQLContainer<>(MySql.IMAGE);
+    public static synchronized void start() {
+        if (container == null) {
+            PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(IMAGE)
+                    .withDatabaseName("advantum")
+                    .withUsername("test")
+                    .withPassword("test");
+            postgres.start();
+            container = postgres;
+        }
+    }
 
-    @Primary
-    @Bean
-    public DataSource testDataSource() {
-        DATABASE_CONTAINER
-                .withTmpFs(Map.of("/var/lib/mysql", "rw"))
-                .withUrlParam("serverTimezone", "Asia/Novosibirsk")
-                .withEnv("MYSQL_ROOT_PASSWORD", MySql.PASSWORD)
-                .withEnv("MYSQL_ROOT_HOST", "%")
-                .withUsername(MySql.USERNAME)
-                .withPassword(MySql.PASSWORD)
-                .withDatabaseName(MySql.DATABASE)
-                .start();
-        return DataSourceBuilder.create()
-                .url(DATABASE_CONTAINER.getJdbcUrl())
-                .username(MySql.ROOT_USERNAME)
-                .password(MySql.PASSWORD)
-                .build();
+    public static String getJdbcUrl() {
+        return container.getJdbcUrl();
+    }
+
+    public static String getUsername() {
+        return container.getUsername();
+    }
+
+    public static String getPassword() {
+        return container.getPassword();
     }
 }

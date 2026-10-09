@@ -1,0 +1,112 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Актуальная схема статистики (prod changelog) -->
+    <include file="/db/changelog/ddl/schema-ddl-stat-snapshot.xml"/>
+    <include file="/db/changelog/ddl/schema-ddl-conversion-stat-snapshot.xml"/>
+
+    <!-- Восстановленная схема release_1 + сиды (порядок как в исходном db.changelog_release_1.xml) -->
+    <include file="/db/changelog/release_1/schema-init.xml"/>
+    <changeSet id="seed-1" author="replay"><sqlFile path="/db/changelog/release_1/InsertCompany.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-2" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-3" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCarNumber.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-4" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertLentaCar.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-5" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertLentaDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-6" author="replay"><sqlFile path="/db/changelog/release_1/metro/InsertDcMetroAddressesDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-7" author="replay"><sqlFile path="/db/changelog/release_1/metro/InsertMetroAddressesDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-8" author="replay"><sqlFile path="/db/changelog/release_1/metro/InsertMetroTemperatureDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-9" author="replay"><sqlFile path="/db/changelog/release_1/metro/InsertMetroTimeDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-10" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-11" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonLoadUnloadTimeTime.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-12" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonTonnageTime.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-13" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonTransitTime1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-14" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonTransitTime2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-15" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonTransitTime3.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-16" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonTransitTime4.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-17" author="replay"><sqlFile path="/db/changelog/release_1/ozon/InsertOzonTransitTime5.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-18" author="replay"><sqlFile path="/db/changelog/release_1/InsertUser.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-19" author="replay"><sqlFile path="/db/changelog/release_1/InsertUser2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/create_sber_address.xml"/>
+    <changeSet id="seed-20" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-21" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-22" author="replay"><sqlFile path="/db/changelog/release_1/sber/AlterSberAddress.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress1.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress2.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress3.xml"/>
+    <changeSet id="seed-23" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCarNumber_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress4.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress5.xml"/>
+    <changeSet id="seed-24" author="replay"><sqlFile path="/db/changelog/release_1/lenta/UpdateLentaCar_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-25" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCarNumber_2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-26" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCarNumber_3.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/schema/schema-ddl-user-role-name.xml"/>
+    <include file="/db/changelog/release_1/users/update_user_1.xml"/>
+    <changeSet id="seed-27" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCarNumber_4.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-28" author="replay"><sqlFile path="/db/changelog/release_1/lenta/UpdateLentaCar_2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-29" author="replay"><sqlFile path="/db/changelog/release_1/lenta/UpdateLentaDictionary.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-30" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-31" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar_2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-32" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_msk_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-33" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_ekb_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-34" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_nsb_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-35" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_perm_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-36" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_rst_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-37" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_spb_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-38" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_tlt_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-39" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_msk_2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-40" author="replay"><sqlFile path="/db/changelog/release_1/lenta/Updatelentadictionary_mix_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-41" author="replay"><sqlFile path="/db/changelog/release_1/lenta/CreateLentaTsCity.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-42" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertLentaTsCity.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-43" author="replay"><sqlFile path="/db/changelog/release_1/lenta/UpdateLentaTsCity_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-44" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar_3.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-45" author="replay"><sqlFile path="/db/changelog/release_1/InsertCompany_2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/siel/create_siel_points.xml"/>
+    <changeSet id="seed-46" author="replay"><sqlFile path="/db/changelog/release_1/siel/InsertSielPoints_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/siel/create_siel_cars.xml"/>
+    <changeSet id="seed-47" author="replay"><sqlFile path="/db/changelog/release_1/siel/InsertSielCars_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-48" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar_4.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/users/update_user_2.xml"/>
+    <changeSet id="seed-49" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress2.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-50" author="replay"><sqlFile path="/db/changelog/release_1/company/InsertCompany_3.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/spar/create_spar_windows.xml"/>
+    <changeSet id="seed-51" author="replay"><sqlFile path="/db/changelog/release_1/spar/InsertSparWindows_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/company/updateCompanySpar.xml"/>
+    <include file="/db/changelog/release_1/users/update_user_3.xml"/>
+    <changeSet id="seed-52" author="replay"><sqlFile path="/db/changelog/release_1/users/InsertUser3.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-53" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar_5.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-54" author="replay"><sqlFile path="/db/changelog/release_1/company/InsertCompany_4.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress6.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress7.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress8.xml"/>
+    <changeSet id="seed-55" author="replay"><sqlFile path="/db/changelog/release_1/lenta/UpdateLentaDictionaryAll.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-56" author="replay"><sqlFile path="/db/changelog/release_1/company/InsertCompany_5.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-57" author="replay"><sqlFile path="/db/changelog/release_1/users/InsertUser4.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-58" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress3.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/users/update_user_4.xml"/>
+    <changeSet id="seed-59" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress4.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/users/update_user_5.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress9.xml"/>
+    <changeSet id="seed-60" author="replay"><sqlFile path="/db/changelog/release_1/users/InsertUser5.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress10.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress11.xml"/>
+    <include file="/db/changelog/release_1/sber/updateSberAddress12.xml"/>
+    <changeSet id="seed-61" author="replay"><sqlFile path="/db/changelog/release_1/users/InsertUser6.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-62" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress5.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress13.xml"/>
+    <changeSet id="seed-63" author="replay"><sqlFile path="/db/changelog/release_1/siel/update_siel_cars1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-64" author="replay"><sqlFile path="/db/changelog/release_1/siel/update_siel_points1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sielmilk/create_siel_milk_points.xml"/>
+    <changeSet id="seed-65" author="replay"><sqlFile path="/db/changelog/release_1/sielmilk/InsertSielMilkPoints_1.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-66" author="replay"><sqlFile path="/db/changelog/release_1/company/InsertCompany_6.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress14.xml"/>
+    <changeSet id="seed-67" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress6.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-68" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress7.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/release_1/sber/updateSberAddress15.xml"/>
+    <changeSet id="seed-69" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress8.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-70" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress9.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-71" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress10.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <changeSet id="seed-72" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress11.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+</databaseChangeLog>
