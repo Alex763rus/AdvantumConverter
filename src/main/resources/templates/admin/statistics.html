@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" href="/css/admin.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .chart-title {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        canvas {
+            max-width: 100%;
+            height: 400px;
+        }
+        .actions {
+            margin-bottom: 20px;
+        }
+        .actions button {
+            padding: 8px 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .actions button:hover {
+            background-color: #218838;
+        }
+        .empty {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h2>Статистика</h2>
+
+<div class="actions">
+    <button type="button" onclick="takeSnapshot()">Сделать снимок сейчас</button>
+    <span id="snapshotResult" style="margin-left: 10px; color: #28a745;"></span>
+</div>
+
+<div id="commandChart" class="chart-container">
+    <h3 class="chart-title">Прирост по командам</h3>
+    <canvas id="commandsCanvas"></canvas>
+</div>
+
+<div id="conversionChart" class="chart-container">
+    <h3 class="chart-title">Конвертации: успешные и с ошибками</h3>
+    <canvas id="conversionsCanvas"></canvas>
+</div>
+
+<a href="/" class="back-link">← На главную</a>
+
+<script>
+    const colors = [
+        'rgb(54, 162, 235)',
+        'rgb(255, 99, 132)',
+        'rgb(75, 192, 192)',
+        'rgb(255, 205, 86)',
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)',
+        'rgb(201, 203, 207)',
+        'rgb(46, 204, 113)',
+        'rgb(231, 76, 60)',
+        'rgb(142, 68, 173)'
+    ];
+
+    let commandsChart = null;
+    let conversionsChart = null;
+
+    const chartOptions = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
+    };
+
+    async function loadAll() {
+        await Promise.all([loadCommands(), loadConversions()]);
+    }
+
+    async function loadCommands() {
+        try {
+            const response = await fetch('/admin/statistics/commands-data');
+            const data = await response.json();
+            renderCommands(data);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function loadConversions() {
+        try {
+            const response = await fetch('/admin/statistics/conversions-data');
+            const data = await response.json();
+            renderConversions(data);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderCommands(data) {
+        const ctx = document.getElementById('commandsCanvas').getContext('2d');
+        const labels = new Set();
+        for (const points of Object.values(data)) {
+            for (const p of points) {
+                labels.add(p.dateLabel);
+            }
+        }
+        const sortedLabels = Array.from(labels).sort();
+
+        const datasets = [];
+        let colorIndex = 0;
+        for (const [command, points] of Object.entries(data)) {
+            const pointMap = new Map(points.map(p => [p.dateLabel, p.total || 0]));
+            datasets.push({
+                label: command,
+                data: sortedLabels.map(label => pointMap.get(label) || 0),
+                borderColor: colors[colorIndex++ % colors.length],
+                tension: 0.1,
+                fill: false
+            });
+        }
+
+        if (commandsChart) {
+            commandsChart.destroy();
+        }
+        commandsChart = new Chart(ctx, {
+            type: 'line',
+            data: {labels: sortedLabels, datasets: datasets},
+            options: chartOptions
+        });
+    }
+
+    function renderConversions(data) {
+        const ctx = document.getElementById('conversionsCanvas').getContext('2d');
+        const labels = data.map(p => p.dateLabel);
+
+        if (conversionsChart) {
+            conversionsChart.destroy();
+        }
+        conversionsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Успешные',
+                        data: data.map(p => p.success),
+                        borderColor: 'rgb(40, 167, 69)',
+                        backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'С ошибками',
+                        data: data.map(p => p.error),
+                        borderColor: 'rgb(220, 53, 69)',
+                        backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: chartOptions
+        });
+    }
+
+    async function takeSnapshot() {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Делаем...';
+        const result = document.getElementById('snapshotResult');
+        result.textContent = '';
+        try {
+            const response = await fetch('/admin/statistics/snapshot', {method: 'POST'});
+            if (response.ok) {
+                result.textContent = 'Снимок сделан!';
+                result.style.color = '#28a745';
+                await loadAll();
+            } else {
+                result.textContent = 'Ошибка';
+                result.style.color = '#dc3545';
+            }
+        } catch (e) {
+            result.textContent = 'Ошибка';
+            result.style.color = '#dc3545';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = original;
+            setTimeout(() => result.textContent = '', 3000);
+        }
+    }
+
+    loadAll();
+</script>
+</body>
+</html>

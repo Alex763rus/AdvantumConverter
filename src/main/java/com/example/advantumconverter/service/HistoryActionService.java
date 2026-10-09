@@ -1,5 +1,6 @@
 package com.example.advantumconverter.service;
 
+import com.example.advantumconverter.enums.HistoryActionType;
 import com.example.advantumconverter.model.jpa.HistoryAction;
 import com.example.advantumconverter.model.jpa.HistoryActionRepository;
 import com.example.advantumconverter.model.jpa.User;
@@ -110,11 +111,20 @@ public class HistoryActionService {
     }
 
     public void saveWebHistoryActionProtect(@Nullable CustomUserDetails user, String fileName, String messageText) {
+        saveWebHistoryActionProtect(user, fileName, messageText, WEB_ACTION);
+    }
+
+    public void saveWebHistoryErrorActionProtect(@Nullable CustomUserDetails user, String fileName, String messageText) {
+        saveWebHistoryActionProtect(user, fileName, messageText, WEB_ERROR_ACTION);
+    }
+
+    private void saveWebHistoryActionProtect(@Nullable CustomUserDetails user, String fileName, String messageText,
+                                             HistoryActionType actionType) {
         if (!enabled) {
             return;
         }
         try {
-            saveWebHistoryAction(user, fileName, messageText);
+            saveWebHistoryAction(user, fileName, messageText, actionType);
         } catch (Exception ex) {
             var errorMessage = "Ошибка во время сохранения HistoryAction:" + ex.getMessage();
             log.error(errorMessage);
@@ -122,7 +132,8 @@ public class HistoryActionService {
         }
     }
 
-    private void saveWebHistoryAction(@Nullable CustomUserDetails user, String fileName, String messageText) {
+    private void saveWebHistoryAction(@Nullable CustomUserDetails user, String fileName, String messageText,
+                                      HistoryActionType actionType) {
         if (user == null) {
             log.warn("Не будет сохранен HistoryAction, user = null");
             return;
@@ -131,7 +142,7 @@ public class HistoryActionService {
         var chatId = Long.parseLong(user.getUsername());
         historyAction.setActionDate(new Timestamp(System.currentTimeMillis()));
         historyAction.setChatIdFrom(chatId);
-        historyAction.setActionType(WEB_ACTION);
+        historyAction.setActionType(actionType);
         historyAction.setMessageText(prepareMessageText(messageText));
         historyAction.setChatIdTo(chatId);
         historyAction.setFileName(fileName);

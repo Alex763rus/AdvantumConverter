@@ -6,6 +6,8 @@ public enum HistoryActionType {
 
     SYSTEM_ACTION,
 
-    WEB_ACTION
+    WEB_ACTION,
+
+    WEB_ERROR_ACTION
 
 }

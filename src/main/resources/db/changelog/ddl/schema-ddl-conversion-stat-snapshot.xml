@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="opencode" id="schema-ddl-conversion-stat-snapshot">
+        <sql>
+            CREATE TABLE IF NOT EXISTS conversion_stat_snapshot
+            (
+                conversion_stat_snapshot_id BIGSERIAL PRIMARY KEY,
+                snapshot_date               TIMESTAMP NOT NULL,
+                success_count               BIGINT,
+                error_count                 BIGINT
+            );
+            CREATE INDEX IF NOT EXISTS idx_conversion_stat_snapshot_date ON conversion_stat_snapshot(snapshot_date);
+            COMMENT ON TABLE conversion_stat_snapshot IS 'Снимки статистики успешных/ошибочных конвертаций';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

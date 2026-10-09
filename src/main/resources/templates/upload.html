@@ -51,8 +51,9 @@
 <div class="admin-panel" sec:authorize="hasRole('ADMIN')"><h3>Администрирование</h3>
     <div class="admin-actions">
         <button type="button" class="admin-button" onclick="updateDictionaries()">🔄 Обновить справочники</button>
-        <a href="/admin/pending-users" class="admin-button"> 👥 Управление пользователями </a></div>
-</div>
+        <a href="/admin/pending-users" class="admin-button"> 👥 Управление пользователями </a>
+        <a href="/admin/statistics" class="admin-button"> 📊 Статистика </a></div>
+    </div>
 <script>
     document.getElementById('convertForm').addEventListener('submit', async function (e) {
         e.preventDefault();

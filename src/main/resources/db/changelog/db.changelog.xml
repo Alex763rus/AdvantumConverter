@@ -2,6 +2,6 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
-
-<!--    <include file="/db/changelog/release_1/schema-init.xmlma-init.xml"/>-->
+    <include file="/db/changelog/ddl/schema-ddl-stat-snapshot.xml"/>
+    <include file="/db/changelog/ddl/schema-ddl-conversion-stat-snapshot.xml"/>
 </databaseChangeLog>

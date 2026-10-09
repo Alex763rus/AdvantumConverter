@@ -163,11 +163,11 @@ public class WebController {
 
         } catch (WebConvertProcessingException e) {
             log.error(e);
-            historyActionService.saveWebHistoryActionProtect(userDetails, file.getOriginalFilename(), converter == null ? EMPTY : e.getMessage());
+            historyActionService.saveWebHistoryErrorActionProtect(userDetails, file.getOriginalFilename(), converter == null ? EMPTY : e.getMessage());
             return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
         } catch (Exception e) {
             log.error(e);
-            historyActionService.saveWebHistoryActionProtect(userDetails, file.getOriginalFilename(), converter == null ? EMPTY : e.getMessage());
+            historyActionService.saveWebHistoryErrorActionProtect(userDetails, file.getOriginalFilename(), converter == null ? EMPTY : e.getMessage());
             return ResponseEntity.status(500).body("Внутренняя ошибка: " + e.getMessage());
         }
     }
