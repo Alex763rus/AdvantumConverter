@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,8 +17,9 @@ import java.util.Objects;
 public class HistoryAction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long historyActionId;
+    @Column(name = "history_action_id")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID historyActionId;
 
     @Column(nullable = false)
     private Long chatIdFrom;

@@ -9,6 +9,7 @@
 
     <!-- Восстановленная схема release_1 + сиды (порядок как в исходном db.changelog_release_1.xml) -->
     <include file="/db/changelog/release_1/schema-init.xml"/>
+    <include file="/db/changelog/ddl/schema-ddl-history-action-uuid.xml"/>
     <changeSet id="seed-1" author="replay"><sqlFile path="/db/changelog/release_1/InsertCompany.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
     <changeSet id="seed-2" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCar.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
     <changeSet id="seed-3" author="replay"><sqlFile path="/db/changelog/release_1/lenta/InsertCarNumber.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>

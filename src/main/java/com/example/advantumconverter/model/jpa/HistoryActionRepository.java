@@ -6,8 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface HistoryActionRepository extends CrudRepository<HistoryAction, Long> {
+public interface HistoryActionRepository extends CrudRepository<HistoryAction, UUID> {
 
     long countByActionType(HistoryActionType actionType);
 

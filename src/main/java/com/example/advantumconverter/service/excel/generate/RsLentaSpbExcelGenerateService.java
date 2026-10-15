@@ -103,8 +103,9 @@ public class RsLentaSpbExcelGenerateService implements ExcelGenerateService {
                     for (ConvertedListDataRsLentaSpbV2.Repeat techRepeat : techRepeats) {
                         for (int repeat = 0; repeat < techRepeat.getRepeat(); ++repeat) {
                             row = sheet.createRow(y + 1);
-                            createCell(row, 0, convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
-                                    + rowData.getColumnDdata() + "_" + (repeat + 1) + "_" + techRepeat.getColumnName());
+                            var reisKey = convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE) + "_"
+                                    + rowData.getColumnDdata() + "_" + (repeat + 1) + "_" + techRepeat.getColumnName() + "_" + rowData.getColumnCdata();
+                                    createCell(row, 0, reisKey);
                             createMainCells(row, rowData);
                             //дополнительные поля, отсутстующие в другой реализации:
                             createCell(row, 18, techRepeat.getGroupName());

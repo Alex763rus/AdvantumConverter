@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="opencode" id="history-action-uuid-pk">
+        <sql splitStatements="false"><![CDATA[
+            CREATE TABLE IF NOT EXISTS history_action
+            (
+                history_action_id  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                action_date        timestamp,
+                action_type        smallint,
+                callback_menu_name varchar(255),
+                chat_id_from       bigint NOT NULL,
+                chat_id_to         bigint,
+                file_name          varchar(255),
+                message_text       varchar(1000)
+            );
+
+            DO $$
+            BEGIN
+                IF EXISTS (SELECT 1
+                           FROM information_schema.columns
+                           WHERE table_schema = ANY (current_schemas(false))
+                             AND table_name = 'history_action'
+                             AND column_name = 'history_action_id'
+                             AND data_type <> 'uuid') THEN
+                    ALTER TABLE history_action ADD COLUMN history_action_id_uuid uuid;
+                    UPDATE history_action
+                       SET history_action_id_uuid = gen_random_uuid()
+                     WHERE history_action_id_uuid IS NULL;
+                    ALTER TABLE history_action DROP CONSTRAINT IF EXISTS history_action_pkey;
+                    ALTER TABLE history_action DROP COLUMN history_action_id;
+                    ALTER TABLE history_action RENAME COLUMN history_action_id_uuid TO history_action_id;
+                    ALTER TABLE history_action ALTER COLUMN history_action_id SET NOT NULL;
+                    ALTER TABLE history_action ALTER COLUMN history_action_id SET DEFAULT gen_random_uuid();
+                    ALTER TABLE history_action ADD CONSTRAINT history_action_pkey PRIMARY KEY (history_action_id);
+                END IF;
+            END
+            $$;
+
+            DROP SEQUENCE IF EXISTS history_action_history_action_id_seq;
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

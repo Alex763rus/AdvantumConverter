@@ -36,39 +36,12 @@ import static org.example.tgcommons.utils.DateConverterUtils.*;
 public class ConvertServiceImplRsLentaSpbHyper extends ConvertServiceBase implements ConvertService {
 
 
-    private static final String COLUMN_C_8023 = "8023";
-    private static final String PALLETA = "Паллета";
-    private static final String ROLIKS = "ролики";
     private static final String DOUBLE_DOT = ":";
     private static final String DOUBLE_ZERO = "00";
     private static final String ZERO = "0";
     private static final String TARA = "тара";
-    private static final String ALKO = "АЛКО";
 
     private static final LocalTime TIME_18 = LocalTime.of(18, 0);
-
-    private static final Map<String, Integer> TYPE_GM_MAP =
-            Map.of(PALLETA, 300,
-                    ROLIKS, 150);
-
-    private static final Map<String, String> TOVAR_GROUP = Map.ofEntries(
-            // Категория СОФ
-            Map.entry("Склад A", "СОФ"),
-            Map.entry("Склад E Производство", "СОФ"),
-            Map.entry("Остаток СОФ", "СОФ"),
-
-            // Категория СХ
-            Map.entry("Склад C", "СХ"),
-            Map.entry("Остаток СХ", "СХ"),
-            Map.entry("Склад B", "СХ"),
-            Map.entry("Склад D", "СХ"),
-            Map.entry("Транзит", "СХ"),
-
-            // Категория Заморозка
-            Map.entry("Склад E Заморозка", "Заморозка"),
-            Map.entry("Остаток Заморозка", "Заморозка")
-    );
-
     private List<String> warnings = new ArrayList<>();
 
     @Override
