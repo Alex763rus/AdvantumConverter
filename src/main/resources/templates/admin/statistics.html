@@ -14,10 +14,28 @@
             margin-bottom: 30px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        .chart-title {
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin: 0 0 15px 0;
+        }
+        .chart-title {
+            margin: 0;
             color: #2c3e50;
             font-size: 18px;
+        }
+        .mode-toggle {
+            padding: 6px 12px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .mode-toggle:hover {
+            background-color: #5a6268;
         }
         canvas {
             max-width: 100%;
@@ -53,12 +71,18 @@
 </div>
 
 <div id="commandChart" class="chart-container">
-    <h3 class="chart-title">Прирост по командам</h3>
+    <div class="chart-header">
+        <h3 class="chart-title" id="commandsChartTitle">Прирост по командам</h3>
+        <button type="button" class="mode-toggle" onclick="toggleCommandsMode()">Абсолют / %</button>
+    </div>
     <canvas id="commandsCanvas"></canvas>
 </div>
 
 <div id="conversionChart" class="chart-container">
-    <h3 class="chart-title">Конвертации: успешные и с ошибками</h3>
+    <div class="chart-header">
+        <h3 class="chart-title" id="conversionsChartTitle">Конвертации: успешные и с ошибками</h3>
+        <button type="button" class="mode-toggle" onclick="toggleConversionsMode()">Абсолют / %</button>
+    </div>
     <canvas id="conversionsCanvas"></canvas>
 </div>
 
@@ -80,6 +104,13 @@
 
     let commandsChart = null;
     let conversionsChart = null;
+    let commandsMode = 'abs';
+    let conversionsMode = 'abs';
+    let lastCommandsData = null;
+    let lastConversionsData = null;
+
+    const COMMANDS_TITLE = 'Прирост по командам';
+    const CONVERSIONS_TITLE = 'Конвертации: успешные и с ошибками';
 
     const chartOptions = {
         responsive: true,
@@ -93,6 +124,21 @@
         }
     };
 
+    const percentChartOptions = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                min: 0,
+                max: 100,
+                ticks: {
+                    precision: 1,
+                    callback: value => value + '%'
+                }
+            }
+        }
+    };
+
     async function loadAll() {
         await Promise.all([loadCommands(), loadConversions()]);
     }
@@ -100,8 +146,8 @@
     async function loadCommands() {
         try {
             const response = await fetch('/admin/statistics/commands-data');
-            const data = await response.json();
-            renderCommands(data);
+            lastCommandsData = await response.json();
+            renderCommands();
         } catch (e) {
             console.error(e);
         }
@@ -110,27 +156,63 @@
     async function loadConversions() {
         try {
             const response = await fetch('/admin/statistics/conversions-data');
-            const data = await response.json();
-            renderConversions(data);
+            lastConversionsData = await response.json();
+            renderConversions();
         } catch (e) {
             console.error(e);
         }
     }
 
-    function renderCommands(data) {
+    function toggleCommandsMode() {
+        commandsMode = commandsMode === 'abs' ? 'pct' : 'abs';
+        renderCommands();
+    }
+
+    function toggleConversionsMode() {
+        conversionsMode = conversionsMode === 'abs' ? 'pct' : 'abs';
+        renderConversions();
+    }
+
+    function toPercentByDay(data) {
+        const totalsByLabel = new Map();
+        for (const points of Object.values(data)) {
+            for (const p of points) {
+                totalsByLabel.set(p.dateLabel, (totalsByLabel.get(p.dateLabel) || 0) + (p.total || 0));
+            }
+        }
+        const result = {};
+        for (const [command, points] of Object.entries(data)) {
+            result[command] = points.map(p => {
+                const sum = totalsByLabel.get(p.dateLabel) || 0;
+                const value = p.total || 0;
+                return {dateLabel: p.dateLabel, value: sum > 0 ? (value / sum) * 100 : 0};
+            });
+        }
+        return result;
+    }
+
+    function renderCommands() {
+        if (!lastCommandsData) {
+            return;
+        }
         const ctx = document.getElementById('commandsCanvas').getContext('2d');
         const labels = new Set();
-        for (const points of Object.values(data)) {
+        for (const points of Object.values(lastCommandsData)) {
             for (const p of points) {
                 labels.add(p.dateLabel);
             }
         }
         const sortedLabels = Array.from(labels).sort();
 
+        const seriesByCommand = commandsMode === 'pct'
+            ? toPercentByDay(lastCommandsData)
+            : Object.fromEntries(Object.entries(lastCommandsData).map(
+                ([command, points]) => [command, points.map(p => ({dateLabel: p.dateLabel, value: p.total || 0}))]));
+
         const datasets = [];
         let colorIndex = 0;
-        for (const [command, points] of Object.entries(data)) {
-            const pointMap = new Map(points.map(p => [p.dateLabel, p.total || 0]));
+        for (const [command, series] of Object.entries(seriesByCommand)) {
+            const pointMap = new Map(series.map(p => [p.dateLabel, p.value]));
             datasets.push({
                 label: command,
                 data: sortedLabels.map(label => pointMap.get(label) || 0),
@@ -146,13 +228,35 @@
         commandsChart = new Chart(ctx, {
             type: 'line',
             data: {labels: sortedLabels, datasets: datasets},
-            options: chartOptions
+            options: commandsMode === 'pct' ? percentChartOptions : chartOptions
         });
+        document.getElementById('commandsChartTitle').textContent =
+            commandsMode === 'pct' ? COMMANDS_TITLE + ' (доля, %)' : COMMANDS_TITLE;
     }
 
-    function renderConversions(data) {
+    function renderConversions() {
+        if (!lastConversionsData) {
+            return;
+        }
         const ctx = document.getElementById('conversionsCanvas').getContext('2d');
-        const labels = data.map(p => p.dateLabel);
+        const labels = lastConversionsData.map(p => p.dateLabel);
+
+        let successData = lastConversionsData.map(p => p.success || 0);
+        let errorData = lastConversionsData.map(p => p.error || 0);
+        if (conversionsMode === 'pct') {
+            successData = lastConversionsData.map(p => {
+                const s = p.success || 0;
+                const e = p.error || 0;
+                const sum = s + e;
+                return sum > 0 ? (s / sum) * 100 : 0;
+            });
+            errorData = lastConversionsData.map(p => {
+                const s = p.success || 0;
+                const e = p.error || 0;
+                const sum = s + e;
+                return sum > 0 ? (e / sum) * 100 : 0;
+            });
+        }
 
         if (conversionsChart) {
             conversionsChart.destroy();
@@ -164,22 +268,24 @@
                 datasets: [
                     {
                         label: 'Успешные',
-                        data: data.map(p => p.success),
+                        data: successData,
                         borderColor: 'rgb(40, 167, 69)',
                         backgroundColor: 'rgba(40, 167, 69, 0.2)',
                         tension: 0.1
                     },
                     {
                         label: 'С ошибками',
-                        data: data.map(p => p.error),
+                        data: errorData,
                         borderColor: 'rgb(220, 53, 69)',
                         backgroundColor: 'rgba(220, 53, 69, 0.2)',
                         tension: 0.1
                     }
                 ]
             },
-            options: chartOptions
+            options: conversionsMode === 'pct' ? percentChartOptions : chartOptions
         });
+        document.getElementById('conversionsChartTitle').textContent =
+            conversionsMode === 'pct' ? CONVERSIONS_TITLE + ' (доля, %)' : CONVERSIONS_TITLE;
     }
 
     async function takeSnapshot() {
