@@ -35,6 +35,8 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
     private final int START_ROW = 4;
     private final int COLUMN_STEP = 5;
     private final String ORGANISATION = "OOO ANGLESEY FOOD";
+    private final String REGION_BASE = "R003";
+    private final String ADDRESS_BASE = "R003 - XK KUYLUK";
     private final CrmConfigProperties crmConfigProperties;
     private int LAST_ROW;
     private List<String> warnings = new ArrayList<>();
@@ -55,10 +57,6 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
         return COMMAND_CONVERT_BASKET;
     }
 
-//    private String addressFromFile = EMPTY;
-//    private Optional<SberAddressDictionary> cityFromDictionary = Optional.empty();
-//    private Map<String, Integer> uniqReisNumbers;
-
     @Override
     public boolean isV2() {
         return true;
@@ -76,10 +74,6 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
         int col = 0;
         int lastRow = 0;
         int countReis = 0;
-//        String fio = EMPTY;
-//        String carNumber = EMPTY;
-//        String organization = EMPTY;
-//        uniqReisNumbers = new HashMap<>();
         try {
             sheet = book.getSheetAt(0);
             LAST_COLUMN_NUMBER = sheet.getRow(START_ROW).getLastCellNum();
@@ -87,38 +81,17 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
             var datefromfile = getDateFromFile();
             var datefromfileString = convertDateFormat(datefromfile, TEMPLATE_DATE);
 
-//            addressFromFile = getCellValue(0, 0).trim();
-//            cityFromDictionary = dictionaryService.getSberCity(addressFromFile);
-//            if (cityFromDictionary.isEmpty()) {
-//                throw new SberAddressNotFoundException();
-//            }
-//            var cityName = cityFromDictionary.get().getCity().trim();
-//            var cityIsEkb = CITY_NAME_EKB.equals(cityName);
             for (col = 0; col <= LAST_COLUMN_NUMBER; col = col + COLUMN_STEP) {
                 isStart = true;
                 ++countReis;
                 lastRow = getLastRow(START_ROW, col);
+                var numberUnloading = 0;
                 for (row = START_ROW; row <= lastRow; ++row) {
-                    if (EMPTY.equals(getCellValue(row, col + 2))) {
+                    var region = getRegion(row, col + 2);
+                    if (EMPTY.equals(region)) {
                         break;
                     }
-////                var dateStartFromFileForSt = dateFromFile;
-                    var numberUnloading = 1;
-                    if (isStart) {
-//                    carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
-//                    var dateStartT = fillT(true, row, dateFromFile, cityIsEkb);
-//                    dateStartFromFileForSt = DateUtils.isSameDay(dateStartT, dateFromFile) ?
-//                            dateFromFile : DateUtils.addDays(dateFromFile, -1);
-//                    fio = prepareFio(getCellValue(row, 4));
-//                    organization = deleteSpace(getCellValue(row, 10));
-                    }
-
                     for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
-////                    var temperage2Min = getTemperage2(row, 17, 0);
-////                    var temperage2Max = getTemperage2(row, 17, 1);
-////                    var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile);
-////                    var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb);
-////                    dateS = dateT.before(dateS) ? DateUtils.addDays(dateS, -1) : dateS;
                         dataLine = ConvertedListDataClientsV2.init()
                                 .setColumnAdata(getColumnA(countReis, datefromfileString))
                                 .setColumnBdata(datefromfile)
@@ -140,10 +113,10 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
                                 .setColumnRdata(null)
                                 .setColumnSdata(fillS(row, col, datefromfile))
                                 .setColumnTdata(fillT(row, col, datefromfile))
-                                .setColumnUdata(fillU(isStart, row, col))
-                                .setColumnVdata(fillV(isStart, row, col))
+                                .setColumnUdata(fillU(isStart, region))
+                                .setColumnVdata(fillV(isStart, region))
                                 .setColumnWdata(isStart ? LOAD_THE_GOODS : UNLOAD_THE_GOODS)
-                                .setColumnXdata(isStart ? 0 : numberUnloading)
+                                .setColumnXdata(numberUnloading)
                                 .setColumnYdata(null)
                                 .setColumnZdata(null)
                                 .setColumnAaData(EMPTY)
@@ -167,7 +140,9 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
                             break;
                         }
                         isStart = false;
+                        ++numberUnloading;
                     }
+                    ++numberUnloading;
                 }
             }
         } catch (Exception e) {
@@ -210,19 +185,16 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
         return crmConfigProperties.getSber();
     }
 
-    private String fillU(boolean isStart, int row, int col) {
-        if (isStart) {
-            return "R003";
-        }
-        return getCellValue(row, col + 2);
+    private String getRegion(int row, int col) {
+        return getCellValue(row, col);
     }
 
-    private String fillV(boolean isStart, int row, int col) {
-        if (isStart) {
-            return "R003 - XK KUYLUK";
-        }
-        var region = getCellValue(row, col + 2);
-        return dictionaryService.getBasketAddress(region);
+    private String fillU(boolean isStart, String region) {
+        return isStart ? REGION_BASE : region;
+    }
+
+    private String fillV(boolean isStart, String region) {
+        return isStart ? ADDRESS_BASE : dictionaryService.getBasketAddress(region);
     }
 
     protected int getLastRow(int startRow, int col) {
