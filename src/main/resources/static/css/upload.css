@@ -251,3 +251,55 @@ select:focus, input[type="file"]:focus {
         justify-content: center;
     }
 }
+
+/* === Выбор формата: карточки вместо выпадающего списка === */
+.format-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.format-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.format-option:hover {
+    border-color: #007bff;
+}
+
+.format-option input[type="radio"] {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.format-option-label {
+    user-select: none;
+}
+
+.format-option.is-selected {
+    border-color: #007bff;
+    background-color: #eaf3ff;
+    box-shadow: inset 0 0 0 1px #007bff;
+}
+
+.format-fixed {
+    padding: 10px 12px;
+    border: 1px dashed #d0d7de;
+    border-radius: 6px;
+    background-color: #f6f8fa;
+    font-size: 14px;
+    color: #444;
+}

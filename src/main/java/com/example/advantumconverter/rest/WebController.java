@@ -74,13 +74,17 @@ public class WebController {
     }
 
     @GetMapping("/")
-    public String showUploadPage(Model model, Authentication authentication) {
+    public String showUploadPage(Model model, Authentication authentication, HttpServletRequest request) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         model.addAttribute("username", userDetails.getUsername());
         model.addAttribute("roleTitle", userDetails.getRole().getTitle());
         model.addAttribute("companyName", userDetails.getCompany().getCompanyName());
         model.addAttribute("formats", converterAccessService.getAvailableFormats(authentication));
         model.addAttribute("showSendToCrm", converterAccessService.shouldShowSendToCrm(authentication));
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            model.addAttribute("lastConverterType", session.getAttribute("lastConverterType"));
+        }
         return "upload";
     }
 
@@ -106,6 +110,11 @@ public class WebController {
                 throw new WebConvertProcessingException(HttpStatus.BAD_REQUEST, "Недопустимый тип конвертации: " + converterType);
             }
             converter = converterOpt.get();
+            // Запоминаем выбранный конвертер в сессии, чтобы не выбирать заново при следующей загрузке
+            HttpSession lastConverterSession = request.getSession();
+            if (lastConverterSession != null) {
+                lastConverterSession.setAttribute("lastConverterType", converterType);
+            }
             XSSFWorkbook inputFile;
             try (InputStream is = file.getInputStream()) {
                 inputFile = (XSSFWorkbook) WorkbookFactory.create(is);

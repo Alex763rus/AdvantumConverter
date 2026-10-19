@@ -19,17 +19,35 @@
 <div th:if="${error}" class="flash-message error" th:text="${error}"></div>
 <div th:if="${success}" class="flash-message success" th:text="${success}"></div> <!-- Панель конвертера -->
 <div class="converter-panel"><h3>Конвертер Excel</h3>
-    <p style="color: #666; font-size: 14px; margin: 0 0 15px 0;">Выберите формат и загрузите файл для конвертации.</p>
+    <p th:unless="${#lists.size(formats) == 1}" style="color: #666; font-size: 14px; margin: 0 0 15px 0;">Выберите формат и загрузите файл для конвертации.</p>
     <form id="convertForm" enctype="multipart/form-data">
-        <div class="form-group"><label for="converterType">Формат конвертации:</label>
+        <div class="form-group"><label th:if="${#lists.size(formats) > 1}" for="converterType">Формат конвертации:</label>
             <div th:if="${#lists.isEmpty(formats)}"
                  style="color: #8a6d3b; background: #fdf6e3; padding: 10px; border-radius: 6px; font-style: italic; font-size: 14px;">
                 ❌ У вашей роли и/или компании нет доступных форматов конвертации.<br>Обратитесь к администратору.
             </div>
-            <select id="converterType" name="converterType" th:disabled="${#lists.isEmpty(formats)}" required
-                    th:if="${!#lists.isEmpty(formats)}">
+
+            <!-- Один доступный формат: выбирать нечего, фиксируем его автоматически -->
+            <th:block th:if="${#lists.size(formats) == 1}">
+                <input type="hidden" name="converterType" th:value="${formats[0].type}"/>
+                <div class="format-fixed">Формат: <strong th:text="${formats[0].label}">—</strong></div>
+            </th:block>
+
+            <!-- 2-3 формата: вместо выпадающего списка показываем карточки -->
+            <div class="format-options" th:if="${#lists.size(formats) > 1 and #lists.size(formats) <= 3}">
+                <label class="format-option" th:each="format, stat : ${formats}">
+                    <input type="radio" name="converterType" th:value="${format.type}" required
+                           th:checked="${(lastConverterType != null and format.type == lastConverterType) or (lastConverterType == null and stat.index == 0)}"/>
+                    <span class="format-option-label" th:text="${format.label}">—</span>
+                </label>
+            </div>
+
+            <!-- Больше 3 форматов: привычный выпадающий список -->
+            <select id="converterType" name="converterType" required
+                    th:if="${#lists.size(formats) > 3}">
                 <option value="">-- Выберите формат --</option>
-                <option th:each="format : ${formats}" th:value="${format.type}" th:text="${format.label}"></option>
+                <option th:each="format : ${formats}" th:value="${format.type}" th:text="${format.label}"
+                        th:selected="${format.type == lastConverterType}"></option>
             </select></div>
         <div class="form-group">
             <label for="file">Excel-файл (.xlsx, .xls):</label>
@@ -110,6 +128,7 @@
                 }
 
                 this.reset();
+                restoreConverterSelection();
             } else {
                 const errorText = await response.text();
                 showMessage('❌ Ошибка: ' + errorText, 'error');
@@ -128,6 +147,51 @@
         messageEl.className = 'flash-message ' + type; // Добавляем класс flash-message и type
         messageEl.style.display = 'block';
     }
+
+    // === Запоминание последнего выбранного формата конвертации ===
+    const CONVERTER_KEY = 'advantum.lastConverterType';
+
+    function getRadioInputs() {
+        return Array.from(document.querySelectorAll('input[name="converterType"][type="radio"]'));
+    }
+
+    function updateOptionClasses() {
+        getRadioInputs().forEach(function (r) {
+            const label = r.closest('label');
+            if (label) label.classList.toggle('is-selected', r.checked);
+        });
+    }
+
+    function restoreConverterSelection() {
+        const saved = localStorage.getItem(CONVERTER_KEY);
+        const radios = getRadioInputs();
+        if (radios.length) {
+            let target = saved ? radios.find(function (r) { return r.value === saved; }) : null;
+            if (!target) target = radios.find(function (r) { return r.checked; }) || radios[0];
+            if (target) target.checked = true;
+            updateOptionClasses();
+            return;
+        }
+        const select = document.getElementById('converterType');
+        if (select) {
+            const values = Array.from(select.options).map(function (o) { return o.value; }).filter(function (v) { return v; });
+            if (saved && values.indexOf(saved) !== -1) {
+                select.value = saved;
+            } else if (!select.value && values.length) {
+                select.value = values[0];
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', restoreConverterSelection);
+
+    document.addEventListener('change', function (e) {
+        const t = e.target;
+        if (t && t.name === 'converterType' && t.value) {
+            localStorage.setItem(CONVERTER_KEY, t.value);
+            updateOptionClasses();
+        }
+    });
 
 async function updateDictionaries() {
     const button = document.querySelector('button[onclick="updateDictionaries()"]');

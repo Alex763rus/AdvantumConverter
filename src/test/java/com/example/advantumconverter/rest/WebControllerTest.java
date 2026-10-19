@@ -129,9 +129,25 @@ class WebControllerTest {
         when(converterAccessService.getAvailableFormats(authentication)).thenReturn(List.of());
         when(converterAccessService.shouldShowSendToCrm(authentication)).thenReturn(true);
 
-        assertThat(controller.showUploadPage(model, authentication)).isEqualTo("upload");
+        var request = new org.springframework.mock.web.MockHttpServletRequest();
+        request.getSession().setAttribute("lastConverterType", "cmd");
+
+        assertThat(controller.showUploadPage(model, authentication, request)).isEqualTo("upload");
         verify(model).addAttribute("username", "user");
         verify(model).addAttribute("showSendToCrm", true);
+        verify(model).addAttribute("lastConverterType", "cmd");
+    }
+
+    @Test
+    void showUploadPage_withoutSession_noLastConverter() {
+        Model model = org.mockito.Mockito.mock(Model.class);
+        when(converterAccessService.getAvailableFormats(authentication)).thenReturn(List.of());
+        when(converterAccessService.shouldShowSendToCrm(authentication)).thenReturn(false);
+
+        var request = new org.springframework.mock.web.MockHttpServletRequest();
+
+        assertThat(controller.showUploadPage(model, authentication, request)).isEqualTo("upload");
+        verify(model, never()).addAttribute(eq("lastConverterType"), any());
     }
 
     @Test
@@ -169,12 +185,14 @@ class WebControllerTest {
         when(converter.getConverterCommand()).thenReturn("cmd");
         when(excelGenerateService.createXlsxV2(any())).thenReturn(new InputFile(resultFile.toFile()));
         HttpServletRequest request = org.mockito.Mockito.mock(HttpServletRequest.class);
-        when(request.getSession()).thenReturn(org.mockito.Mockito.mock(HttpSession.class));
+        HttpSession session = org.mockito.Mockito.mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
 
         var response = controller.convertFile(xlsxFile(), "cmd", false, authentication, request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(historyActionService).saveWebHistoryActionProtect(any(), eq("in.xlsx"), eq("cmd"));
+        verify(session).setAttribute("lastConverterType", "cmd");
     }
 
     @Test
