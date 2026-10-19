@@ -5,6 +5,8 @@ import com.example.advantumconverter.model.jpa.Car;
 import com.example.advantumconverter.model.jpa.CarNumber;
 import com.example.advantumconverter.model.jpa.CarNumberRepository;
 import com.example.advantumconverter.model.jpa.CarRepository;
+import com.example.advantumconverter.model.jpa.basket.BasketAddressDictionary;
+import com.example.advantumconverter.model.jpa.basket.BasketAddressDictionaryRepository;
 import com.example.advantumconverter.model.jpa.lenta.*;
 import com.example.advantumconverter.model.jpa.metro.*;
 import com.example.advantumconverter.model.jpa.ozon.*;
@@ -55,6 +57,7 @@ public class DictionaryService {
     private final MetroAddressesDictionaryRepository metroAddressesDictionaryRepository;
     private final MetroDcAddressesDictionaryRepository metroDcAddressesDictionaryRepository;
     private final SberAddressDictionaryRepository sberAddressDictionaryRepository;
+    private final BasketAddressDictionaryRepository basketAddressDictionaryRepository;
     private final LentaTsCityRepository lentaTsCityRepository;
     private final SparWindowsRepository sparWindowsRepository;
 
@@ -76,6 +79,7 @@ public class DictionaryService {
     private volatile Set<MetroTimeDictionary> metroTimeDictionaries;
     private volatile Map<String, MetroDcAddressesDictionary> metroDcAddressesDictionaries;
     private volatile Map<String, SberAddressDictionary> sberAddressDictionaries;
+    private volatile Map<String, BasketAddressDictionary> basketAddressDictionaries;
     private volatile Map<String, LentaTsCity> lentaTsCitiesDictionaries;
 
     @PostConstruct
@@ -143,6 +147,10 @@ public class DictionaryService {
         sberAddressDictionaries = new HashMap<>();
         sberAddressDictionaryRepository.findAll()
                 .forEach(e -> sberAddressDictionaries.put(e.getAddress(), e));
+
+        basketAddressDictionaries = new HashMap<>();
+        basketAddressDictionaryRepository.findAll()
+                .forEach(e -> basketAddressDictionaries.put(e.getRegion(), e));
 
         metroTemperatureDictionaries = new HashMap<>();
         metroTemperatureDictionaryRepository.findAll()
@@ -279,6 +287,12 @@ public class DictionaryService {
 
     public Optional<SberAddressDictionary> getSberCity(String address) {
         return Optional.ofNullable(sberAddressDictionaries.get(address));
+    }
+
+    public String getBasketAddress(String region) {
+        return Optional.ofNullable(basketAddressDictionaries.get(region))
+                .map(BasketAddressDictionary::getAddress)
+                .orElse(null);
     }
 
 

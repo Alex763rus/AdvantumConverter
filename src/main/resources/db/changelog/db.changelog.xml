@@ -5,4 +5,7 @@
     <include file="/db/changelog/ddl/schema-ddl-stat-snapshot.xml"/>
     <include file="/db/changelog/ddl/schema-ddl-conversion-stat-snapshot.xml"/>
     <include file="/db/changelog/ddl/schema-ddl-history-action-uuid.xml"/>
+    <include file="/db/changelog/data/company/InsertCompany_1.sql"/>
+    <include file="/db/changelog/data/basket/create_basket_address.xml"/>
+    <include file="/db/changelog/data/basket/Insert_basket_address.sql"/>
 </databaseChangeLog>
