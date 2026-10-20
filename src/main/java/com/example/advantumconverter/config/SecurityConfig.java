@@ -28,21 +28,15 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         // Читаем пользователя из БД при каждом входе, чтобы изменения ролей
         // из админки подхватывались без рестарта сервиса.
-        // Логин = chat_id, пароль хранится в БД в виде хеша.
+        // Логин = поле login (для старых пользователей = chat_id), пароль хранится в БД в виде хеша.
         return username -> {
-            Long chatId;
-            try {
-                chatId = Long.parseLong(username);
-            } catch (NumberFormatException e) {
-                throw new UsernameNotFoundException("Пользователь не найден");
-            }
-            var user = userRepository.findUserByChatId(chatId);
+            var user = userRepository.findUserByLogin(username);
             if (user == null) {
                 throw new UsernameNotFoundException("Пользователь не найден");
             }
             if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
-                // Пользователи, созданные до перехода на пароли: логин и пароль = chat_id
-                user.setPasswordHash(passwordEncoder().encode(String.valueOf(chatId)));
+                // Пользователи, созданные до перехода на пароли: пароль = chat_id
+                user.setPasswordHash(passwordEncoder().encode(String.valueOf(user.getChatId())));
                 userRepository.save(user);
             }
             return new CustomUserDetails(username,

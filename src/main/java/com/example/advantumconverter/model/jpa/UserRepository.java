@@ -11,6 +11,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     User findUserByChatId(Long chatId);
 
+    User findUserByLogin(String login);
+
+    User findUserByUserName(String userName);
+
     @Override
     List<User> findAll();
 }

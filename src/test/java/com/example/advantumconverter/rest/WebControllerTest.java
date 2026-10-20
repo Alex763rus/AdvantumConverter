@@ -113,10 +113,9 @@ class WebControllerTest {
         form.setTelegramChatId(5L);
         form.setUsername("login");
         form.setPassword("secret");
-        form.setFullName("Full Name");
 
         assertThat(controller.processRegistration(form)).isEqualTo("redirect:/setup");
-        verify(userService).registerNewUser(5L, "login", "secret", "Full Name");
+        verify(userService).registerNewUser(5L, "login", "secret");
     }
 
     @Test
@@ -126,15 +125,15 @@ class WebControllerTest {
 
     @Test
     void changePassword_success_redirectsToLogin() {
-        var numericAuth = org.mockito.Mockito.mock(org.springframework.security.core.Authentication.class);
-        var details = new CustomUserDetails("42", "pass", UserRole.ADMIN, company);
-        when(numericAuth.getPrincipal()).thenReturn(details);
+        var auth = org.mockito.Mockito.mock(org.springframework.security.core.Authentication.class);
+        var details = new CustomUserDetails("alice", "pass", UserRole.ADMIN, company);
+        when(auth.getPrincipal()).thenReturn(details);
         var attrs = org.mockito.Mockito.mock(org.springframework.web.servlet.mvc.support.RedirectAttributes.class);
 
-        var view = controller.changePassword("newPass", "newPass", numericAuth, attrs);
+        var view = controller.changePassword("newPass", "newPass", auth, attrs);
 
         assertThat(view).isEqualTo("redirect:/login");
-        verify(userService).changePassword(42L, "newPass");
+        verify(userService).changePassword("alice", "newPass");
     }
 
     @Test

@@ -65,7 +65,7 @@ public class WebController {
     @PostMapping("/register")
     public String processRegistration(RegistrationForm form) {
         // Перенаправляем на страницу настройки
-        userService.registerNewUser(form.getTelegramChatId(), form.getUsername(), form.getPassword(), form.getFullName());
+        userService.registerNewUser(form.getTelegramChatId(), form.getUsername(), form.getPassword());
         return "redirect:/setup";
     }
 
@@ -90,13 +90,7 @@ public class WebController {
             redirectAttributes.addFlashAttribute("error", "Пароли не совпадают");
             return "redirect:/change-password";
         }
-        Long chatId;
-        try {
-            chatId = Long.parseLong(userDetails.getUsername());
-        } catch (NumberFormatException e) {
-            return "redirect:/login";
-        }
-        userService.changePassword(chatId, newPassword);
+        userService.changePassword(userDetails.getUsername(), newPassword);
         redirectAttributes.addFlashAttribute("success", "Пароль успешно изменён");
         return "redirect:/login";
     }

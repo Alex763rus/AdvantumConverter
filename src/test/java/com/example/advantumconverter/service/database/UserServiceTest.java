@@ -148,14 +148,26 @@ class UserServiceTest {
 
     @Test
     void registerNewUser_savesAndSetsFree() {
-        var result = service.registerNewUser(5L, "login", "secret", "First");
+        var result = service.registerNewUser(5L, "login", "secret");
 
         var captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(captor.capture());
         assertThat(captor.getValue().getChatId()).isEqualTo(5L);
+        assertThat(captor.getValue().getFirstName()).isEmpty();
+        assertThat(captor.getValue().getLogin()).isEqualTo("login");
         assertThat(captor.getValue().getPasswordHash()).isEqualTo("enc(secret)");
         assertThat(result.getUserRole()).isEqualTo(UserRole.NEED_SETTING);
         verify(stateService).setState(any(User.class), eq(State.FREE));
+    }
+
+    @Test
+    void registerNewUser_withoutChatId_generatesUniqueId() {
+        when(userRepository.existsById(any())).thenReturn(false);
+
+        var result = service.registerNewUser(null, "login", "secret");
+
+        assertThat(result.getChatId()).isNotNull();
+        verify(userRepository).save(result);
     }
 
     @Test
@@ -184,10 +196,12 @@ class UserServiceTest {
     @Test
     void changePassword_clearsFlag() {
         var stored = user(5L);
+        stored.setUserName("alice");
+        stored.setLogin("alice");
         stored.setMustChangePassword(true);
-        when(userRepository.findUserByChatId(5L)).thenReturn(stored);
+        when(userRepository.findUserByLogin("alice")).thenReturn(stored);
 
-        service.changePassword(5L, "newPass");
+        service.changePassword("alice", "newPass");
 
         assertThat(stored.getPasswordHash()).isEqualTo("enc(newPass)");
         assertThat(stored.getMustChangePassword()).isFalse();

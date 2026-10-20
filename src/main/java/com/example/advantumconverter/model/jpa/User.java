@@ -30,6 +30,9 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
+    @Column(name = "login")
+    private String login;
+
     @Column(name = "password_hash")
     private String passwordHash;
 

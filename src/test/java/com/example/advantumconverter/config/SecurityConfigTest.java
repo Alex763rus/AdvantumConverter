@@ -29,13 +29,14 @@ class SecurityConfigTest {
 
     private SecurityConfig config;
 
-    private User user(Long chatId, UserRole role) {
+    private User user(String login, Long chatId, UserRole role) {
         var company = new Company();
         company.setCompanyId(1L);
         company.setCompanyName("Company");
         var user = new User();
         user.setChatId(chatId);
-        user.setUserName("user" + chatId);
+        user.setUserName(login);
+        user.setLogin(login);
         user.setPasswordHash("{noop}12345");
         user.setUserRole(role);
         user.setCompany(company);
@@ -50,12 +51,12 @@ class SecurityConfigTest {
 
     @Test
     void loadUserByUsername_readsFreshRoleFromDb() {
-        when(userRepository.findUserByChatId(12345L)).thenReturn(user(12345L, UserRole.ADMIN));
+        when(userRepository.findUserByLogin("alice")).thenReturn(user("alice", 12345L, UserRole.ADMIN));
 
-        var details = config.userDetailsService().loadUserByUsername("12345");
+        var details = config.userDetailsService().loadUserByUsername("alice");
 
         assertThat(details).isInstanceOf(CustomUserDetails.class);
-        assertThat(details.getUsername()).isEqualTo("12345");
+        assertThat(details.getUsername()).isEqualTo("alice");
         assertThat(details.isEnabled()).isTrue();
         assertThat(details.getAuthorities())
                 .extracting("authority")
@@ -64,34 +65,28 @@ class SecurityConfigTest {
 
     @Test
     void loadUserByUsername_needsSettingUser_disabled() {
-        when(userRepository.findUserByChatId(777L)).thenReturn(user(777L, UserRole.NEED_SETTING));
+        when(userRepository.findUserByLogin("bob")).thenReturn(user("bob", 777L, UserRole.NEED_SETTING));
 
-        var details = config.userDetailsService().loadUserByUsername("777");
+        var details = config.userDetailsService().loadUserByUsername("bob");
 
         assertThat(details.isEnabled()).isFalse();
     }
 
     @Test
     void loadUserByUsername_unknownUser_throws() {
-        when(userRepository.findUserByChatId(999L)).thenReturn(null);
+        when(userRepository.findUserByLogin("ghost")).thenReturn(null);
 
-        assertThatThrownBy(() -> config.userDetailsService().loadUserByUsername("999"))
+        assertThatThrownBy(() -> config.userDetailsService().loadUserByUsername("ghost"))
                 .isInstanceOf(UsernameNotFoundException.class);
     }
 
     @Test
-    void loadUserByUsername_notANumber_throws() {
-        assertThatThrownBy(() -> config.userDetailsService().loadUserByUsername("admin"))
-                .isInstanceOf(UsernameNotFoundException.class);
-    }
-
-    @Test
-    void loadUserByUsername_legacyUserWithoutHash_backfillsPassword() {
-        var legacy = user(555L, UserRole.ADMIN);
+    void loadUserByUsername_legacyUserWithoutHash_backfillsPasswordWithChatId() {
+        var legacy = user("legacy", 555L, UserRole.ADMIN);
         legacy.setPasswordHash(null);
-        when(userRepository.findUserByChatId(555L)).thenReturn(legacy);
+        when(userRepository.findUserByLogin("legacy")).thenReturn(legacy);
 
-        var details = config.userDetailsService().loadUserByUsername("555");
+        var details = config.userDetailsService().loadUserByUsername("legacy");
 
         assertThat(details.getPassword()).isNotBlank();
         assertThat(legacy.getPasswordHash()).isNotBlank();

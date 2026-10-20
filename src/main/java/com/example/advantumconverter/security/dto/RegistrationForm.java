@@ -8,6 +8,5 @@ import lombok.Setter;
 public class RegistrationForm {
     private String username;
     private String password;
-    private String fullName;
     private Long telegramChatId;
 }

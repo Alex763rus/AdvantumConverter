@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.sql.Timestamp;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NOT_FOUND;
 import static com.example.advantumconverter.enums.UserRole.NEED_SETTING;
@@ -60,13 +61,21 @@ public class UserService {
         stateService.refreshUser(user);
     }
 
-    public User registerNewUser(Long chatId, String login, String password, String firstName) {
+    public User registerNewUser(Long chatId, String login, String password) {
 
         User user = new User();
 
+        if (chatId == null) {
+            // chat_id необязателен: генерируем псевдо-значение, чтобы не нарушать PK
+            do {
+                chatId = -ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            } while (userRepository.existsById(chatId));
+        }
+
         user.setChatId(chatId);
-        user.setFirstName(firstName);
+        user.setFirstName("");
         user.setUserName(login);
+        user.setLogin(login);
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setUserRole(NEED_SETTING);
         user.setUserRoletext(NEED_SETTING.name());
@@ -94,8 +103,8 @@ public class UserService {
         return user;
     }
 
-    public void changePassword(Long chatId, String newPassword) {
-        User user = userRepository.findUserByChatId(chatId);
+    public void changePassword(String login, String newPassword) {
+        User user = userRepository.findUserByLogin(login);
         if (user == null) {
             return;
         }
@@ -103,7 +112,7 @@ public class UserService {
         user.setMustChangePassword(false);
         userRepository.save(user);
         refreshUser(user);
-        log.info("password changed for chatId = {}", chatId);
+        log.info("password changed for user = {}", login);
     }
 
     private Message getMessage(Update update) {
