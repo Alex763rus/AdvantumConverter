@@ -14,10 +14,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 import static com.example.advantumconverter.constant.Constant.Command.COMMAND_CONVERT_BASKET;
 import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NAME_BASKET;
@@ -156,17 +157,47 @@ public class ConvertServiceImplBasket extends ConvertServiceBase implements Conv
     }
 
     private Date fillS(int row, int col, Date dateFromFileString) throws ParseException {
-        var dateCol = col + 3;
-        var time = getCellValue(row, dateCol);
+        return calculateDate(row, col + 3, dateFromFileString);
+    }
+
+    private Date fillT(int row, int col, Date dateFromFileString) throws ParseException {
+        return calculateDate(row, col + 4, dateFromFileString);
+    }
+
+    private Date calculateDate(int row, int dateCol, Date dateFromFileString) throws ParseException {
+        var time = convertTo24HourFormat(getCellValue(row, dateCol));
         var resultString = convertDateFormat(dateFromFileString, TEMPLATE_DATE_DOT) + SPACE + time;
         return convertDateFormat(resultString, TEMPLATE_DATE_TIME_DOT);
     }
 
-    private Date fillT(int row, int col, Date dateFromFileString) throws ParseException {
-        var dateCol = col + 4;
-        var time = getCellValue(row, dateCol);
-        var resultString = convertDateFormat(dateFromFileString, TEMPLATE_DATE_DOT) + SPACE + time;
-        return convertDateFormat(resultString, TEMPLATE_DATE_TIME_DOT);
+    private static final DateTimeFormatter FLEXIBLE_INPUT_FORMATTER = new DateTimeFormatterBuilder()
+            // Вариант 1: 12-часовой формат с секундами (например, "1:00:00 PM", "11:00:00 AM")
+            .appendOptional(DateTimeFormatter.ofPattern("h:mm:ss a", Locale.ENGLISH))
+            // Вариант 2: 12-часовой формат без секунд (например, "1:00 PM")
+            .appendOptional(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))
+            // Вариант 3: 24-часовой формат с секундами (например, "15:45:12")
+            .appendOptional(DateTimeFormatter.ofPattern("H:mm:ss"))
+            // Вариант 4: 24-часовой формат без секунд (например, "10:20", "8:05")
+            .appendOptional(DateTimeFormatter.ofPattern("H:mm"))
+            .toFormatter(Locale.ENGLISH);
+
+    private static final DateTimeFormatter OUTPUT_FORMATTER =
+            DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    private String convertTo24HourFormat(String inputTime) {
+        if (inputTime == null || inputTime.trim().isEmpty()) {
+            throw new IllegalArgumentException("Входная строка времени не может быть пустой");
+        }
+
+        try {
+            // Удаляем лишние пробелы и приводим PM/AM к верхнему регистру для надежности
+            String cleanedInput = inputTime.trim().toUpperCase();
+
+            LocalTime time = LocalTime.parse(cleanedInput, FLEXIBLE_INPUT_FORMATTER);
+            return time.format(OUTPUT_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Некорректный формат времени: " + inputTime, e);
+        }
     }
 
     @Override
