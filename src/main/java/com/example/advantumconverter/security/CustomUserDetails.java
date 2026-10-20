@@ -19,6 +19,11 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
     private final UserRole role;
     private final Company company;
+    private final boolean mustChangePassword;
+
+    public CustomUserDetails(String username, String password, UserRole role, Company company) {
+        this(username, password, role, company, false);
+    }
 
 
     @Override

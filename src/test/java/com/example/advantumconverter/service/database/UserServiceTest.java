@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -41,6 +42,8 @@ class UserServiceTest {
     private StateService stateService;
     @Mock
     private CompanyRepository companyRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private UserService service;
 
@@ -48,8 +51,9 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new UserService(userRepository, stateService, companyRepository);
+        service = new UserService(userRepository, stateService, companyRepository, passwordEncoder);
         when(companyRepository.getCompaniesByCompanyName(any())).thenReturn(company);
+        when(passwordEncoder.encode(any())).thenAnswer(inv -> "enc(" + inv.getArgument(0) + ")");
     }
 
     private User user(Long chatId) {
@@ -144,12 +148,49 @@ class UserServiceTest {
 
     @Test
     void registerNewUser_savesAndSetsFree() {
-        var result = service.registerNewUser(5L, "login", "First");
+        var result = service.registerNewUser(5L, "login", "secret", "First");
 
         var captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(captor.capture());
         assertThat(captor.getValue().getChatId()).isEqualTo(5L);
+        assertThat(captor.getValue().getPasswordHash()).isEqualTo("enc(secret)");
         assertThat(result.getUserRole()).isEqualTo(UserRole.NEED_SETTING);
         verify(stateService).setState(any(User.class), eq(State.FREE));
+    }
+
+    @Test
+    void resetPassword_setsDefaultAndFlag() {
+        var stored = user(5L);
+        stored.setUserName("login");
+        when(userRepository.findUserByChatId(5L)).thenReturn(stored);
+
+        var result = service.resetPassword(5L);
+
+        assertThat(result).isNotNull();
+        assertThat(stored.getPasswordHash()).isEqualTo("enc(" + UserService.DEFAULT_PASSWORD + ")");
+        assertThat(stored.getMustChangePassword()).isTrue();
+        verify(userRepository).save(stored);
+        verify(stateService).refreshUser(stored);
+    }
+
+    @Test
+    void resetPassword_unknownUser_returnsNull() {
+        when(userRepository.findUserByChatId(5L)).thenReturn(null);
+
+        assertThat(service.resetPassword(5L)).isNull();
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void changePassword_clearsFlag() {
+        var stored = user(5L);
+        stored.setMustChangePassword(true);
+        when(userRepository.findUserByChatId(5L)).thenReturn(stored);
+
+        service.changePassword(5L, "newPass");
+
+        assertThat(stored.getPasswordHash()).isEqualTo("enc(newPass)");
+        assertThat(stored.getMustChangePassword()).isFalse();
+        verify(userRepository).save(stored);
     }
 }

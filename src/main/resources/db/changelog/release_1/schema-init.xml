@@ -169,6 +169,8 @@
                 last_name     VARCHAR(255),
                 registered_at TIMESTAMP,
                 user_name     VARCHAR(255),
+                password_hash VARCHAR(255),
+                must_change_password BOOLEAN DEFAULT FALSE,
                 user_role     SMALLINT,
                 company_id    BIGINT NOT NULL,
                 CONSTRAINT fk_user_company

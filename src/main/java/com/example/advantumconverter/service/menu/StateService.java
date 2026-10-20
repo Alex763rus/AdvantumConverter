@@ -49,7 +49,10 @@ public class StateService {
     }
 
     public void refreshUser(User user) {
-        deleteUser(getUser(user.getChatId()));
+        User oldUser = getUser(user.getChatId());
+        if (oldUser != null) {
+            deleteUser(oldUser);
+        }
         setState(user, FREE);
     }
 

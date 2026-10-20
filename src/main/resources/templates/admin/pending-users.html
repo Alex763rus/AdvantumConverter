@@ -98,6 +98,7 @@
         <th>Назначить компанию</th>
         <th>Назначить роль</th>
         <th>Действие</th>
+        <th>Пароль</th>
     </tr>
     </thead>
     <tbody>
@@ -133,6 +134,14 @@
                 <button type="submit" class="btn">Сохранить</button>
             </td>
         </form>
+        <td>
+            <form th:action="@{'/admin/pending-users/' + ${user.chatId} + '/reset-password'}" method="post">
+                <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Сбросить пароль пользователю на 123456?');">
+                    Сбросить пароль
+                </button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>

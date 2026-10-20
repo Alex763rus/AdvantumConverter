@@ -112,10 +112,49 @@ class WebControllerTest {
         var form = new RegistrationForm();
         form.setTelegramChatId(5L);
         form.setUsername("login");
+        form.setPassword("secret");
         form.setFullName("Full Name");
 
         assertThat(controller.processRegistration(form)).isEqualTo("redirect:/setup");
-        verify(userService).registerNewUser(5L, "login", "Full Name");
+        verify(userService).registerNewUser(5L, "login", "secret", "Full Name");
+    }
+
+    @Test
+    void showChangePasswordForm_returnsView() {
+        assertThat(controller.showChangePasswordForm()).isEqualTo("change-password");
+    }
+
+    @Test
+    void changePassword_success_redirectsToLogin() {
+        var numericAuth = org.mockito.Mockito.mock(org.springframework.security.core.Authentication.class);
+        var details = new CustomUserDetails("42", "pass", UserRole.ADMIN, company);
+        when(numericAuth.getPrincipal()).thenReturn(details);
+        var attrs = org.mockito.Mockito.mock(org.springframework.web.servlet.mvc.support.RedirectAttributes.class);
+
+        var view = controller.changePassword("newPass", "newPass", numericAuth, attrs);
+
+        assertThat(view).isEqualTo("redirect:/login");
+        verify(userService).changePassword(42L, "newPass");
+    }
+
+    @Test
+    void changePassword_mismatch_showsError() {
+        var attrs = org.mockito.Mockito.mock(org.springframework.web.servlet.mvc.support.RedirectAttributes.class);
+
+        var view = controller.changePassword("newPass", "other", authentication, attrs);
+
+        assertThat(view).isEqualTo("redirect:/change-password");
+        verify(userService, never()).changePassword(any(), anyString());
+    }
+
+    @Test
+    void changePassword_blank_showsError() {
+        var attrs = org.mockito.Mockito.mock(org.springframework.web.servlet.mvc.support.RedirectAttributes.class);
+
+        var view = controller.changePassword("  ", "  ", authentication, attrs);
+
+        assertThat(view).isEqualTo("redirect:/change-password");
+        verify(userService, never()).changePassword(any(), anyString());
     }
 
     @Test

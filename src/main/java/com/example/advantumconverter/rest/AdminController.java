@@ -6,6 +6,7 @@ import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
 import com.example.advantumconverter.service.database.DictionaryService;
+import com.example.advantumconverter.service.database.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ public class AdminController {
     private final DictionaryService dictionaryService;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final UserService userService;
 
     // Обновить пользователя: назначить компанию и роль
     @PostMapping("/pending-users/{id}/assign")
@@ -46,6 +48,8 @@ public class AdminController {
             user.setUserRole(userRole);
             user.setUserRoletext(userRole.name());
             userRepository.save(user);
+            // Обновляем кэш пользователя в памяти бота, иначе бот видит старую роль до рестарта
+            userService.refreshUser(user);
             redirectAttributes.addFlashAttribute("success",
                     "Пользователь '" + user.getUserName() + "' успешно настроен и активирован");
 
@@ -53,6 +57,23 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("error", "Неверная роль: " + role);
         }
 
+        return "redirect:/admin/pending-users";
+    }
+
+    @PostMapping("/pending-users/{id}/reset-password")
+    public String resetPassword(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+
+        User user = userService.resetPassword(id);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Пользователь не найден");
+        } else {
+            redirectAttributes.addFlashAttribute("success",
+                    "Пароль пользователя '" + user.getUserName()
+                            + "' сброшен на транспортный: " + UserService.DEFAULT_PASSWORD
+                            + ". При входе потребуется сменить пароль.");
+        }
         return "redirect:/admin/pending-users";
     }
 

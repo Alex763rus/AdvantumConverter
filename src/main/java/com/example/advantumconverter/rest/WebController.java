@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriUtils;
 
 import java.io.File;
@@ -64,8 +65,40 @@ public class WebController {
     @PostMapping("/register")
     public String processRegistration(RegistrationForm form) {
         // Перенаправляем на страницу настройки
-        userService.registerNewUser(form.getTelegramChatId(), form.getUsername(), form.getFullName());
+        userService.registerNewUser(form.getTelegramChatId(), form.getUsername(), form.getPassword(), form.getFullName());
         return "redirect:/setup";
+    }
+
+    @GetMapping("/change-password")
+    public String showChangePasswordForm() {
+        return "change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 Authentication authentication,
+                                 RedirectAttributes redirectAttributes) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            return "redirect:/login";
+        }
+        if (newPassword == null || newPassword.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Пароль не может быть пустым");
+            return "redirect:/change-password";
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Пароли не совпадают");
+            return "redirect:/change-password";
+        }
+        Long chatId;
+        try {
+            chatId = Long.parseLong(userDetails.getUsername());
+        } catch (NumberFormatException e) {
+            return "redirect:/login";
+        }
+        userService.changePassword(chatId, newPassword);
+        redirectAttributes.addFlashAttribute("success", "Пароль успешно изменён");
+        return "redirect:/login";
     }
 
     @GetMapping("/login")

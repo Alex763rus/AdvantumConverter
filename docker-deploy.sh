@@ -11,4 +11,4 @@ docker push alex163rus/advantumconverter:latest
 
 echo "Deployment completed successfully!"
 echo ""
-read -p "Press Enter to close this window..."
+read -p "Press Enter to close this window..."==

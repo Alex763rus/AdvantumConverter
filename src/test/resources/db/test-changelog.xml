@@ -1,13 +1,13 @@
-<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <!-- Актуальная схема статистики (prod changelog) -->
+    <!-- РђРєС‚СѓР°Р»СЊРЅР°СЏ СЃС…РµРјР° СЃС‚Р°С‚РёСЃС‚РёРєРё (prod changelog) -->
     <include file="/db/changelog/ddl/schema-ddl-stat-snapshot.xml"/>
     <include file="/db/changelog/ddl/schema-ddl-conversion-stat-snapshot.xml"/>
 
-    <!-- Восстановленная схема release_1 + сиды (порядок как в исходном db.changelog_release_1.xml) -->
+    <!-- Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРЅР°СЏ СЃС…РµРјР° release_1 + СЃРёРґС‹ (РїРѕСЂСЏРґРѕРє РєР°Рє РІ РёСЃС…РѕРґРЅРѕРј db.changelog_release_1.xml) -->
     <include file="/db/changelog/release_1/schema-init.xml"/>
     <include file="/db/changelog/ddl/schema-ddl-history-action-uuid.xml"/>
     <changeSet id="seed-1" author="replay"><sqlFile path="/db/changelog/release_1/InsertCompany.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
@@ -110,4 +110,5 @@
     <changeSet id="seed-70" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress9.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
     <changeSet id="seed-71" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress10.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
     <changeSet id="seed-72" author="replay"><sqlFile path="/db/changelog/release_1/sber/InsertSberAddress11.sql" splitStatements="true" stripComments="true" endDelimiter=";"/></changeSet>
+    <include file="/db/changelog/ddl/schema-ddl-user-password.xml"/>
 </databaseChangeLog>

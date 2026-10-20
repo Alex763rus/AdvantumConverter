@@ -15,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import java.util.stream.Collectors;
-
 import static com.example.advantumconverter.enums.UserRole.NEED_SETTING;
 
 @Configuration
@@ -27,21 +25,32 @@ public class SecurityConfig {
     private UserRepository userRepository;
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        var users = userRepository.findAll()
-                .stream()
-                .map(user ->
-                        new CustomUserDetails(String.valueOf(user.getChatId()),
-                                passwordEncoder.encode(String.valueOf(user.getChatId())),
-                                user.getUserRole(),
-                                user.getCompany())
-                )
-                .collect(Collectors.toList());
-
-        return username -> users.stream()
-                .filter(u -> u.getUsername().equals(username))
-                .findFirst()
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+    public UserDetailsService userDetailsService() {
+        // Читаем пользователя из БД при каждом входе, чтобы изменения ролей
+        // из админки подхватывались без рестарта сервиса.
+        // Логин = chat_id, пароль хранится в БД в виде хеша.
+        return username -> {
+            Long chatId;
+            try {
+                chatId = Long.parseLong(username);
+            } catch (NumberFormatException e) {
+                throw new UsernameNotFoundException("Пользователь не найден");
+            }
+            var user = userRepository.findUserByChatId(chatId);
+            if (user == null) {
+                throw new UsernameNotFoundException("Пользователь не найден");
+            }
+            if (user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
+                // Пользователи, созданные до перехода на пароли: логин и пароль = chat_id
+                user.setPasswordHash(passwordEncoder().encode(String.valueOf(chatId)));
+                userRepository.save(user);
+            }
+            return new CustomUserDetails(username,
+                    user.getPasswordHash(),
+                    user.getUserRole(),
+                    user.getCompany(),
+                    Boolean.TRUE.equals(user.getMustChangePassword()));
+        };
     }
 
     @Bean
@@ -54,7 +63,9 @@ public class SecurityConfig {
         return (request, response, authentication) -> {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-            if (userDetails.getRole() == NEED_SETTING) {
+            if (userDetails.isMustChangePassword()) {
+                response.sendRedirect("/change-password");
+            } else if (userDetails.getRole() == NEED_SETTING) {
                 response.sendRedirect("/setup");
             } else {
                 response.sendRedirect("/");

@@ -30,6 +30,12 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
+    @Column(name = "password_hash")
+    private String passwordHash;
+
+    @Column(name = "must_change_password")
+    private Boolean mustChangePassword = false;
+
     @Column(name = "user_role")
     private UserRole userRole;
 

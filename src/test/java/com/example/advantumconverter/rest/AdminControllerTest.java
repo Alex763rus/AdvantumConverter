@@ -6,6 +6,7 @@ import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.User;
 import com.example.advantumconverter.model.jpa.UserRepository;
 import com.example.advantumconverter.service.database.DictionaryService;
+import com.example.advantumconverter.service.database.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +40,8 @@ class AdminControllerTest {
     private UserRepository userRepository;
     @Mock
     private CompanyRepository companyRepository;
+    @Mock
+    private UserService userService;
 
     private AdminController controller;
 
@@ -61,7 +64,7 @@ class AdminControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller = new AdminController(dictionaryService, userRepository, companyRepository);
+        controller = new AdminController(dictionaryService, userRepository, companyRepository, userService);
     }
 
     @Test
@@ -77,6 +80,7 @@ class AdminControllerTest {
         assertThat(user.getUserRole()).isEqualTo(UserRole.ADMIN);
         assertThat(user.getUserRoletext()).isEqualTo("ADMIN");
         verify(userRepository).save(user);
+        verify(userService).refreshUser(user);
         verify(attributes).addFlashAttribute(eq("success"), any());
     }
 
@@ -198,5 +202,28 @@ class AdminControllerTest {
 
         assertThat(response.getStatusCodeValue()).isEqualTo(500);
         assertThat(response.getBody()).isEqualTo("boom");
+    }
+
+    @Test
+    void resetPassword_success() {
+        var stored = user(5L, "alice", "Alice", company(1L), UserRole.EMPLOYEE);
+        when(userService.resetPassword(5L)).thenReturn(stored);
+        var attrs = mock(RedirectAttributes.class);
+
+        var view = controller.resetPassword(5L, attrs);
+
+        assertThat(view).isEqualTo("redirect:/admin/pending-users");
+        verify(attrs).addFlashAttribute(eq("success"), any());
+    }
+
+    @Test
+    void resetPassword_unknownUser_showsError() {
+        when(userService.resetPassword(5L)).thenReturn(null);
+        var attrs = mock(RedirectAttributes.class);
+
+        var view = controller.resetPassword(5L, attrs);
+
+        assertThat(view).isEqualTo("redirect:/admin/pending-users");
+        verify(attrs).addFlashAttribute(eq("error"), any());
     }
 }

@@ -4,6 +4,7 @@ import com.example.advantumconverter.model.jpa.CompanyRepository;
 import com.example.advantumconverter.model.jpa.UserRepository;
 import com.example.advantumconverter.service.menu.StateService;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -19,9 +20,10 @@ class UserServiceBranchTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final StateService stateService = mock(StateService.class);
     private final CompanyRepository companyRepository = mock(CompanyRepository.class);
+    private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
 
     private UserService service() {
-        return new UserService(userRepository, stateService, companyRepository);
+        return new UserService(userRepository, stateService, companyRepository, passwordEncoder);
     }
 
     @Test

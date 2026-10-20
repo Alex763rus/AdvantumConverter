@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,11 +24,15 @@ import static com.example.advantumconverter.enums.UserRole.NEED_SETTING;
 @RequiredArgsConstructor
 public class UserService {
 
+    public static final String DEFAULT_PASSWORD = "123456";
+
     private final UserRepository userRepository;
 
     private final StateService stateService;
 
     private final CompanyRepository companyRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {
@@ -55,13 +60,14 @@ public class UserService {
         stateService.refreshUser(user);
     }
 
-    public User registerNewUser(Long chatId, String login, String firstName) {
+    public User registerNewUser(Long chatId, String login, String password, String firstName) {
 
         User user = new User();
 
         user.setChatId(chatId);
         user.setFirstName(firstName);
         user.setUserName(login);
+        user.setPasswordHash(passwordEncoder.encode(password));
         user.setUserRole(NEED_SETTING);
         user.setUserRoletext(NEED_SETTING.name());
         user.setCompany(companyRepository.getCompaniesByCompanyName(COMPANY_NOT_FOUND));
@@ -73,6 +79,31 @@ public class UserService {
         stateService.setState(user, State.FREE);
         log.info("user saved: " + user);
         return user;
+    }
+
+    public User resetPassword(Long chatId) {
+        User user = userRepository.findUserByChatId(chatId);
+        if (user == null) {
+            return null;
+        }
+        user.setPasswordHash(passwordEncoder.encode(DEFAULT_PASSWORD));
+        user.setMustChangePassword(true);
+        userRepository.save(user);
+        refreshUser(user);
+        log.info("password reset for chatId = {}", chatId);
+        return user;
+    }
+
+    public void changePassword(Long chatId, String newPassword) {
+        User user = userRepository.findUserByChatId(chatId);
+        if (user == null) {
+            return;
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.setMustChangePassword(false);
+        userRepository.save(user);
+        refreshUser(user);
+        log.info("password changed for chatId = {}", chatId);
     }
 
     private Message getMessage(Update update) {
@@ -95,6 +126,7 @@ public class UserService {
         user.setFirstName(chat.getFirstName());
         user.setLastName(chat.getLastName());
         user.setUserName(chat.getUserName());
+        user.setPasswordHash(passwordEncoder.encode(String.valueOf(chatId)));
         user.setUserRole(NEED_SETTING);
         user.setUserRoletext(NEED_SETTING.name());
         user.setCompany(companyRepository.getCompaniesByCompanyName(COMPANY_NOT_FOUND));
