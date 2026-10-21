@@ -26,7 +26,8 @@ import static com.example.advantumconverter.constant.Constant.Company.COMPANY_NA
 import static com.example.advantumconverter.constant.Constant.Converter.*;
 import static com.example.advantumconverter.constant.Constant.Exceptions.EXCEL_LINE_CONVERT_ERROR;
 import static com.example.advantumconverter.constant.Constant.FileOutputName.FILE_NAME_SBER;
-import static com.example.advantumconverter.constant.Constant.Heap.*;
+import static com.example.advantumconverter.constant.Constant.Heap.MINUS;
+import static com.example.advantumconverter.constant.Constant.Heap.TWO_SPACE;
 import static com.example.advantumconverter.enums.ExcelType.CLIENT;
 import static org.example.tgcommons.constant.Constant.TextConstants.EMPTY;
 import static org.example.tgcommons.constant.Constant.TextConstants.SPACE;
@@ -94,7 +95,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         String carNumber = EMPTY;
         String organization = EMPTY;
         uniqReisNumbers = new HashMap<>();
-
+        Date nextSdate = null;
         try {
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW, 1);
@@ -114,7 +115,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 isStart = numberUnloading == 1;
                 if (isStart) {
                     carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
-                    var dateStartT = fillT(true, row, dateFromFile, cityIsEkb);
+                    nextSdate = fillS(false, row + 1, dateFromFile, null);
+                    var dateStartT = fillT(true, row, dateFromFile, cityIsEkb, nextSdate);
                     dateStartFromFileForSt = DateUtils.isSameDay(dateStartT, dateFromFile) ?
                             dateFromFile : DateUtils.addDays(dateFromFile, -1);
                     fio = prepareFio(getCellValue(row, 4));
@@ -123,9 +125,10 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
                     var temperage2Min = getTemperage2(row, 17, 0);
                     var temperage2Max = getTemperage2(row, 17, 1);
-                    var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile);
-                    var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb);
+                    var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, nextSdate);
+                    var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb, nextSdate);
                     dateS = dateT.before(dateS) ? DateUtils.addDays(dateS, -1) : dateS;
+
                     dataLine = ConvertedListDataClientsV2.init()
                             .setColumnAdata(getCellValue(row, 1))
                             .setColumnBdata(dateFromFile)
@@ -213,24 +216,30 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         Результат: дата из 17 колонки + время из второй части 15 столбца
     */
 
-    private Date fillS(boolean isStart, int row, Date dateFromFile) throws ParseException {
+    private Date fillS(boolean isStart, int row, Date dateFromFile, Date nextSdate) throws ParseException {
         //для погрузки лдя времени первого столбца точки. убытие 6 часов. Обытие Прибытие минус 2 от прибытия.
         //разгрузки:
         var time = isStart
                 ? getCellValue(row, 0)
                 : getCellValue(row, 14).split(MINUS)[0];
         var resultString = convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
-        return convertDateFormat(resultString, TEMPLATE_DATE_TIME_DOT);
+        var resultDate = convertDateFormat(resultString, TEMPLATE_DATE_TIME_DOT);
+        resultDate = isStart && resultDate.after(nextSdate) ?
+                DateUtils.addDays(resultDate, -1) : resultDate;
+        return resultDate;
     }
 
-    private Date fillT(boolean isStart, int row, Date dateFromFile, boolean isEkb) throws ParseException {
-        var dateResult = calculateT(isStart, row, dateFromFile, isEkb);
-        return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_DOT);
+    private Date fillT(boolean isStart, int row, Date dateFromFile, boolean isEkb, Date nextSdate) throws ParseException {
+        var dateResult = calculateT(isStart, row, dateFromFile, isEkb, nextSdate);
+        var resultDate = convertDateFormat(dateResult, TEMPLATE_DATE_TIME_DOT);
+        resultDate = isStart && resultDate.after(nextSdate) ?
+                DateUtils.addDays(resultDate, -1) : resultDate;
+        return resultDate;
     }
 
-    private String calculateT(boolean isStart, int row, Date dateFromFile, boolean isEkb) throws ParseException {
+    private String calculateT(boolean isStart, int row, Date dateFromFile, boolean isEkb, Date nextSdate) throws ParseException {
         if (isStart) {
-            var dateS = fillS(isStart, row, dateFromFile);
+            var dateS = fillS(isStart, row, dateFromFile, nextSdate);
             var addedHours = isEkb ? 1 : 2;
             var result = DateUtils.addHours(dateS, addedHours);
             return convertDateFormat(result, TEMPLATE_DATE_TIME_DOT);
