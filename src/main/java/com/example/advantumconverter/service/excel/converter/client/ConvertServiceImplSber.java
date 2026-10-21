@@ -116,7 +116,9 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 if (isStart) {
                     carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
                     var dateStartT = fillT(true, row, dateFromFile, cityIsEkb, nextTdate);
-                    nextTdate = fillT(false, row + 1, dateFromFile, cityIsEkb, nextTdate);
+                    nextTdate = row == LAST_ROW
+                            ? null
+                            : fillT(false, row + 1, dateFromFile, cityIsEkb, null);
                     dateStartFromFileForSt = DateUtils.isSameDay(dateStartT, dateFromFile) ?
                             dateFromFile : DateUtils.addDays(dateFromFile, -1);
                     fio = prepareFio(getCellValue(row, 4));
