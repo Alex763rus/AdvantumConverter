@@ -95,7 +95,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         String carNumber = EMPTY;
         String organization = EMPTY;
         uniqReisNumbers = new HashMap<>();
-        Date nextSdate = null;
+        Date nextTdate = null;
         try {
             sheet = book.getSheetAt(0);
             LAST_ROW = getLastRow(START_ROW, 1);
@@ -115,8 +115,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 isStart = numberUnloading == 1;
                 if (isStart) {
                     carNumber = deleteSpace(getCellValue(row, 3).replace("RUS", EMPTY));
-                    nextSdate = fillS(false, row + 1, dateFromFile, null);
-                    var dateStartT = fillT(true, row, dateFromFile, cityIsEkb, nextSdate);
+                    var dateStartT = fillT(true, row, dateFromFile, cityIsEkb, nextTdate);
+                    nextTdate = fillT(false, row + 1, dateFromFile, cityIsEkb, nextTdate);
                     dateStartFromFileForSt = DateUtils.isSameDay(dateStartT, dateFromFile) ?
                             dateFromFile : DateUtils.addDays(dateFromFile, -1);
                     fio = prepareFio(getCellValue(row, 4));
@@ -125,8 +125,8 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 for (int iRepeat = 0; iRepeat < 2; ++iRepeat) {
                     var temperage2Min = getTemperage2(row, 17, 0);
                     var temperage2Max = getTemperage2(row, 17, 1);
-                    var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, nextSdate);
-                    var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb, nextSdate);
+                    var dateS = fillS(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, nextTdate);
+                    var dateT = fillT(isStart, row, isStart ? dateStartFromFileForSt : dateFromFile, cityIsEkb, nextTdate);
                     dateS = dateT.before(dateS) ? DateUtils.addDays(dateS, -1) : dateS;
 
                     dataLine = ConvertedListDataClientsV2.init()
@@ -216,7 +216,7 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
         Результат: дата из 17 колонки + время из второй части 15 столбца
     */
 
-    private Date fillS(boolean isStart, int row, Date dateFromFile, Date nextSdate) throws ParseException {
+    private Date fillS(boolean isStart, int row, Date dateFromFile, Date nextTdate) throws ParseException {
         //для погрузки лдя времени первого столбца точки. убытие 6 часов. Обытие Прибытие минус 2 от прибытия.
         //разгрузки:
         var time = isStart
@@ -224,17 +224,15 @@ public class ConvertServiceImplSber extends ConvertServiceBase implements Conver
                 : getCellValue(row, 14).split(MINUS)[0];
         var resultString = convertDateFormat(dateFromFile, TEMPLATE_DATE_DOT) + SPACE + time;
         var resultDate = convertDateFormat(resultString, TEMPLATE_DATE_TIME_DOT);
-        resultDate = isStart && resultDate.after(nextSdate) ?
+        resultDate = isStart && nextTdate != null && resultDate.after(nextTdate) ?
                 DateUtils.addDays(resultDate, -1) : resultDate;
+
         return resultDate;
     }
 
-    private Date fillT(boolean isStart, int row, Date dateFromFile, boolean isEkb, Date nextSdate) throws ParseException {
-        var dateResult = calculateT(isStart, row, dateFromFile, isEkb, nextSdate);
-        var resultDate = convertDateFormat(dateResult, TEMPLATE_DATE_TIME_DOT);
-        resultDate = isStart && resultDate.after(nextSdate) ?
-                DateUtils.addDays(resultDate, -1) : resultDate;
-        return resultDate;
+    private Date fillT(boolean isStart, int row, Date dateFromFile, boolean isEkb, Date nextTdate) throws ParseException {
+        var dateResult = calculateT(isStart, row, dateFromFile, isEkb, nextTdate);
+        return convertDateFormat(dateResult, TEMPLATE_DATE_TIME_DOT);
     }
 
     private String calculateT(boolean isStart, int row, Date dateFromFile, boolean isEkb, Date nextSdate) throws ParseException {
