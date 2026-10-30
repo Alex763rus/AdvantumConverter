@@ -77,17 +77,18 @@ public class BotConfig {
             ConvertServiceImplMetroPrimary convertServiceImplMetroPrimary,
             ConvertServiceImplSielMilk convertServiceImplSielMilk,
             ConvertServiceImplRsLentaSpbHyper convertServiceImplRsLentaSpbHyper,
+            ConvertServiceImplRsLentaSpbHyperNew convertServiceImplRsLentaSpbHyperNew,
             ConvertServiceImplKznFatOil convertServiceImplKznFatOil,
             ConvertServiceImplBasket convertServiceImplBasket
     ) {
         val companySetting = new CompanySetting();
         val companyConverter = new HashMap<Company, List<? extends ConvertService>>();
-        val lentaConverter = List.of(convertServiceImplLenta, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplRsLentaSpbHyper);
+        val lentaConverter = List.of(convertServiceImplLenta, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplRsLentaSpbHyper, convertServiceImplRsLentaSpbHyperNew);
         val bushConverter = List.of(convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail);
         val advantumConverter = List.of(convertServiceImplLenta, convertServiceImplBogorodsk, convertServiceImplCofix
                 , convertServiceImplSamokat, convertServiceImplDominos, convertServiceImplAgroprom, convertServiceImplAgropromDetail, convertServiceImplOzon, convertServiceImplMetro, convertServiceImplSber, convertServiceImplArtFruit
-                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSielMilk, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb, convertServiceImplMetroPrimary, convertServiceImplRsLentaSpbHyper
+                , convertServiceImplBooker, convertServiceImplSiel, convertServiceImplSielMilk, convertServiceImplSpar, convertServiceImplNika, convertServiceImplFragrantWorldMsk, convertServiceImplRsLenta, convertServiceImplRsLentaYr, convertServiceImplRsLentaSpb, convertServiceImplRsLentaMsk, convertServiceImplFragrantWorldSpb, convertServiceImplMetroPrimary, convertServiceImplRsLentaSpbHyper, convertServiceImplRsLentaSpbHyperNew
                 , convertServiceImplKznFatOil, convertServiceImplBasket
         );
         val ozonConverter = List.of(convertServiceImplOzon);
@@ -152,6 +153,7 @@ public class BotConfig {
         rsConverters.add(COMMAND_CONVERT_RS_LENTA_SPB);
         rsConverters.add(COMMAND_CONVERT_RS_LENTA_MSK);
         rsConverters.add(COMMAND_CONVERT_RS_LENTA_SPB_HYPER);
+        rsConverters.add(COMMAND_CONVERT_RS_LENTA_SPB_HYPER_NEW);
 
         var employeeCommands = new ArrayList<>(allConverters);
 
@@ -205,6 +207,7 @@ public class BotConfig {
                         /*RS Лента УР:*/, COMMAND_CONVERT_RS_LENTA_YR
                         /*RS Лента СПБ мини:*/, COMMAND_CONVERT_RS_LENTA_SPB
                         /*RS Лента СПБ гипер:*/, COMMAND_CONVERT_RS_LENTA_SPB_HYPER
+                        /*RS Лента СПБ гипер новый:*/, COMMAND_CONVERT_RS_LENTA_SPB_HYPER_NEW
                         /*RS Лента МСК:*/, COMMAND_CONVERT_RS_LENTA_MSK
                         /*Озон:*/, COMMAND_CONVERT_OZON
                         /*Казанский жировой комбинат:*/, COMMAND_CONVERT_KZN_FAT_OIL
@@ -225,7 +228,7 @@ public class BotConfig {
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_LENTA)
                 , List.of(COMMAND_FAQ, COMMAND_DEFAULT, COMMAND_START, COMMAND_HISTORIC_ACTION
-                        , COMMAND_CONVERT_LENTA, COMMAND_CONVERT_RS_LENTA, COMMAND_CONVERT_RS_LENTA_YR, COMMAND_CONVERT_RS_LENTA_SPB, COMMAND_CONVERT_RS_LENTA_MSK, COMMAND_CONVERT_FRAGRANT_WORLD_SPB, COMMAND_CONVERT_RS_LENTA_SPB_HYPER
+                        , COMMAND_CONVERT_LENTA, COMMAND_CONVERT_RS_LENTA, COMMAND_CONVERT_RS_LENTA_YR, COMMAND_CONVERT_RS_LENTA_SPB, COMMAND_CONVERT_RS_LENTA_MSK, COMMAND_CONVERT_FRAGRANT_WORLD_SPB, COMMAND_CONVERT_RS_LENTA_SPB_HYPER, COMMAND_CONVERT_RS_LENTA_SPB_HYPER_NEW
                 )
         );
         commandAccessList.put(companyRepository.getCompaniesByCompanyName(COMPANY_NAME_BASKET)

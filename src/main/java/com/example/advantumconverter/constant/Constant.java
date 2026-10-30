@@ -54,6 +54,7 @@ public final class Constant {
         public static final String FILE_NAME_RS_LENTA_YR = "Лента ур входящий";
         public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ мини";
         public static final String FILE_NAME_RS_LENTA_SPB_HYPER = "Лента исходящий гипер";
+        public static final String FILE_NAME_RS_LENTA_SPB_HYPER_NEW = "Лента исходящий гипер возврат";
         public static final String FILE_NAME_FRAGRANT_WORLD_SPB = "Ароматный мир СПБ";
         public static final String FILE_NAME_RS_LENTA_MSK = "Лента исходящий МСК";
         public static final String FILE_NAME_METRO = "METRO";
@@ -99,6 +100,7 @@ public final class Constant {
         public static final String BOOKER = "Booker";
         public static final String RS = "Rs";
         public static final String RS_LENTA_SPB = "RsLentaSpb";
+        public static final String RS_LENTA_SPB_NEW = "RsLentaSpbNew";
     }
 
     @NoArgsConstructor(access = PRIVATE)
@@ -125,6 +127,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_RS_LENTA_YR = "/convert_rs_lenta_yr";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB = "/convert_rs_lenta_spb";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB_HYPER = "/convert_rs_lenta_spb_hyper";
+        public static final String COMMAND_CONVERT_RS_LENTA_SPB_HYPER_NEW = "/convert_rs_lenta_spb_hyper_new";
         public static final String COMMAND_CONVERT_FRAGRANT_WORLD_SPB = "/convert_fragrant_world_spb";
         public static final String COMMAND_CONVERT_RS_LENTA_MSK = "/convert_rs_lenta_msk";
         public static final String COMMAND_CONVERT_OZON = "/convert_ozon";
