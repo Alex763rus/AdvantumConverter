@@ -51,6 +51,7 @@ public final class Constant {
         public static final String FILE_NAME_METRO_PRIMARY = "Metro Primary";
         public static final String FILE_NAME_RS_LENTA = "Лента входящий";
         public static final String FILE_NAME_BASKET = "Корзинка";
+        public static final String FILE_NAME_BASKET_FAYZABAD = "Корзинка Файзабад";
         public static final String FILE_NAME_RS_LENTA_YR = "Лента ур входящий";
         public static final String FILE_NAME_RS_LENTA_SPB = "Лента исходящий СПБ мини";
         public static final String FILE_NAME_RS_LENTA_SPB_HYPER = "Лента исходящий гипер";
@@ -87,6 +88,7 @@ public final class Constant {
         public static final String COMPANY_NAME_METRO = "Метро";
         public static final String COMPANY_NAME_SBER = "СберЛогистика";
         public static final String COMPANY_NAME_BASKET = "Корзиночка";
+        public static final String COMPANY_NAME_BASKET_FAYZABAD = "Корзиночка Файзабад";
         public static final String COMPANY_NAME_ART_FRUIT = "ArtFruit";
         public static final String COMPANY_NAME_SIEL = "СИЭЛЬ";
         public static final String COMPANY_NAME_SPAR = "Спар";
@@ -124,6 +126,7 @@ public final class Constant {
         public static final String COMMAND_CONVERT_METRO_PRIMARY = "/metro_primary";
         public static final String COMMAND_CONVERT_RS_LENTA = "/convert_rs_lenta";
         public static final String COMMAND_CONVERT_BASKET = "/convert_basket";
+        public static final String COMMAND_CONVERT_BASKET_FAYZABAD = "/convert_basket_fayzabad";
         public static final String COMMAND_CONVERT_RS_LENTA_YR = "/convert_rs_lenta_yr";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB = "/convert_rs_lenta_spb";
         public static final String COMMAND_CONVERT_RS_LENTA_SPB_HYPER = "/convert_rs_lenta_spb_hyper";
