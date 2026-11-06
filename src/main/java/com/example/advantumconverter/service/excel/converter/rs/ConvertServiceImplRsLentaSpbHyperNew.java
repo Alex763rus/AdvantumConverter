@@ -77,7 +77,11 @@ public class ConvertServiceImplRsLentaSpbHyperNew extends ConvertServiceBase imp
                         var dataLine = prepareData(reisMain, svodData);
                         data.add(dataLine);
                         if (reisMain.getTara() != null && !reisMain.getTara().isEmpty()) {
-                            data.add(prepareTara(reisMain, svodData));
+                            try {
+                                data.add(prepareTara(reisMain, svodData));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
             );
@@ -94,6 +98,13 @@ public class ConvertServiceImplRsLentaSpbHyperNew extends ConvertServiceBase imp
                 .toLocalDateTime().toLocalTime();
     }
 
+    private String prepareSdate(Date date, Svod svod) throws ParseException {
+        var sDateString = convertDateFormat(date, TEMPLATE_DATE_DOT);
+        var time = getTime(svod.getTimeInterval(), svod.getTk());
+        var result = prepareDateStartEnd(sDateString, time.getFirst(), time.getSecond(), TIME_18, svod.getSquiz());
+        return result.getFirst() + "/" + result.getSecond();
+    }
+
     private Pair<String, String> prepareDateStartEnd(String date,
                                                      String timeStart,
                                                      String timeEnd,
@@ -102,6 +113,7 @@ public class ConvertServiceImplRsLentaSpbHyperNew extends ConvertServiceBase imp
         if (EMPTY.equals(timeStart) || EMPTY.equals(timeEnd)) {
             return Pair.of(EMPTY, EMPTY);
         }
+
         var dateTime1 = convertDateFormat(date + " " + timeStart, TEMPLATE_DATE_TIME_DOT);
         var dateTime2 = convertDateFormat(date + " " + timeEnd, TEMPLATE_DATE_TIME_DOT);
 
@@ -132,8 +144,7 @@ public class ConvertServiceImplRsLentaSpbHyperNew extends ConvertServiceBase imp
         );
     }
 
-
-    private ConvertedListDataRsLentaSpbNewV2 prepareTara(ReisMain reisMain, Map<Integer, Svod> swodData) {
+    private ConvertedListDataRsLentaSpbNewV2 prepareTara(ReisMain reisMain, Map<Integer, Svod> swodData) throws ParseException {
         var svod = swodData.get(reisMain.getTk());
         var svodRc = swodData.get(convertToIntegerOrNull(reisMain.getRcComplectation()));
         return ConvertedListDataRsLentaSpbNewV2.init()
@@ -158,34 +169,11 @@ public class ConvertServiceImplRsLentaSpbHyperNew extends ConvertServiceBase imp
                 .setColumnOdata(null)
                 .setColumnPdata(null)
                 .setColumnQdata("Возврат тары")
-                .setColumnRdata(prepareSdate(reisMain, svod))
+                .setColumnRdata(prepareSdate(reisMain.getDateDelivery(), svod))
                 .setColumnSdata(null)
                 //========================
                 .setIsTara(true)
                 .build();
-    }
-
-    private String prepareSdate(ReisMain reisMain, Svod svod) {
-        var sDate = (svod.getSquiz() == null || svod.getSquiz() == 0)
-                ? reisMain.getDateDelivery()
-                : DateUtils.addDays(reisMain.getDateDelivery(), svod.getSquiz());
-
-        var sDateString = convertDateFormat(sDate, TEMPLATE_DATE_DOT);
-        var timesFromFile = svod.getTimeInterval();
-        try {
-
-            var times = timesFromFile.split(MINUS);
-            var timeStart = times[0];
-            var timeEnd = times[1];
-            return sDateString
-                    + " " + timeStart
-                    + "/" + sDateString
-                    + " " + timeEnd;
-        } catch (Exception ex) {
-            warnings.add("Не обработать время для рейса: " + reisMain.getTk() + ", время: " + timesFromFile);
-            return EMPTY;
-        }
-
     }
 
     private ConvertedListDataRsLentaSpbNewV2 prepareData(ReisMain reisMain, Map<Integer, Svod> swodData) {
@@ -342,6 +330,21 @@ public class ConvertServiceImplRsLentaSpbHyperNew extends ConvertServiceBase imp
         } catch (Exception ex) {
             warnings.add("Не обработать время для рейса: " + numberYr + ", время: " + timesFromFile);
             return EMPTY;
+        }
+    }
+
+    private Pair<String, String> getTime(String timesFromFile, Integer tk) {
+        if (EMPTY.equals(timesFromFile) || timesFromFile.equals("-")) {
+            return Pair.of(EMPTY, EMPTY);
+        }
+        try {
+            var times = timesFromFile.split(MINUS);
+            var timeStart = times[0];
+            var timeEnd = times[1];
+            return Pair.of(timeStart, timeEnd);
+        } catch (Exception ex) {
+            warnings.add("Не обработать время для рейса: " + tk + ", время: " + timesFromFile);
+            return Pair.of(EMPTY, EMPTY);
         }
     }
 

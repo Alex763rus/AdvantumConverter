@@ -104,7 +104,7 @@ public class RsLentaSpbExcelNewGenerateService implements ExcelGenerateService {
                     for (int repeat = 0; repeat < rowData.getTechCountRepeat(); ++repeat) {
                         row = sheet.createRow(y + 1);
                         var key = convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE)
-                                + "_" + rowData.getColumnDdata()
+                                + "_" + rowData.getColumnEdata()
                                 + "_" + (repeat + 1)
                                 + "_" + rowData.getTechProductGroup();
                         createCell(row, 0, key);
@@ -117,7 +117,7 @@ public class RsLentaSpbExcelNewGenerateService implements ExcelGenerateService {
                         for (int repeat = 0; repeat < techRepeat.getRepeat(); ++repeat) {
                             row = sheet.createRow(y + 1);
                             var reisKey = convertDateFormat(rowData.getColumnBdata(), TEMPLATE_DATE)
-                                    + "_" + rowData.getColumnDdata()
+                                    + "_" + rowData.getColumnEdata()
                                     + "_" + (repeat + 1)
                                     + "_" + techRepeat.getColumnName()
                                     + "_" + rowData.getColumnCdata();
